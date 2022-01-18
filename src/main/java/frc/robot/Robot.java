@@ -14,11 +14,13 @@ import frc.robot.Commands.AutoDrive;
 import frc.robot.Commands.DriveStick;
 import frc.robot.Commands.DriveStickSlew;
 import frc.robot.Commands.ResetOrientation;
+import frc.robot.Commands.AutonOption3;
 
 public class Robot extends TimedRobot {
     private final XboxController controller = new XboxController(0);
     private final Drivetrain swerve = new Drivetrain();
     private boolean lastEnabled = false;
+    private AutonOption3 autonOption3;
 
     @Override
     public void robotInit() {
@@ -42,12 +44,20 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousInit() {
         CommandScheduler.getInstance().cancelAll();
+        //
+       autonOption3 = new AutonOption3(swerve);
+
         //CommandScheduler.getInstance().schedule(new DriveCharacter(this, swerve));
+    }
+    @Override
+    public void autonomousPeriodic(){
+        autonOption3.execute();
+       
     }
 
     @Override
     public void teleopPeriodic() {
-
+       // swerve.drive(controller.getLeftY(), controller.getLeftX(), controller.getRightX(), true);
     }
 
     @Override
