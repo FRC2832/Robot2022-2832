@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.CommandGroup.Auton1A;
 import frc.robot.Commands.AutoDrive;
 import frc.robot.Commands.DriveStick;
 import frc.robot.Commands.DriveStickSlew;
@@ -19,6 +20,7 @@ public class Robot extends TimedRobot {
     private final XboxController controller = new XboxController(0);
     private final Drivetrain swerve = new Drivetrain();
     private boolean lastEnabled = false;
+    private Auton1A auton;
 
     @Override
     public void robotInit() {
@@ -32,6 +34,7 @@ public class Robot extends TimedRobot {
         SmartDashboard.putData("Drive Forward 0.5mps", new AutoDrive(swerve, 0.5, 0));
         SmartDashboard.putData("Drive FR 0.5mps", new AutoDrive(swerve, 0.5, 0.5));
         SmartDashboard.putData("Reset Orientation", new ResetOrientation(swerve));
+        SmartDashboard.putNumber("Shooting delay", 4.0);
     }
 
     @Override
@@ -43,6 +46,12 @@ public class Robot extends TimedRobot {
     public void autonomousInit() {
         CommandScheduler.getInstance().cancelAll();
         //CommandScheduler.getInstance().schedule(new DriveCharacter(this, swerve));
+        auton = new Auton1A(swerve);
+    }
+
+    @Override
+    public void autonomousPeriodic() {
+        auton.execute();
     }
 
     @Override
