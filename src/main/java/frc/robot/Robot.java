@@ -45,13 +45,13 @@ public class Robot extends TimedRobot {
     public void autonomousInit() {
         CommandScheduler.getInstance().cancelAll();
         //
-       autonOption3 = new AutonOption3(swerve);
+      // autonOption3 = new AutonOption3(swerve);
 
-        //CommandScheduler.getInstance().schedule(new DriveCharacter(this, swerve));
+        CommandScheduler.getInstance().schedule(new AutonOption3(swerve));
     }
     @Override
     public void autonomousPeriodic(){
-        autonOption3.execute();
+        //autonOption3.execute();
        
     }
 

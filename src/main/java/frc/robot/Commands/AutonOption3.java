@@ -26,7 +26,7 @@ public void execute(){
    // timer.start();
     if(timer.get()<2){
         System.out.println("Moving Back");
-        drive.drive(-1, 0, 0, true);
+        drive.drive(-1, 0, 0, false);
         } 
        else if(timer.get()>2 && timer.get()<3){
         System.out.println("Stopping");
@@ -36,7 +36,7 @@ public void execute(){
         //shoot times two
       else if(timer.get()>3 && timer.get()< 6){
         System.out.println("Moving Right");
-         drive.drive(0, -1, 0, true);
+         drive.drive(0, -1, 0, false);
         }else{
             System.out.println("Stopping");
             stop();
