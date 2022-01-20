@@ -20,7 +20,6 @@ public class Robot extends TimedRobot {
     private final XboxController controller = new XboxController(0);
     private final Drivetrain swerve = new Drivetrain();
     private boolean lastEnabled = false;
-    private Auton1A auton;
 
     @Override
     public void robotInit() {
