@@ -28,5 +28,10 @@
         }
       }
     }
+  },
+  "NetworkTables": {
+    "SmartDashboard": {
+      "open": true
+    }
   }
 }
