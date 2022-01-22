@@ -230,8 +230,9 @@ public class Drivetrain extends SubsystemBase {
     public void simulationPeriodic() {
         boolean reset = SmartDashboard.getBoolean("Reset Position", false);
         if(reset == true) {
+            Rotation2d drive = new Rotation2d();
             //set the robot to x=0.5m, y=4m, rot=0*
-            odometry.resetPosition(new Pose2d(0.5, 4, new Rotation2d()), new Rotation2d());
+            odometry.resetPosition(new Pose2d(6.5, 4.72, new Rotation2d()), new Rotation2d());
             SmartDashboard.putBoolean("Reset Position", false);
         }
 

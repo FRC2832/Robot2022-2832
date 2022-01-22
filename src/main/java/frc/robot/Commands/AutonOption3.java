@@ -35,8 +35,8 @@ public void execute(){
         //Pick up ball
         //shoot times two
       else if(timer.get()>3 && timer.get()< 6){
-        System.out.println("Moving Right");
-         drive.drive(0, -1, 0, false);
+        System.out.println("Moving Left");
+         drive.drive(0, 1, 0, false);
         }else{
             System.out.println("Stopping");
             stop();
