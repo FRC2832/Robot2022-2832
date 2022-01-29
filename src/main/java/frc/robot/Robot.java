@@ -10,9 +10,9 @@ import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.CommandGroup.Auton1;
-import frc.robot.CommandGroup.Auton1A;
 import frc.robot.Commands.AutoDrive;
+import frc.robot.Commands.Auton1;
+import frc.robot.Commands.Auton1A;
 import frc.robot.Commands.DriveStick;
 import frc.robot.Commands.DriveStickSlew;
 import frc.robot.Commands.ResetOrientation;
@@ -28,13 +28,14 @@ public class Robot extends TimedRobot {
         swerve.setDefaultCommand(new DriveStickSlew(swerve,controller));
         //this.setNetworkTablesFlushEnabled(true);  //turn off 20ms Dashboard update rate
         LiveWindow.setEnabled(false);
+        Pi.sendAlliance();
 
         //add commands to the dashboard so we can run them seperately
         SmartDashboard.putData("Stick Drive", new DriveStick(swerve, controller));
         SmartDashboard.putData("Drive Forward 0.5mps", new AutoDrive(swerve, 0.5, 0));
         SmartDashboard.putData("Drive FR 0.5mps", new AutoDrive(swerve, 0.5, 0.5));
         SmartDashboard.putData("Reset Orientation", new ResetOrientation(swerve));
-        SmartDashboard.putNumber("Shooting delay", 4.0);
+        SmartDashboard.putNumber("Shooting delay", 0.0);
     }
 
     @Override

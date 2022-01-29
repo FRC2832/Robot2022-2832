@@ -1,4 +1,4 @@
-package frc.robot.CommandGroup;
+package frc.robot.Commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -8,16 +8,17 @@ import frc.robot.Drivetrain;
 public class Auton1A extends CommandBase {
     private Drivetrain drive;
     private Timer timer;
-    private double delay = 4.0;
+    private double delay = 0.0;
 
     public Auton1A(Drivetrain drive) {
         this.drive = drive;
         timer = new Timer();
         timer.start();
-        delay = SmartDashboard.getNumber("Shooting delay", 4.0); // TODO: check that drivers can change this value
+        delay = SmartDashboard.getNumber("Shooting delay", 0.0);
         addRequirements(drive);
     }
 
+    // back up, wait for delay, shoot
     public void execute() {
         double driveTime = 3;
         if(timer.get() < driveTime) {
