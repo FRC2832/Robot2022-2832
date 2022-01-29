@@ -215,14 +215,17 @@ public class Drivetrain extends SubsystemBase {
     public SwerveModule[] getModules() {
         return modules;
     }
-
+    int i = 0;
     @Override
     public void periodic() {
         //put data on dashboard
         SmartDashboard.putNumber("SwerveDrive/gyroAngle", getAngle());
         SmartDashboard.putNumber("SwerveDrive/gyroHeading", getHeading().getDegrees());
+        i++;
+        if(i%5 == 0){
         for(int i=0; i< modules.length; i++) {
             modules[i].putSmartDashboard();
+            }
         }
     }
 
