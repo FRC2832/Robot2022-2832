@@ -36,7 +36,11 @@ public class Robot extends TimedRobot {
     @Override
     public void robotInit() {
         CommandScheduler.getInstance().registerSubsystem(swerve);
+<<<<<<< Updated upstream
         //swerve.setDefaultCommand(new DriveStickSlew(swerve,controller));
+=======
+        swerve.setDefaultCommand(new DriveStickSlew(swerve,controller));
+>>>>>>> Stashed changes
         
         //this.setNetworkTablesFlushEnabled(true);  //turn off 20ms Dashboard update rate
         LiveWindow.setEnabled(false);
@@ -114,7 +118,15 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopPeriodic() {
         //swerve.drive(controller.getLeftY()*2.85, controller.getLeftX()*2.85, controller.getRightX()*6.28, true);
+<<<<<<< Updated upstream
         driveStickSlew.execute();
+=======
+       // driveStickSlew.execute();
+    }
+    @Override 
+    public void teleopInit(){
+        CommandScheduler.getInstance().cancelAll();
+>>>>>>> Stashed changes
     }
 
     @Override
