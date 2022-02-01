@@ -522,7 +522,7 @@ def extra_cargo_processing(pipeline):
     print('cargo x', cargo_x_positions)
     print('cargo y', cargo_y_positions)
     # Publish to the '/vision/red_areas' network table
-    table = NetworkTables.getTable('datatable')
+    table = NetworkTables.getTable('vision')
     table.putNumberArray('cargoX', cargo_x_positions)
     table.putNumberArray('cargoY', cargo_y_positions)
 
@@ -536,6 +536,7 @@ def extra_target_processing(pipeline):
     target_y_positions = []
     target_widths = []
     target_heights = []
+    target_areas = []
 
     # Find the bounding boxes of the contours to get x, y, width, and height
     for contour in pipeline.filter_contours_output:
@@ -544,18 +545,20 @@ def extra_target_processing(pipeline):
         target_y_positions.append(y + (h / 2))
         target_widths.append(w)
         target_heights.append(h)
+        target_areas.append(w * h)
 
     print('center target x', target_x_positions)
     print('center target y', target_y_positions)
     print('target width', target_widths)
     print('target height', target_heights)
+    print('target area', target_areas)
     # Publish to the '/vision/red_areas' network table
-    table = NetworkTables.getTable('datatable')
+    table = NetworkTables.getTable('vision')
     table.putNumberArray('targetX', target_x_positions)
     table.putNumberArray('targetY', target_y_positions)
     table.putNumberArray('targetWidth', target_widths)
     table.putNumberArray('targetHeight', target_heights)
-
+    table.putNumberArray('targetArea', target_areas)
 
 
 
