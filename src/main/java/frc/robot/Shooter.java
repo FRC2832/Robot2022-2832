@@ -30,6 +30,7 @@ public class Shooter extends SubsystemBase
         config.peakCurrentLimit = 40; // the peak current, in amps
         config.peakCurrentDuration = 1500; // the time at the peak current before the limit triggers, in ms
         config.continuousCurrentLimit = 30; // the current to maintain if the peak limit is triggered
+        //P=0.8, i=0.001, d=16, F=0.05205, Izone=65
         shooterSrx.configAllSettings(config); // apply the config settings; this selects the quadrature encoder
     }
 
