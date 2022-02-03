@@ -216,13 +216,18 @@ public class Drivetrain extends SubsystemBase {
         return modules;
     }
 
+    int loops = 0;
     @Override
     public void periodic() {
-        //put data on dashboard
+        // put data on dashboard
         SmartDashboard.putNumber("SwerveDrive/gyroAngle", getAngle());
         SmartDashboard.putNumber("SwerveDrive/gyroHeading", getHeading().getDegrees());
-        for(int i=0; i< modules.length; i++) {
-            modules[i].putSmartDashboard();
+        loops++;
+        if (loops % 5 == 0) {
+            for (int i = 0; i < modules.length; i++) {
+                modules[i].putSmartDashboard();
+            }
+            loops = 0;
         }
     }
 
@@ -231,7 +236,7 @@ public class Drivetrain extends SubsystemBase {
         boolean reset = SmartDashboard.getBoolean("Reset Position", false);
         if(reset == true) {
             //set the robot to x=0.5m, y=4m, rot=0*
-            odometry.resetPosition(new Pose2d(0.5, 4, new Rotation2d()), new Rotation2d());
+            odometry.resetPosition(new Pose2d(6.5, 4.72, new Rotation2d()), new Rotation2d());
             SmartDashboard.putBoolean("Reset Position", false);
         }
 
