@@ -2,65 +2,71 @@ package frc.robot;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import com.ctre.phoenix.motorcontrol.can.TalonSRXConfiguration;
-import com.revrobotics.CANSparkMax;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Shooter extends SubsystemBase 
 {
-    TalonSRX shooterSrx;
-    TalonSRX hoodMotor;
-    //TODO: write home hood method
+    final double SENSOR_UNITS_TO_RPM = 3.414;
+    TalonFX shooterFx;
+    //TalonSRX hoodMotor;
 
+    //TODO: write home hood method
     //Distance to Target
-    //Shooter Speed (RPM)
     //Hood Angle
+    //Turn robot to goal
     //Turret Angle?
     
     public Shooter() {
         // Example usage of a TalonSRX motor controller
-        shooterSrx = new TalonSRX(0); // creates a new TalonSRX with ID 0
-        shooterSrx.setNeutralMode(NeutralMode.Coast);
-        hoodMotor = new TalonSRX(2);
+        shooterFx = new TalonFX(0); // creates a new TalonSRX with ID 0
+        shooterFx.setNeutralMode(NeutralMode.Coast);
+        //hoodMotor = new TalonSRX(2);
 
-        TalonSRXConfiguration config = new TalonSRXConfiguration();
-        config.peakCurrentLimit = 40; // the peak current, in amps
-        config.peakCurrentDuration = 1500; // the time at the peak current before the limit triggers, in ms
-        config.continuousCurrentLimit = 30; // the current to maintain if the peak limit is triggered
-        //P=0.8, i=0.001, d=16, F=0.05205, Izone=65
-        shooterSrx.configAllSettings(config); // apply the config settings; this selects the quadrature encoder
+        TalonFXConfiguration config = new TalonFXConfiguration();
+        //PID values from calibration on field, 6878 units/100ms = 32.3% power, 47.89% = 9892, 16.62%=3572 units=1046 rpm
+        config.slot0.kP = 0.8;
+        config.slot0.kI = 0.001;
+        config.slot0.kD = 16;
+        config.slot0.kF = 0.05205;
+        config.slot0.integralZone = 65;
+        config.closedloopRamp = 0.1;         //take 100ms to ramp to max power
+        shooterFx.configAllSettings(config); // apply the config settings; this selects the quadrature encoder
     }
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Shooter Output Position", shooterSrx.getSelectedSensorPosition());
         SmartDashboard.putNumber("Shooter Output Velocity", getShooterVelocity());
         SmartDashboard.putNumber("Hood Angle Position", getHoodAngle());
     }
 
     public void setShootPct(double percent) {
-        shooterSrx.set(ControlMode.PercentOutput, percent);
+        shooterFx.set(ControlMode.PercentOutput, percent);
     }
 
     public void setShooterRpm(double rpm) {
-        //TODO: set scale factor for RPM
-        shooterSrx.set(ControlMode.Velocity, rpm);
+        shooterFx.set(ControlMode.Velocity, rpm * SENSOR_UNITS_TO_RPM);
     }
 
     public void setHoodAngle(double position) {
         //TODO: set hood angle
     }
 
+    /**
+     * Get shooter speed in RPM
+     * @return RPM
+     */
     public double getShooterVelocity() {
-        //TODO: convert raw units to RPM
-        return shooterSrx.getSelectedSensorVelocity();
+        return shooterFx.getSelectedSensorVelocity() / SENSOR_UNITS_TO_RPM;
     }
 
     public double getHoodAngle() {
         //TODO: add angle scale factor and zeroing
-        return hoodMotor.getSelectedSensorPosition();
+        //return hoodMotor.getSelectedSensorPosition();
+        return 0;
     }
 }

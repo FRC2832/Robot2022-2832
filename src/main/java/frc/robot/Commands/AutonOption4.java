@@ -2,7 +2,6 @@ package frc.robot.Commands;
 
 import frc.robot.Drivetrain;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class AutonOption4 extends CommandBase {

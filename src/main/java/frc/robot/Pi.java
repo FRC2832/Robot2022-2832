@@ -8,21 +8,21 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 public class Pi {
     private NetworkTableInstance netTableInstance;
-    private static NetworkTable table;
+    private NetworkTable table;
     private NetworkTableEntry cargoCenterX;
     private NetworkTableEntry cargoCenterY;
-    private static NetworkTableEntry allianceColor;
+    private NetworkTableEntry allianceColor;
 
     public Pi() {
         netTableInstance = NetworkTableInstance.getDefault();
-        table = netTableInstance.getTable("datatable");
+        table = netTableInstance.getTable("vision");
         cargoCenterX = table.getEntry("cargoX");
         cargoCenterY = table.getEntry("cargoY");
+        allianceColor = table.getEntry("alliance");
     }
 
     // sends alliance color to the python code so it knows what color cargo to look for
-    public static void sendAlliance() {
-        allianceColor = table.getEntry("alliance");
+    public void sendAlliance() {
         Alliance alliance = DriverStation.getAlliance();
         if(alliance == Alliance.Red) {
             allianceColor.setString("red");

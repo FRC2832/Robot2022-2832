@@ -3,6 +3,7 @@
     "types": {
       "/FMSInfo": "FMSInfo",
       "/LiveWindow/Drivetrain": "Subsystem",
+      "/LiveWindow/Shooter": "Subsystem",
       "/LiveWindow/Ungrouped/ADXRS450_Gyro[0]": "Gyro",
       "/LiveWindow/Ungrouped/PIDController[1]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[2]": "PIDController",
@@ -13,11 +14,13 @@
       "/LiveWindow/Ungrouped/PIDController[7]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[8]": "PIDController",
       "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
+      "/SmartDashboard/Auto Choices": "String Chooser",
       "/SmartDashboard/Drive FR 0.5mps": "Command",
       "/SmartDashboard/Drive Forward 0.5mps": "Command",
       "/SmartDashboard/Drivetrain": "Subsystem",
       "/SmartDashboard/Field": "Field2d",
       "/SmartDashboard/Reset Orientation": "Command",
+      "/SmartDashboard/Shooter": "Subsystem",
       "/SmartDashboard/Stick Drive": "Command"
     },
     "windows": {
@@ -30,6 +33,9 @@
     }
   },
   "NetworkTables": {
+    "FMSInfo": {
+      "open": true
+    },
     "SmartDashboard": {
       "open": true
     }

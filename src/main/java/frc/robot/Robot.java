@@ -6,23 +6,27 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Commands.AutoDrive;
-import frc.robot.Commands.Auton1;
-import frc.robot.Commands.Auton1A;
 import frc.robot.Commands.DriveStick;
 import frc.robot.Commands.DriveStickSlew;
+import frc.robot.Commands.NoShoot;
 import frc.robot.Commands.ResetOrientation;
 import frc.robot.Commands.AutonOption3;
 import frc.robot.Commands.AutonOption6;
+import frc.robot.Commands.DashboardShoot;
 
 public class Robot extends TimedRobot {
     private final XboxController controller = new XboxController(0);
     private final Drivetrain swerve = new Drivetrain();
+    private final Shooter shooter = new Shooter();
+    private final Pi pi = new Pi();
+
     private boolean lastEnabled = false;
 
     private static final String option1 = "Option1";
@@ -39,17 +43,21 @@ public class Robot extends TimedRobot {
     public void robotInit() {
         CommandScheduler.getInstance().registerSubsystem(swerve);
         swerve.setDefaultCommand(new DriveStickSlew(swerve, controller));
+        shooter.setDefaultCommand(new NoShoot(shooter));
+
+        JoystickButton selectButton = new JoystickButton(controller, 7);  //7 = select button
+        selectButton.whenHeld(new DashboardShoot(shooter));
 
         // this.setNetworkTablesFlushEnabled(true); //turn off 20ms Dashboard update
         // rate
         LiveWindow.setEnabled(false);
-        Pi.sendAlliance();
 
         // add commands to the dashboard so we can run them seperately
         SmartDashboard.putData("Stick Drive", new DriveStick(swerve, controller));
         SmartDashboard.putData("Drive Forward 0.5mps", new AutoDrive(swerve, 0.5, 0));
         SmartDashboard.putData("Drive FR 0.5mps", new AutoDrive(swerve, 0.5, 0.5));
         SmartDashboard.putData("Reset Orientation", new ResetOrientation(swerve));
+        SmartDashboard.putData(shooter);
 
         m_chooser.setDefaultOption("Option1", option1);
         m_chooser.addOption("Option2", option2);
@@ -148,6 +156,8 @@ public class Robot extends TimedRobot {
         }
         // save the result for next loop
         lastEnabled = isEnabled();
+
+        pi.sendAlliance();
     }
 
     @Override
