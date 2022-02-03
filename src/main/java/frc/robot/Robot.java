@@ -12,6 +12,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Commands.AutoDrive;
+import frc.robot.Commands.Auton1;
+import frc.robot.Commands.Auton1A;
 import frc.robot.Commands.DriveStick;
 import frc.robot.Commands.DriveStickSlew;
 import frc.robot.Commands.ResetOrientation;
@@ -41,6 +43,7 @@ public class Robot extends TimedRobot {
         // this.setNetworkTablesFlushEnabled(true); //turn off 20ms Dashboard update
         // rate
         LiveWindow.setEnabled(false);
+        Pi.sendAlliance();
 
         // add commands to the dashboard so we can run them seperately
         SmartDashboard.putData("Stick Drive", new DriveStick(swerve, controller));
@@ -55,6 +58,9 @@ public class Robot extends TimedRobot {
         m_chooser.addOption("Option5", option5);
         m_chooser.addOption("Option6", option6);
         SmartDashboard.putData("Auto Choices", m_chooser);
+
+        SmartDashboard.putNumber("Shooting delay", 0.0);
+
     }
 
     @Override
@@ -65,6 +71,7 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousInit() {
         CommandScheduler.getInstance().cancelAll();
+
         m_autoSelected = m_chooser.getSelected();
         // autonOption3 = new AutonOption3(swerve);
         // CommandScheduler.getInstance().schedule(new AutonOption3(swerve));
@@ -109,7 +116,6 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousPeriodic() {
-        // autonOption3.execute();
 
     }
 
