@@ -25,6 +25,7 @@ public class Robot extends TimedRobot {
     private final XboxController controller = new XboxController(0);
     private final Drivetrain swerve = new Drivetrain();
     private final Shooter shooter = new Shooter();
+    private final Pi pi = new Pi();
 
     private boolean lastEnabled = false;
 
@@ -155,6 +156,8 @@ public class Robot extends TimedRobot {
         }
         // save the result for next loop
         lastEnabled = isEnabled();
+
+        pi.sendAlliance();
     }
 
     @Override
