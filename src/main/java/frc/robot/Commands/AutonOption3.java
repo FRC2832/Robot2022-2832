@@ -30,7 +30,7 @@ public void execute(){
         System.out.println("Moving Back");
         drive.drive(-1, 0, 0, false);
         } 
-       else if(timer.get()>2+delay && timer.get()<3+delay){
+       else if(timer.get()>2+delay && timer.get()<3+delay);
         System.out.println("Stopping");
            stop(); 
         } 
