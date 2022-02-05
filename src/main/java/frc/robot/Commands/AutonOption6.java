@@ -3,53 +3,73 @@ package frc.robot.Commands;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Drivetrain;
+import frc.robot.Shooter;
 
 public class AutonOption6 extends CommandBase {
-    private Drivetrain drive;
+    private Drivetrain driveTrain;
+    private Shooter shooter;
     private Timer timer;
 
-    public AutonOption6(Drivetrain drive){
+    public AutonOption6(Drivetrain driveTrain, Shooter shooter) {
         timer = new Timer();
-        this.drive = drive; 
-        addRequirements(drive);
+        this.driveTrain = driveTrain;
+        this.shooter = shooter;
+        addRequirements(driveTrain, shooter);
         timer.start();
     }
-    private void stop(){
-        drive.drive(0, 0, 0, true);
+
+    private void stopDrive() {
+        driveTrain.drive(0, 0, 0, true);
     }
 
-    public void execute(){
-        if(timer.get() < 2 ){
-            drive.drive(.75, 0, 0, false);
-            System.out.println("Getting ball 1");
-            
-        } else if (timer.get()>2 && timer.get()<3){
-            stop();
-            System.out.println("SHOOTING!!!!");
-        }
-        //pick up ball and shoot x2
-        else if(timer.get()>3 && timer.get()< 4){
-            drive.drive(0, 0, -3*Math.PI/4, false);
-        }
-        else if(timer.get()>4 && timer.get()<7){
-            drive.drive(1, 0, 0, false);
-            System.out.println("Getting ball 2");
-        }
-        else if(timer.get()>8 && timer.get()< 9){
-            drive.drive(0, 0, Math.PI/2.5, false);
-        } else if(timer.get()>9 && timer.get()<12){
-            drive.drive(1.5, 0, 0, false);
-        }
-        else if(timer.get()>12 && timer.get()<13 ){
-            drive.drive(0, 0, Math.PI, false);
-        } else if(timer.get()>13 && timer.get()<14){
-            drive.drive(2, 0, 0, false);
-        } else{
-            stop();
-            System.out.println("SHOOTING!!!!");
+    public void execute() {
+        double timerVal = timer.get();
+        if (timerVal < 2) {
+            driveTrain.drive(1, 0, 0, false);
+            shooter.setShooterRpm(0);
+            System.out.println("Approaching cargo 2");
+        } else if (timerVal < 3) {
+            driveTrain.drive(0, 0, Math.PI, false);
+            shooter.setShooterRpm(60);
+            System.out.println("Turning to shoot");
+        } else if (timerVal < 4) {
+            shooter.setShooterRpm(60);
+            stopDrive();
+            System.out.println("Shooting two cargo");
+        } else if (timerVal < 5) {
+            shooter.setShooterRpm(0);
+            driveTrain.drive(1.05, -1.819, Math.PI / 3, false);
+            System.out.println("turning and driving towards 3rd cargo");
+            // TODO: Replace with vision
+        } else if (timerVal < 6) {
+            shooter.setShooterRpm(60);
+            driveTrain.drive(0, 0, (-2 * Math.PI) / 3, false);
+            System.out.println("Turning to shoot cargo 3");
+        } else if (timerVal < 7) {
+            shooter.setShooterRpm(60);
+            stopDrive();
+            System.out.println("Shooting cargo 3");
+        } else if (timerVal < 9) {
+            shooter.setShooterRpm(0);
+            driveTrain.drive(-2, 0, Math.PI / 2, false);
+            System.out.println("Turning and driving towards cargo 4 and 5");
+        } else if (timerVal < 10) {
+            shooter.setShooterRpm(0);
+            stopDrive();
+            System.out.println("Stopping for a sec so the human player can deliver the cargo");
+        } else if (timerVal < 11) {
+            shooter.setShooterRpm(60);
+            driveTrain.drive(-2, 0, Math.PI, false);
+            System.out.println("Moving back and turning so the robot can shoot");
+        } else if (timerVal < 12) {
+            shooter.setShooterRpm(60);
+            stopDrive();
+            System.out.println("SHOOTING CARGO 4 AND 5!!!!");
+        } else {
+            shooter.setShooterRpm(0);
+            stopDrive();
+            System.out.println("STOPPING EVERYTHING!!!!!!!");
         }
     }
-        //Now we shoot!!!!!
+    // Now we shoot!!!!!
 }
-    
-

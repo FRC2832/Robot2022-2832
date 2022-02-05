@@ -116,7 +116,7 @@ public class Robot extends TimedRobot {
 
             case option6:
                 System.out.println("Running Option 6");
-                CommandScheduler.getInstance().schedule(new AutonOption6(swerve));
+                CommandScheduler.getInstance().schedule(new AutonOption6(swerve, shooter));
 
                 break;
         }
