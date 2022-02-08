@@ -46,7 +46,7 @@ public class Robot extends TimedRobot {
         shooter.setDefaultCommand(new NoShoot(shooter));
 
         JoystickButton selectButton = new JoystickButton(controller, 7);  //7 = select button
-        selectButton.whenHeld(new DashboardShoot(shooter));
+        selectButton.whileActiveContinuous(new DashboardShoot(shooter));
 
         // this.setNetworkTablesFlushEnabled(true); //turn off 20ms Dashboard update
         // rate
@@ -57,7 +57,7 @@ public class Robot extends TimedRobot {
         SmartDashboard.putData("Drive Forward 0.5mps", new AutoDrive(swerve, 0.5, 0));
         SmartDashboard.putData("Drive FR 0.5mps", new AutoDrive(swerve, 0.5, 0.5));
         SmartDashboard.putData("Reset Orientation", new ResetOrientation(swerve));
-        SmartDashboard.putData(shooter);
+        SmartDashboard.putData("Shooter",shooter);
 
         m_chooser.setDefaultOption("Option1", option1);
         m_chooser.addOption("Option2", option2);

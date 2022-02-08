@@ -25,6 +25,7 @@ public class Shooter extends SubsystemBase
         // Example usage of a TalonSRX motor controller
         shooterFx = new TalonFX(0); // creates a new TalonSRX with ID 0
         shooterFx.setNeutralMode(NeutralMode.Coast);
+        shooterFx.setInverted(true);
         //hoodMotor = new TalonSRX(2);
 
         TalonFXConfiguration config = new TalonFXConfiguration();
