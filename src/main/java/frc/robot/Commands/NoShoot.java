@@ -13,6 +13,6 @@ public class NoShoot extends CommandBase{
     
     @Override
     public void execute() {
-        shooter.setShooterRpm(0);
+        shooter.setShootPct(0);
     }
 }
