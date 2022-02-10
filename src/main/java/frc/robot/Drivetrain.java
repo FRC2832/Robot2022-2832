@@ -40,8 +40,8 @@ public class Drivetrain extends SubsystemBase {
     private final SwerveModule[] modules = new SwerveModule[4];
     private final SwerveConstants[] constants = new SwerveConstants[4]; 
     private Pose2d[] modulePoses = new Pose2d[4];
-    private Translation2d redBalls[];
-    private Translation2d blueBalls[];
+    private Translation2d[] redBalls;
+    private Translation2d[] blueBalls;
     NetworkTable visionTable;
 
     // private final AnalogGyro gyro = new AnalogGyro(0);
@@ -211,7 +211,7 @@ public class Drivetrain extends SubsystemBase {
         // Update the poses for the swerveModules. Note that the order of rotating the
         // position and then adding the translation matters
         for (int i = 0; i < modules.length; i++) {
-            var modulePositionFromChassis = constants[i].Location.rotateBy(getHeading())
+            Translation2d modulePositionFromChassis = constants[i].Location.rotateBy(getHeading())
                     .plus(pose.getTranslation());
 
             // Module's heading is it's angle relative to the chassis heading
@@ -305,11 +305,11 @@ public class Drivetrain extends SubsystemBase {
 
 
     public void updateVision(Pose2d robot) {
-        Translation2d balls[];
+        Translation2d[] balls;
         final double MAX_SIGHT_DIST = 1.219;  //48"
 
-        var cameraMove = new Translation2d(0.381, new Rotation2d());//move the camera 15" forward to be at the front of the robot
-        var cameraPose = robot.transformBy(new Transform2d(cameraMove,new Rotation2d()));  
+        Translation2d cameraMove = new Translation2d(0.381, new Rotation2d());//move the camera 15" forward to be at the front of the robot
+        Pose2d cameraPose = robot.transformBy(new Transform2d(cameraMove,new Rotation2d()));  
 
         if(DriverStation.getAlliance() == Alliance.Red) {
             balls = redBalls;
@@ -320,17 +320,17 @@ public class Drivetrain extends SubsystemBase {
         ArrayList<Double> centerX = new ArrayList<Double>();
         ArrayList<Double> centerY = new ArrayList<Double>();
         for(Translation2d ball : balls) {
-            var heading = calcHeading(cameraPose, ball);
+            Transform2d heading = calcHeading(cameraPose, ball);
 
             //ball must be within 48" and within a 90* FOV to be seen
-            var angle = heading.getRotation().getDegrees();
+            double angle = heading.getRotation().getDegrees();
             if (Math.abs(angle) < 45) {
-                var dist = heading.getTranslation().getNorm();
-                var x = Math.sin(Math.toRadians(angle)) * dist;
-                var y = Math.cos(Math.toRadians(angle)) * dist;
+                double dist = heading.getTranslation().getNorm();
+                double x = Math.sin(Math.toRadians(angle)) * dist;
+                double y = Math.cos(Math.toRadians(angle)) * dist;
 
                 //48" check
-                if(y < MAX_SIGHT_DIST) {
+                if (y < MAX_SIGHT_DIST) {
                     //top left is 0,0
                     centerX.add((MAX_SIGHT_DIST-x)/MAX_SIGHT_DIST*320);  //since we are 90*, a 45* max triangle has equal sides, so we assumed max distance side to side also.  640 max pixels divided by 2
                     centerY.add((MAX_SIGHT_DIST-y)/MAX_SIGHT_DIST*480);
