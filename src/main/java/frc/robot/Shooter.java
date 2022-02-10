@@ -30,7 +30,7 @@ public class Shooter extends SubsystemBase
         // Example usage of a TalonSRX motor controller
         shooterFx = new TalonFX(0); // creates a new TalonSRX with ID 0
         shooterFx.setNeutralMode(NeutralMode.Coast);
-        shooterFx.setInverted(true);
+        shooterFx.setInverted(false);
         hoodMotor = new TalonSRX(2);
         hoodMotor.setNeutralMode(NeutralMode.Brake);
 
@@ -53,7 +53,7 @@ public class Shooter extends SubsystemBase
         SmartDashboard.putNumber("Hood Angle Position", getHoodAngle());
 
         //if the limit switch is pressed, reset the hood angle position
-        if(limitSwitch.get() == true) {
+        if (limitSwitch.get() == true) {
             hoodMotor.setSelectedSensorPosition(0);
             isHomed = true;
         }
