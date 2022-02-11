@@ -80,6 +80,8 @@ public class Robot extends TimedRobot {
     public void autonomousInit() {
         CommandScheduler.getInstance().cancelAll();
 
+        pi.processCargo();
+        pi.processTargets();
         m_autoSelected = m_chooser.getSelected();
         // autonOption3 = new AutonOption3(swerve);
         // CommandScheduler.getInstance().schedule(new AutonOption3(swerve));
@@ -158,6 +160,8 @@ public class Robot extends TimedRobot {
         lastEnabled = isEnabled();
 
         pi.sendAlliance();
+        pi.processCargo();
+        pi.processTargets();
     }
 
     @Override
