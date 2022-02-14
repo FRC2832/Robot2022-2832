@@ -72,7 +72,7 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousInit() {
         CommandScheduler.getInstance().cancelAll();
-		//rehome hood if needed
+		    //rehome hood if needed
         CommandScheduler.getInstance().schedule(new HomeHood(shooter));
 		
         m_autoSelected = m_chooser.getSelected();
@@ -155,6 +155,8 @@ public class Robot extends TimedRobot {
         lastEnabled = isEnabled();
 
         pi.sendAlliance();
+        pi.processCargo();
+        pi.processTargets();
     }
 
     @Override
