@@ -12,14 +12,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.Commands.AutoDrive;
-import frc.robot.Commands.DriveStick;
-import frc.robot.Commands.DriveStickSlew;
-import frc.robot.Commands.NoShoot;
-import frc.robot.Commands.ResetOrientation;
-import frc.robot.Commands.AutonOption3;
-import frc.robot.Commands.AutonOption6;
-import frc.robot.Commands.DashboardShoot;
+import frc.robot.Commands.*;
 
 public class Robot extends TimedRobot {
     private final XboxController controller = new XboxController(0);
@@ -46,7 +39,7 @@ public class Robot extends TimedRobot {
         shooter.setDefaultCommand(new NoShoot(shooter));
 
         JoystickButton selectButton = new JoystickButton(controller, 7);  //7 = select button
-        selectButton.whenHeld(new DashboardShoot(shooter));
+        selectButton.whileActiveContinuous(new DashboardShoot(shooter));
 
         // this.setNetworkTablesFlushEnabled(true); //turn off 20ms Dashboard update
         // rate
@@ -57,7 +50,7 @@ public class Robot extends TimedRobot {
         SmartDashboard.putData("Drive Forward 0.5mps", new AutoDrive(swerve, 0.5, 0));
         SmartDashboard.putData("Drive FR 0.5mps", new AutoDrive(swerve, 0.5, 0.5));
         SmartDashboard.putData("Reset Orientation", new ResetOrientation(swerve));
-        SmartDashboard.putData(shooter);
+        SmartDashboard.putData("Shooter",shooter);
 
         m_chooser.setDefaultOption("Option1", option1);
         m_chooser.addOption("Option2", option2);
@@ -79,9 +72,9 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousInit() {
         CommandScheduler.getInstance().cancelAll();
-
-        pi.processCargo();
-        pi.processTargets();
+		    //rehome hood if needed
+        CommandScheduler.getInstance().schedule(new HomeHood(shooter));
+		
         m_autoSelected = m_chooser.getSelected();
         // autonOption3 = new AutonOption3(swerve);
         // CommandScheduler.getInstance().schedule(new AutonOption3(swerve));
@@ -139,6 +132,8 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopInit() {
         CommandScheduler.getInstance().cancelAll();
+        //rehome hood if needed
+        CommandScheduler.getInstance().schedule(new HomeHood(shooter));
     }
 
     @Override
