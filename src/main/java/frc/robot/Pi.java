@@ -25,13 +25,13 @@ public class Pi {
     private Number[] targetWidthArray;
     private Number[] targetHeightArray;
     private Number[] targetAreaArray;
-    private static ArrayList<Pair<Double,Double>> distTable;
     private final double CAM_X_RES = 640;
     private final double CAM_Y_RES = 480;
     private static boolean targetMoveRight;
     private static boolean targetMoveLeft;
     private static boolean cargoMoveRight;
     private static boolean cargoMoveLeft;
+    private double centerYOutput;
 
     public Pi() {
         netTableInstance = NetworkTableInstance.getDefault();
@@ -44,9 +44,7 @@ public class Pi {
         targetWidth = table.getEntry("targetWidth");
         targetHeight = table.getEntry("targetHeight");
         targetArea = table.getEntry("targetArea");
-        distTable = new ArrayList<Pair<Double,Double>>();
-        //table is input: pixel width (or area?), output: meters from target
-        distTable.add(new Pair<Double, Double>(94.0, 7.7724)); //placeholder values
+        centerYOutput = -1;
     }
 
     // sends alliance color to the python code so it knows what color cargo to look for
@@ -101,6 +99,7 @@ public class Pi {
             index = (int) ((targetCenterXArray.length / 2) + 1);
         }
         double targetX = (double) targetCenterXArray[index];
+        centerYOutput = (double) targetCenterYArray[index];
         if (targetX < (CAM_X_RES / 2) - (CAM_X_RES * 0.05)) {
             targetMoveRight = false;
             targetMoveLeft = true;
@@ -186,4 +185,7 @@ public class Pi {
         return targetMoveLeft;
     }
 
+    public double getCenterY() {
+        return centerYOutput;
+    }
 }
