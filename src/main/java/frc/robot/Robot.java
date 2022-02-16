@@ -19,6 +19,7 @@ public class Robot extends TimedRobot {
     private final Drivetrain swerve = new Drivetrain();
     private final Shooter shooter = new Shooter();
     private final Pi pi = new Pi();
+    private REVDigitBoard digit;
 
     private boolean lastEnabled = false;
 
@@ -34,6 +35,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void robotInit() {
+        digit = new REVDigitBoard();
         CommandScheduler.getInstance().registerSubsystem(swerve);
         swerve.setDefaultCommand(new DriveStickSlew(swerve, controller));
         shooter.setDefaultCommand(new NoShoot(shooter));
@@ -157,7 +159,12 @@ public class Robot extends TimedRobot {
         pi.sendAlliance();
         pi.processCargo();
         pi.processTargets();
+        
+        //display something on the digit board
+		digit.display((double)loops/100);
+        loops++;
     }
+    int loops;  //temp variable to display loops on the digit board
 
     @Override
     public void simulationPeriodic() {
