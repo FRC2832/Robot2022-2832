@@ -95,10 +95,10 @@ public class Pi {
         sortTargets();
         // pick a target just right of center so the cargo hopefully doesn't bounce out
         int index = 0;
-        if(targetCenterXArray.length <= 3) {
-            index = targetCenterXArray.length - 1;
+        if (targetCenterXArray.length <= 1) {
+            index = 0; 
         } else {
-            index = (int) ((targetCenterXArray.length / 2) + 1);
+            index = (int) Math.ceil((double) targetCenterXArray.length / 2);
         }
         double targetX = (double) targetCenterXArray[index];
         if (targetX < (CAM_X_RES / 2) - (CAM_X_RES * 0.05)) {
