@@ -27,11 +27,13 @@ public class Pi {
     private Number[] targetAreaArray;
     private final double CAM_X_RES = 640;
     private final double CAM_Y_RES = 480;
+    public final double TARGET_CENTER_X = 320;
     private static boolean targetMoveRight;
     private static boolean targetMoveLeft;
     private static boolean cargoMoveRight;
     private static boolean cargoMoveLeft;
     private double centerYOutput;
+    private double centerXOutput;
 
     public Pi() {
         netTableInstance = NetworkTableInstance.getDefault();
@@ -88,6 +90,8 @@ public class Pi {
         if (targetCenterXArray.length == 0) {
             targetMoveRight = false;
             targetMoveLeft = false;
+            centerYOutput = -1;
+            centerXOutput = -1;
             return;
         }
         sortTargets();
@@ -100,10 +104,11 @@ public class Pi {
         }
         double targetX = (double) targetCenterXArray[index];
         centerYOutput = (double) targetCenterYArray[index];
-        if (targetX < (CAM_X_RES / 2) - (CAM_X_RES * 0.05)) {
+        centerXOutput = targetX;
+        if (targetX < ((CAM_X_RES / 2) - (CAM_X_RES * 0.05))) {
             targetMoveRight = false;
             targetMoveLeft = true;
-        } else if (targetX > (CAM_X_RES / 2) + (CAM_X_RES * 0.05)) {
+        } else if (targetX > ((CAM_X_RES / 2) + (CAM_X_RES * 0.05))) {
             targetMoveLeft = false;
             targetMoveRight = true;
         } else {
@@ -187,5 +192,9 @@ public class Pi {
 
     public double getCenterY() {
         return centerYOutput;
+    }
+
+    public double getCenterX() {
+        return centerXOutput;
     }
 }

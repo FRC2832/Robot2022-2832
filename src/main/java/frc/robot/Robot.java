@@ -44,6 +44,9 @@ public class Robot extends TimedRobot {
         JoystickButton selectButton = new JoystickButton(controller, 7);  //7 = select button
         selectButton.whileActiveContinuous(new DashboardShoot(shooter));
 
+        JoystickButton startButton = new JoystickButton(controller, 8);  //7 = select button
+        startButton.whileActiveContinuous(new AutoShoot(swerve,shooter,pi));
+
         // this.setNetworkTablesFlushEnabled(true); //turn off 20ms Dashboard update
         // rate
         LiveWindow.setEnabled(false);
@@ -160,7 +163,6 @@ public class Robot extends TimedRobot {
         pi.sendAlliance();
         pi.processCargo();
         pi.processTargets();
-        shooter.calcShot();
     }
 
     @Override
