@@ -45,6 +45,6 @@ public class DriveStickSlew extends CommandBase {
                 * frc.robot.Drivetrain.kMaxAngularSpeed;
 
         // ask the drivetrain to run
-        drive.drive(xSpeed, ySpeed, rot, true);
+        drive.drive(xSpeed, ySpeed, rot, false);
     }
 }

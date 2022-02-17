@@ -16,8 +16,11 @@ public class Shooter extends SubsystemBase
     TalonFX shooterFx;
     TalonSRX hoodMotor;
     boolean isHomed;    //report if hood has been homed
-    DigitalInput limitSwitch;
     double hoodSensorOffset;
+    Pi pi;
+    private double distance;
+    private double hoodAngle;
+    private double targetRpm;
 
     //TODO: write home hood method
     //Distance to Target
@@ -25,7 +28,8 @@ public class Shooter extends SubsystemBase
     //Turn robot to goal
     //Turret Angle?
     
-    public Shooter() {
+    public Shooter(Pi pi) {
+        this.pi = pi;
         isHomed = false;
         // Example usage of a TalonSRX motor controller
         shooterFx = new TalonFX(0); // creates a new TalonSRX with ID 0
@@ -33,8 +37,6 @@ public class Shooter extends SubsystemBase
         shooterFx.setInverted(false);
         hoodMotor = new TalonSRX(2);
         hoodMotor.setNeutralMode(NeutralMode.Brake);
-
-        limitSwitch = new DigitalInput(1);  //plugged into input 1 on roborio
 
         TalonFXConfiguration config = new TalonFXConfiguration();
         //PID values from calibration on field, 6878 units/100ms = 32.3% power, 47.89% = 9892, 16.62%=3572 units=1046 rpm
@@ -51,9 +53,12 @@ public class Shooter extends SubsystemBase
     public void periodic() {
         SmartDashboard.putNumber("Shooter Output Velocity", getShooterVelocity());
         SmartDashboard.putNumber("Hood Angle Position", getHoodAngle());
+        SmartDashboard.putNumber("Shot Distance", getShotDist());
+        SmartDashboard.putNumber("Calc RPM", getTargetRpm());
+        SmartDashboard.putNumber("Calc Hood Angle", getTargetHoodAngle());
 
         //if the limit switch is pressed, reset the hood angle position
-        if (limitSwitch.get() == true) {
+        if (hoodMotor.isRevLimitSwitchClosed() > 0) {
             hoodMotor.setSelectedSensorPosition(0);
             isHomed = true;
         }
@@ -93,5 +98,26 @@ public class Shooter extends SubsystemBase
 
     public void setHoodAngle(double position) {
         //TODO: set hood angle
+    }
+
+    public void calcShot() {
+        //first, calculate distance to target
+        double centerY = pi.getCenterY();
+        distance = Pi.LinearInterp(ShooterConstants.VISION_DIST_TABLE, centerY);
+
+        hoodAngle = Pi.LinearInterp(ShooterConstants.DIST_HOOD_TABLE, distance);
+        targetRpm = Pi.LinearInterp(ShooterConstants.DIST_RPM_TABLE, distance);
+    }
+
+    public double getTargetRpm() {
+        return targetRpm;
+    }
+
+    public double getTargetHoodAngle() {
+        return hoodAngle;
+    }
+
+    public double getShotDist() {
+        return distance;
     }
 }
