@@ -1,11 +1,4 @@
 {
-  "HALProvider": {
-    "Other Devices": {
-      "window": {
-        "visible": false
-      }
-    }
-  },
   "NTProvider": {
     "types": {
       "/FMSInfo": "FMSInfo",
@@ -32,10 +25,7 @@
     },
     "windows": {
       "/SmartDashboard/Field": {
-        "image": "2022-field.png",
-        "window": {
-          "visible": true
-        }
+        "image": "2022-field.png"
       }
     }
   },

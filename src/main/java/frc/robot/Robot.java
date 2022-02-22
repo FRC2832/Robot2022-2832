@@ -45,6 +45,7 @@ public class Robot extends TimedRobot {
         swerve.setDefaultCommand(new DriveStickSlew(swerve, controller));
         shooter.setDefaultCommand(new NoShoot(shooter));
 
+
         JoystickButton selectButton = new JoystickButton(controller, 7);  //7 = select button
         selectButton.whenHeld(new DashboardShoot(shooter));
 
@@ -81,11 +82,12 @@ public class Robot extends TimedRobot {
         CommandScheduler.getInstance().cancelAll();
 
         m_autoSelected = m_chooser.getSelected();
+        CommandScheduler.getInstance().schedule(new AutonOption6(swerve, shooter));
         // autonOption3 = new AutonOption3(swerve);
         // CommandScheduler.getInstance().schedule(new AutonOption3(swerve));
         // CommandScheduler.getInstance().schedule(new AutonOption6(swerve));
 
-        switch (m_autoSelected) {
+       /* switch (m_autoSelected) {
             case option1:
             default:
                 System.out.println("Running Option 1");
@@ -119,7 +121,7 @@ public class Robot extends TimedRobot {
                 CommandScheduler.getInstance().schedule(new AutonOption6(swerve, shooter));
 
                 break;
-        }
+        }*/
     }
 
     @Override

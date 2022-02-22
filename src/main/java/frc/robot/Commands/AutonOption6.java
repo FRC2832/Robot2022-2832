@@ -38,7 +38,7 @@ public class AutonOption6 extends CommandBase {
             System.out.println("Shooting two cargo");
         } else if (timerVal < 5) {
             shooter.setShooterRpm(0);
-            driveTrain.drive(1.05, -1.819, Math.PI / 3, false);
+            driveTrain.drive(1.05, -1.819, Math.PI / 3, true);
             System.out.println("turning and driving towards 3rd cargo");
             // TODO: Replace with vision
         } else if (timerVal < 6) {
@@ -51,7 +51,7 @@ public class AutonOption6 extends CommandBase {
             System.out.println("Shooting cargo 3");
         } else if (timerVal < 9) {
             shooter.setShooterRpm(0);
-            driveTrain.drive(-2, 0, Math.PI / 2, false);
+            driveTrain.drive(2, 0, Math.PI / 2, true);//-----
             System.out.println("Turning and driving towards cargo 4 and 5");
         } else if (timerVal < 10) {
             shooter.setShooterRpm(0);
@@ -59,7 +59,7 @@ public class AutonOption6 extends CommandBase {
             System.out.println("Stopping for a sec so the human player can deliver the cargo");
         } else if (timerVal < 11) {
             shooter.setShooterRpm(60);
-            driveTrain.drive(-2, 0, Math.PI, false);
+            driveTrain.drive(-2, 0, Math.PI, true);
             System.out.println("Moving back and turning so the robot can shoot");
         } else if (timerVal < 12) {
             shooter.setShooterRpm(60);
