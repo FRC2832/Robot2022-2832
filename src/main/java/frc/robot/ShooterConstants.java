@@ -47,22 +47,23 @@ public class ShooterConstants {
         
         //table is input: distance in in, output: angle in degrees
         // from auto shots sheet in 2022 shooter speed table
-        // TODO: add real angles
-        DIST_HOOD_TABLE.add(new Pair<Double, Double>(60d, 20d));
-        DIST_HOOD_TABLE.add(new Pair<Double, Double>(72d, 30d));
-        DIST_HOOD_TABLE.add(new Pair<Double, Double>(84d, 25d));
-        DIST_HOOD_TABLE.add(new Pair<Double, Double>(96d, 42d));
-        DIST_HOOD_TABLE.add(new Pair<Double, Double>(108d, 30d));   
-        DIST_HOOD_TABLE.add(new Pair<Double, Double>(120d, 30d));   
-        DIST_HOOD_TABLE.add(new Pair<Double, Double>(132d, 30d));
-        DIST_HOOD_TABLE.add(new Pair<Double, Double>(144d, 30d));
-        DIST_HOOD_TABLE.add(new Pair<Double, Double>(156d, 30d));
-        DIST_HOOD_TABLE.add(new Pair<Double, Double>(168d, 30d)); 
-        DIST_HOOD_TABLE.add(new Pair<Double, Double>(180d, 30d));
-        DIST_HOOD_TABLE.add(new Pair<Double, Double>(192d, 30d));
-        DIST_HOOD_TABLE.add(new Pair<Double, Double>(204d, 30d)); 
-        DIST_HOOD_TABLE.add(new Pair<Double, Double>(216d, 30d));
-        DIST_HOOD_TABLE.add(new Pair<Double, Double>(228d, 30d));
+        // 88 degrees is when the hood is down and touching the limit switch
+        // 36 degrees is when the hood is practically all the way up at knob 6
+        DIST_HOOD_TABLE.add(new Pair<Double, Double>(60d, 66d));
+        DIST_HOOD_TABLE.add(new Pair<Double, Double>(72d, 66d));
+        DIST_HOOD_TABLE.add(new Pair<Double, Double>(84d, 66d));
+        DIST_HOOD_TABLE.add(new Pair<Double, Double>(96d, 60d));
+        DIST_HOOD_TABLE.add(new Pair<Double, Double>(108d, 60d));   
+        DIST_HOOD_TABLE.add(new Pair<Double, Double>(120d, 48d));   
+        DIST_HOOD_TABLE.add(new Pair<Double, Double>(132d, 47d));
+        DIST_HOOD_TABLE.add(new Pair<Double, Double>(144d, 48d));
+        DIST_HOOD_TABLE.add(new Pair<Double, Double>(156d, 48d));
+        DIST_HOOD_TABLE.add(new Pair<Double, Double>(168d, 48d)); 
+        DIST_HOOD_TABLE.add(new Pair<Double, Double>(180d, 47d));
+        DIST_HOOD_TABLE.add(new Pair<Double, Double>(192d, 47d));
+        DIST_HOOD_TABLE.add(new Pair<Double, Double>(204d, 47d)); 
+        DIST_HOOD_TABLE.add(new Pair<Double, Double>(216d, 43d));
+        DIST_HOOD_TABLE.add(new Pair<Double, Double>(228d, 43d));
 
     }
 }
