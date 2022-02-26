@@ -6,6 +6,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -45,8 +46,8 @@ public class Robot extends TimedRobot {
         JoystickButton selectButton = new JoystickButton(controller, 7);  //7 = select button
         selectButton.whileActiveContinuous(new DashboardShoot(shooter));
 
-        JoystickButton startButton = new JoystickButton(controller, 8);  //7 = select button
-        startButton.whileActiveContinuous(new AutoShoot(swerve,shooter,pi));
+        JoystickButton startButton = new JoystickButton(controller, 8);  //8 = start button
+        startButton.whileActiveContinuous(new AutoShoot(swerve, shooter, pi, controller));
 
         // this.setNetworkTablesFlushEnabled(true); //turn off 20ms Dashboard update
         // rate
@@ -74,6 +75,8 @@ public class Robot extends TimedRobot {
     @Override
     public void disabledInit() {
         swerve.resetRobot();
+        controller.setRumble(RumbleType.kLeftRumble, 0.0);
+        controller.setRumble(RumbleType.kRightRumble, 0.0);
     }
 
     @Override
