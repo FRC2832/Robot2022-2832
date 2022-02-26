@@ -28,13 +28,13 @@ public class DriveStickSlew extends CommandBase {
     public void execute() {
         // Get the x speed. We are inverting this because Xbox controllers return
         // negative values when we push forward.
-        final double xSpeed = -xSpeedLimiter.calculate(drive.deadbandStick(controller.getLeftY()))
+        final double xSpeed = xSpeedLimiter.calculate(drive.deadbandStick(controller.getLeftY()))
                 * frc.robot.Drivetrain.kMaxSpeed;
 
         // Get the y speed or sideways/strafe speed. We are inverting this because
         // we want a positive value when we pull to the left. Xbox controllers
         // return positive values when you pull to the right by default.
-        final double ySpeed = -ySpeedLimiter.calculate(drive.deadbandStick(controller.getLeftX()))
+        final double ySpeed = ySpeedLimiter.calculate(drive.deadbandStick(controller.getLeftX()))
                 * frc.robot.Drivetrain.kMaxSpeed;
 
         // Get the rate of angular rotation. We are inverting this because we want a

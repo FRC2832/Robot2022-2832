@@ -509,13 +509,14 @@ def extra_target_processing(pipeline):
     print('target width', target_widths)
     print('target height', target_heights)
     print('target area', target_areas)
-    # Publish to the '/vision/red_areas' network table
-    table = NetworkTables.getTable('vision')
-    table.putNumberArray('targetX', target_x_positions)
-    table.putNumberArray('targetY', target_y_positions)
-    table.putNumberArray('targetWidth', target_widths)
-    table.putNumberArray('targetHeight', target_heights)
-    table.putNumberArray('targetArea', target_areas)
+    if len(target_x_positions) == len(target_y_positions) and len(target_x_positions) == len(target_widths) and len(target_x_positions) == len(target_heights) and len(target_x_positions) == len(target_areas): 
+        # Publish to the '/vision/red_areas' network table
+        table = NetworkTables.getTable('vision')
+        table.putNumberArray('targetX', target_x_positions)
+        table.putNumberArray('targetY', target_y_positions)
+        table.putNumberArray('targetWidth', target_widths)
+        table.putNumberArray('targetHeight', target_heights)
+        table.putNumberArray('targetArea', target_areas)
 
 
 
