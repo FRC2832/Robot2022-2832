@@ -9,22 +9,61 @@ public class ShooterConstants {
     public final static ArrayList<Pair<Double,Double>> DIST_HOOD_TABLE = new ArrayList<Pair<Double,Double>>();
 
     public static void LoadConstants() {
-        //table is input: pixel Y, output: mm from target
-        VISION_DIST_TABLE.add(new Pair<Double, Double>(94.0, 7.7724));
-        VISION_DIST_TABLE.add(new Pair<Double, Double>(245.0, 2.667));
-        VISION_DIST_TABLE.add(new Pair<Double, Double>(298.0, 2.1336));
-        VISION_DIST_TABLE.add(new Pair<Double, Double>(372.0, 1.651));
+        //table is input: pixel Y, output: in from target
+        // data from Nighttime (3rd set) sheet in 2022 shooter vision table
+        VISION_DIST_TABLE.add(new Pair<Double, Double>(86.0, 60d));
+        VISION_DIST_TABLE.add(new Pair<Double, Double>(136.5, 72d));
+        VISION_DIST_TABLE.add(new Pair<Double, Double>(173.5, 84d));
+        VISION_DIST_TABLE.add(new Pair<Double, Double>(210.5, 96d));
+        VISION_DIST_TABLE.add(new Pair<Double, Double>(242.5, 108d));
+        VISION_DIST_TABLE.add(new Pair<Double, Double>(267.0, 120d));
+        VISION_DIST_TABLE.add(new Pair<Double, Double>(291.0, 132d));
+        VISION_DIST_TABLE.add(new Pair<Double, Double>(310.5, 144d));
+        VISION_DIST_TABLE.add(new Pair<Double, Double>(331.0, 156d));
+        VISION_DIST_TABLE.add(new Pair<Double, Double>(347.0, 168d));
+        VISION_DIST_TABLE.add(new Pair<Double, Double>(358.0, 180d));
+        VISION_DIST_TABLE.add(new Pair<Double, Double>(367.0, 192d));
+        VISION_DIST_TABLE.add(new Pair<Double, Double>(384.0, 204d));
+        VISION_DIST_TABLE.add(new Pair<Double, Double>(404.0, 216d));
+        VISION_DIST_TABLE.add(new Pair<Double, Double>(406.5, 228d));
 
-        //table is input: distance in mm, output: rpm
-        DIST_RPM_TABLE.add(new Pair<Double, Double>(1000d, 2350d));
-        DIST_RPM_TABLE.add(new Pair<Double, Double>(1300d, 2600d));
-        DIST_RPM_TABLE.add(new Pair<Double, Double>(1700d, 2400d));
-        DIST_RPM_TABLE.add(new Pair<Double, Double>(2000d, 2550d));
+        //table is input: distance in in, output: rpm
+        // from auto shots sheet in 2022 shooter speed table
+        DIST_RPM_TABLE.add(new Pair<Double, Double>(60d, 2200d));
+        DIST_RPM_TABLE.add(new Pair<Double, Double>(72d, 2350d));
+        DIST_RPM_TABLE.add(new Pair<Double, Double>(84d, 2400d));
+        DIST_RPM_TABLE.add(new Pair<Double, Double>(96d, 2450d));
+        DIST_RPM_TABLE.add(new Pair<Double, Double>(108d, 2550d));
+        DIST_RPM_TABLE.add(new Pair<Double, Double>(120d, 2650d));
+        DIST_RPM_TABLE.add(new Pair<Double, Double>(132d, 2750d));
+        DIST_RPM_TABLE.add(new Pair<Double, Double>(144d, 2800d));
+        DIST_RPM_TABLE.add(new Pair<Double, Double>(156d, 2800d));
+        DIST_RPM_TABLE.add(new Pair<Double, Double>(168d, 2850d));
+        DIST_RPM_TABLE.add(new Pair<Double, Double>(180d, 3000d));
+        DIST_RPM_TABLE.add(new Pair<Double, Double>(192d, 3050d));
+        DIST_RPM_TABLE.add(new Pair<Double, Double>(204d, 3100d));
+        DIST_RPM_TABLE.add(new Pair<Double, Double>(216d, 3100d));
+        DIST_RPM_TABLE.add(new Pair<Double, Double>(228d, 3250d));
+        
+        //table is input: distance in in, output: angle in degrees
+        // from auto shots sheet in 2022 shooter speed table
+        // 88 degrees is when the hood is down and touching the limit switch
+        // 36 degrees is when the hood is practically all the way up at knob 6
+        DIST_HOOD_TABLE.add(new Pair<Double, Double>(60d, 66d));
+        DIST_HOOD_TABLE.add(new Pair<Double, Double>(72d, 66d));
+        DIST_HOOD_TABLE.add(new Pair<Double, Double>(84d, 66d));
+        DIST_HOOD_TABLE.add(new Pair<Double, Double>(96d, 60d));
+        DIST_HOOD_TABLE.add(new Pair<Double, Double>(108d, 60d));   
+        DIST_HOOD_TABLE.add(new Pair<Double, Double>(120d, 48d));   
+        DIST_HOOD_TABLE.add(new Pair<Double, Double>(132d, 47d));
+        DIST_HOOD_TABLE.add(new Pair<Double, Double>(144d, 48d));
+        DIST_HOOD_TABLE.add(new Pair<Double, Double>(156d, 48d));
+        DIST_HOOD_TABLE.add(new Pair<Double, Double>(168d, 48d)); 
+        DIST_HOOD_TABLE.add(new Pair<Double, Double>(180d, 47d));
+        DIST_HOOD_TABLE.add(new Pair<Double, Double>(192d, 47d));
+        DIST_HOOD_TABLE.add(new Pair<Double, Double>(204d, 47d)); 
+        DIST_HOOD_TABLE.add(new Pair<Double, Double>(216d, 43d));
+        DIST_HOOD_TABLE.add(new Pair<Double, Double>(228d, 43d));
 
-        //table is input: distance in mm, output: angle in degrees
-        DIST_HOOD_TABLE.add(new Pair<Double, Double>(1000d, 20d));
-        DIST_HOOD_TABLE.add(new Pair<Double, Double>(1300d, 30d));
-        DIST_HOOD_TABLE.add(new Pair<Double, Double>(1700d, 25d));
-        DIST_HOOD_TABLE.add(new Pair<Double, Double>(2000d, 42d));
     }
 }
