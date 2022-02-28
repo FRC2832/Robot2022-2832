@@ -36,6 +36,9 @@ public class Robot extends TimedRobot {
 
     @Override
     public void robotInit() {
+        GitVersion vers = GitVersion.loadVersion();
+        vers.printVersions();
+        
         ShooterConstants.LoadConstants();
         shooter = new Shooter(pi);
 
