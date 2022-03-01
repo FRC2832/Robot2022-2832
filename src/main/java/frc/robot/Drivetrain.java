@@ -114,32 +114,32 @@ public class Drivetrain extends SubsystemBase {
         }
         //per corner constants
         constants[FL].Name = "SwerveDrive_FL";
-        constants[FL].DriveMotorId = 7;
-        constants[FL].TurnMotorId = 8;
-        constants[FL].CanCoderId = 3;
+        constants[FL].DriveMotorId = 32;
+        constants[FL].TurnMotorId = 30;
+        constants[FL].CanCoderId = 50;
         constants[FL].Location = new Translation2d(0.261, 0.261);
-        constants[FL].ZeroAngle = -6.1;
+        constants[FL].ZeroAngle = 92.5;
 
         constants[FR].Name = "SwerveDrive_FR";
-        constants[FR].DriveMotorId = 5;
-        constants[FR].TurnMotorId = 9;
-        constants[FR].CanCoderId = 0;
+        constants[FR].DriveMotorId = 28;
+        constants[FR].TurnMotorId = 29;
+        constants[FR].CanCoderId = 49;
         constants[FR].Location = new Translation2d(0.261, -0.261);
-        constants[FR].ZeroAngle = 47.9;
+        constants[FR].ZeroAngle = -3.39;
 
         constants[RL].Name = "SwerveDrive_RL";
-        constants[RL].DriveMotorId = 4;
-        constants[RL].TurnMotorId = 11;
-        constants[RL].CanCoderId = 1;
+        constants[RL].DriveMotorId = 38;
+        constants[RL].TurnMotorId = 39;
+        constants[RL].CanCoderId = 59;
         constants[RL].Location = new Translation2d(-0.261, 0.261);
-        constants[RL].ZeroAngle = 25.2;  
+        constants[RL].ZeroAngle = 164.0;  
 
         constants[RR].Name = "SwerveDrive_RR";
-        constants[RR].DriveMotorId = 6;
-        constants[RR].TurnMotorId = 10;
-        constants[RR].CanCoderId = 2;
+        constants[RR].DriveMotorId = 21;
+        constants[RR].TurnMotorId = 20;
+        constants[RR].CanCoderId = 40;
         constants[RR].Location = new Translation2d(-0.261, -0.261);
-        constants[RR].ZeroAngle = -153.1;
+        constants[RR].ZeroAngle = -81.8;
 
         //create the swerve modules
         for(int i=0; i<modules.length; i++) {

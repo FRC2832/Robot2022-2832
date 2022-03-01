@@ -32,7 +32,7 @@ public class Shooter extends SubsystemBase
         this.pi = pi;
         isHomed = false;
         // Example usage of a TalonSRX motor controller
-        shooterFx = new TalonFX(0); // creates a new TalonSRX with ID 0
+        shooterFx = new TalonFX(24); // creates a new TalonSRX with ID 0
         shooterFx.setNeutralMode(NeutralMode.Coast);
         shooterFx.setInverted(false);
         // hoodMotor = new TalonSRX(2);
