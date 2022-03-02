@@ -434,6 +434,7 @@ def extra_target_processing(pipeline):
     print('target width', target_widths)
     print('target height', target_heights)
     print('target area', target_areas)
+
     # i know this looks disgusting but it works. A for loop would be neater but would it affect the 20ms loop?
     if len(target_x_positions) == len(target_y_positions) and len(target_x_positions) == len(target_widths) and len(target_x_positions) == len(target_heights) and len(target_x_positions) == len(target_areas): 
         # Publish to the '/vision/red_areas' network table

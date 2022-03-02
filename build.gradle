@@ -83,6 +83,15 @@ jar {
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }
 
+//make the object file that has git info
+task putGitInfo(type: Exec) {
+    doFirst {
+        commandLine "java", "-classpath", "$projectDir/build/classes/java/main/", "frc.robot.GitVersion"
+    }
+}
+//force this task to run before jar packaging
+jar.dependsOn putGitInfo
+
 test {
    useJUnit()
 }

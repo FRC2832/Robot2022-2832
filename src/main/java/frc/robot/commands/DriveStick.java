@@ -1,4 +1,4 @@
-package frc.robot.Commands;
+package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
@@ -39,6 +39,6 @@ public class DriveStick extends CommandBase {
                 * frc.robot.Drivetrain.kMaxAngularSpeed;
 
         // ask the drivetrain to run
-        drive.drive(xSpeed, ySpeed, rot, true);
+        drive.drive(xSpeed, ySpeed, rot, false);
     }
 }

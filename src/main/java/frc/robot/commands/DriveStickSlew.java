@@ -1,4 +1,4 @@
-package frc.robot.Commands;
+package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.math.filter.SlewRateLimiter;
@@ -28,13 +28,15 @@ public class DriveStickSlew extends CommandBase {
     public void execute() {
         // Get the x speed. We are inverting this because Xbox controllers return
         // negative values when we push forward.
-        final double xSpeed = -xSpeedLimiter.calculate(drive.deadbandStick(controller.getLeftY()))
+        // no longer inverted because the robot was 'facing' the wrong way with field-relative off
+        final double xSpeed = xSpeedLimiter.calculate(drive.deadbandStick(controller.getLeftY()))
                 * frc.robot.Drivetrain.kMaxSpeed;
 
         // Get the y speed or sideways/strafe speed. We are inverting this because
         // we want a positive value when we pull to the left. Xbox controllers
         // return positive values when you pull to the right by default.
-        final double ySpeed = -ySpeedLimiter.calculate(drive.deadbandStick(controller.getLeftX()))
+        // no longer inverted because the robot was 'facing' the wrong way with field-relative off
+        final double ySpeed = ySpeedLimiter.calculate(drive.deadbandStick(controller.getLeftX()))
                 * frc.robot.Drivetrain.kMaxSpeed;
 
         // Get the rate of angular rotation. We are inverting this because we want a
@@ -45,6 +47,6 @@ public class DriveStickSlew extends CommandBase {
                 * frc.robot.Drivetrain.kMaxAngularSpeed;
 
         // ask the drivetrain to run
-        drive.drive(xSpeed, ySpeed, rot, true);
+        drive.drive(xSpeed, ySpeed, rot, false);
     }
 }

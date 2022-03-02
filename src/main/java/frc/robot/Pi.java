@@ -25,13 +25,15 @@ public class Pi {
     private Number[] targetWidthArray;
     private Number[] targetHeightArray;
     private Number[] targetAreaArray;
-    private static ArrayList<Pair<Double,Double>> distTable;
     private final double CAM_X_RES = 640;
     private final double CAM_Y_RES = 480;
+    public final double TARGET_CENTER_X = 320;
     private static boolean targetMoveRight;
     private static boolean targetMoveLeft;
     private static boolean cargoMoveRight;
     private static boolean cargoMoveLeft;
+    private double centerYOutput;
+    private double centerXOutput;
 
     public Pi() {
         netTableInstance = NetworkTableInstance.getDefault();
@@ -44,9 +46,7 @@ public class Pi {
         targetWidth = table.getEntry("targetWidth");
         targetHeight = table.getEntry("targetHeight");
         targetArea = table.getEntry("targetArea");
-        distTable = new ArrayList<Pair<Double,Double>>();
-        //table is input: pixel width (or area?), output: meters from target
-        distTable.add(new Pair<Double, Double>(94.0, 7.7724)); //placeholder values
+        centerYOutput = -1;
     }
 
     // sends alliance color to the python code so it knows what color cargo to look for
@@ -87,24 +87,43 @@ public class Pi {
         targetWidthArray = targetWidth.getNumberArray(new Number[0]);
         targetHeightArray = targetHeight.getNumberArray(new Number[0]);
         targetAreaArray = targetArea.getNumberArray(new Number[0]);
-        if (targetCenterXArray.length == 0) {
+        int size = targetCenterXArray.length;
+        //check if vision saw a target
+        if (size == 0) {
             targetMoveRight = false;
             targetMoveLeft = false;
+            centerYOutput = -1;
+            centerXOutput = -1;
             return;
         }
-        sortTargets();
+        //consistency check
+        if(  size == targetCenterYArray.length
+          && size == targetWidthArray.length
+          && size == targetHeightArray.length
+          && size == targetAreaArray.length
+          )
+        {
+            sortTargets();
+        }
+        else {
+            //unknown order, skip this loop
+            return;
+        }
+
         // pick a target just right of center so the cargo hopefully doesn't bounce out
         int index = 0;
-        if (targetCenterXArray.length <= 1) {
+        if (size <= 1) {
             index = 0; 
         } else {
-            index = (int) Math.ceil((double) targetCenterXArray.length / 2);
+            index = (int) Math.ceil((double) size / 2);
         }
         double targetX = (double) targetCenterXArray[index];
-        if (targetX < (CAM_X_RES / 2) - (CAM_X_RES * 0.05)) {
+        centerYOutput = (double) targetCenterYArray[index];
+        centerXOutput = targetX;
+        if (targetX < ((CAM_X_RES / 2) - (CAM_X_RES * 0.05))) {
             targetMoveRight = false;
             targetMoveLeft = true;
-        } else if (targetX > (CAM_X_RES / 2) + (CAM_X_RES * 0.05)) {
+        } else if (targetX > ((CAM_X_RES / 2) + (CAM_X_RES * 0.05))) {
             targetMoveLeft = false;
             targetMoveRight = true;
         } else {
@@ -186,4 +205,11 @@ public class Pi {
         return targetMoveLeft;
     }
 
+    public double getCenterY() {
+        return centerYOutput;
+    }
+
+    public double getCenterX() {
+        return centerXOutput;
+    }
 }

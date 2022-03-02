@@ -6,19 +6,21 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.Commands.*;
+import frc.robot.commands.*;
+import frc.robot.ShooterConstants;
 
 public class Robot extends TimedRobot {
     private final XboxController controller = new XboxController(0);
     private final Drivetrain swerve = new Drivetrain();
-    private final Shooter shooter = new Shooter();
     private final Pi pi = new Pi();
+    private Shooter shooter;
 
     private boolean lastEnabled = false;
 
@@ -34,12 +36,21 @@ public class Robot extends TimedRobot {
 
     @Override
     public void robotInit() {
+        GitVersion vers = GitVersion.loadVersion();
+        vers.printVersions();
+        
+        ShooterConstants.LoadConstants();
+        shooter = new Shooter(pi);
+
         CommandScheduler.getInstance().registerSubsystem(swerve);
         swerve.setDefaultCommand(new DriveStickSlew(swerve, controller));
         shooter.setDefaultCommand(new NoShoot(shooter));
 
         JoystickButton selectButton = new JoystickButton(controller, 7);  //7 = select button
         selectButton.whileActiveContinuous(new DashboardShoot(shooter));
+
+        JoystickButton startButton = new JoystickButton(controller, 8);  //8 = start button
+        startButton.whileActiveContinuous(new AutoShoot(swerve, shooter, pi, controller));
 
         // this.setNetworkTablesFlushEnabled(true); //turn off 20ms Dashboard update
         // rate
@@ -67,6 +78,8 @@ public class Robot extends TimedRobot {
     @Override
     public void disabledInit() {
         swerve.resetRobot();
+        controller.setRumble(RumbleType.kLeftRumble, 0.0);
+        controller.setRumble(RumbleType.kRightRumble, 0.0);
     }
 
     @Override
