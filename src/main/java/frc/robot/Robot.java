@@ -14,11 +14,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.commands.*;
-import frc.robot.ShooterConstants;
 
 public class Robot extends TimedRobot {
     private final XboxController controller = new XboxController(0);
-    private final Drivetrain swerve = new Drivetrain();
+    private Drivetrain swerve;
     private final Pi pi = new Pi();
     private Shooter shooter;
 
@@ -32,16 +31,17 @@ public class Robot extends TimedRobot {
     private static final String option6 = "Option6";
     private String m_autoSelected;
     private final SendableChooser<String> m_chooser = new SendableChooser<>();
-    DriveStickSlew driveStickSlew = new DriveStickSlew(swerve, controller);
 
     @Override
     public void robotInit() {
+        Configuration.SetPersistentKeys();
         GitVersion vers = GitVersion.loadVersion();
         vers.printVersions();
         
         ShooterConstants.LoadConstants();
         shooter = new Shooter(pi);
 
+        swerve = new Drivetrain();
         CommandScheduler.getInstance().registerSubsystem(swerve);
         swerve.setDefaultCommand(new DriveStickSlew(swerve, controller));
         shooter.setDefaultCommand(new NoShoot(shooter));
