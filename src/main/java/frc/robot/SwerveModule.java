@@ -58,6 +58,7 @@ public class SwerveModule {
     private EncoderSim driveEncoderSim;
     private EncoderSim turnEncoderSim;
     private static int encoderIndex = 0;
+    private double zeroAngle;
 
     /**
      * Constructs a SwerveModule.
@@ -68,8 +69,8 @@ public class SwerveModule {
      */
     public SwerveModule(SwerveConstants cornerConstants) {
         constants = cornerConstants;
-        driveMotor = new WPI_TalonFX(constants.DriveMotorId);
-        turningMotor = new CANSparkMax(constants.TurnMotorId, MotorType.kBrushless);
+        driveMotor = new WPI_TalonFX(Configuration.GetDriveMotorId(constants.Id));
+        turningMotor = new CANSparkMax(Configuration.GetTurnMotorId(constants.Id), MotorType.kBrushless);
         turningEncoder = turningMotor.getEncoder();
         turningEncoder.setPositionConversionFactor(6.82);
         driveMotor.setNeutralMode(NeutralMode.Brake);
@@ -89,9 +90,11 @@ public class SwerveModule {
         pidController.setOutputRange(min, max);
         */
 
-        absEncoder = new CANCoder(constants.CanCoderId);
+        absEncoder = new CANCoder(Configuration.GetCanCoderId(constants.Id));
         absEncoder.setPositionToAbsolute();
         absEncoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180, 0);
+        zeroAngle = Configuration.GetZeroAngle(constants.Id);
+
         // Limit the PID Controller's input range between -pi and pi and set the input
         // to be continuous.
         turningPIDController.enableContinuousInput(-Math.PI, Math.PI);
@@ -151,7 +154,7 @@ public class SwerveModule {
 
     public double getAbsoluteAngle() {
         if(Robot.isReal()) {
-            return -absEncoder.getAbsolutePosition() + constants.ZeroAngle;
+            return -absEncoder.getAbsolutePosition() + zeroAngle;
         } else {
             return turnEncoderSim.getDistance();
         }

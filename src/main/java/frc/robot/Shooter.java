@@ -6,7 +6,6 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -31,8 +30,8 @@ public class Shooter extends SubsystemBase
     public Shooter(Pi pi) {
         this.pi = pi;
         isHomed = false;
-        // Example usage of a TalonSRX motor controller
-        shooterFx = new TalonFX(24); // creates a new TalonSRX with ID 0
+        
+        shooterFx = new TalonFX(Configuration.GetShooterId()); 
         shooterFx.setNeutralMode(NeutralMode.Coast);
         shooterFx.setInverted(false);
         // hoodMotor = new TalonSRX(2);
