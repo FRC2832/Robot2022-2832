@@ -42,9 +42,9 @@ public class Robot extends TimedRobot {
         shooter.setDefaultCommand(new NoShoot(shooter));
 
         JoystickButton selectButton = new JoystickButton(controller, 7);  //7 = select button
-        selectButton.whileActiveContinuous(new DashboardShoot(shooter));
+        selectButton.whileActiveContinuous(new ManualShoot(shooter));
 
-        JoystickButton startButton = new JoystickButton(controller, 8);  //7 = select button
+        JoystickButton startButton = new JoystickButton(controller, 8);  //8 = start button
         startButton.whileActiveContinuous(new AutoShoot(swerve,shooter,pi));
 
         // this.setNetworkTablesFlushEnabled(true); //turn off 20ms Dashboard update

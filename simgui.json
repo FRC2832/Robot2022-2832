@@ -1,4 +1,23 @@
 {
+  "HALProvider": {
+    "Other Devices": {
+      "Talon FX[7]/Fwd Limit": {
+        "header": {
+          "open": true
+        }
+      },
+      "Talon FX[7]/Integrated Sensor": {
+        "header": {
+          "open": true
+        }
+      },
+      "Talon FX[7]/Rev Limit": {
+        "header": {
+          "open": true
+        }
+      }
+    }
+  },
   "NTProvider": {
     "types": {
       "/FMSInfo": "FMSInfo",
@@ -14,6 +33,10 @@
       "/LiveWindow/Ungrouped/PIDController[7]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[8]": "PIDController",
       "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
+      "/LiveWindow/Ungrouped/Talon FX [4]": "Motor Controller",
+      "/LiveWindow/Ungrouped/Talon FX [5]": "Motor Controller",
+      "/LiveWindow/Ungrouped/Talon FX [6]": "Motor Controller",
+      "/LiveWindow/Ungrouped/Talon FX [7]": "Motor Controller",
       "/SmartDashboard/Auto Choices": "String Chooser",
       "/SmartDashboard/Drive FR 0.5mps": "Command",
       "/SmartDashboard/Drive Forward 0.5mps": "Command",
@@ -24,8 +47,18 @@
       "/SmartDashboard/Stick Drive": "Command"
     },
     "windows": {
+      "/LiveWindow/Shooter": {
+        "window": {
+          "visible": true
+        }
+      },
       "/SmartDashboard/Field": {
         "image": "2022-field.png",
+        "window": {
+          "visible": true
+        }
+      },
+      "/SmartDashboard/Shooter": {
         "window": {
           "visible": true
         }
