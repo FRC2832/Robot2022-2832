@@ -112,10 +112,10 @@ public class Pi {
 
         // pick a target just right of center so the cargo hopefully doesn't bounce out
         int index = 0;
-        if(size <= 3) {
-            index = size - 1;
+        if (size <= 1) {
+            index = 0; 
         } else {
-            index = (int) ((size / 2) + 1);
+            index = (int) Math.ceil((double) size / 2);
         }
         double targetX = (double) targetCenterXArray[index];
         centerYOutput = (double) targetCenterYArray[index];
