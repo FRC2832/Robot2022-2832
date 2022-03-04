@@ -6,6 +6,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -16,7 +17,7 @@ import frc.robot.commands.*;
 
 public class Robot extends TimedRobot {
     private final XboxController controller = new XboxController(0);
-    private final Drivetrain swerve = new Drivetrain();
+    private Drivetrain swerve;
     private final Pi pi = new Pi();
     private Shooter shooter;
 
@@ -30,13 +31,17 @@ public class Robot extends TimedRobot {
     private static final String option6 = "Option6";
     private String m_autoSelected;
     private final SendableChooser<String> m_chooser = new SendableChooser<>();
-    DriveStickSlew driveStickSlew = new DriveStickSlew(swerve, controller);
 
     @Override
     public void robotInit() {
+        Configuration.SetPersistentKeys();
+        GitVersion vers = GitVersion.loadVersion();
+        vers.printVersions();
+        
         ShooterConstants.LoadConstants();
         shooter = new Shooter(pi);
 
+        swerve = new Drivetrain();
         CommandScheduler.getInstance().registerSubsystem(swerve);
         swerve.setDefaultCommand(new DriveStickSlew(swerve, controller));
         shooter.setDefaultCommand(new NoShoot(shooter));
@@ -45,8 +50,7 @@ public class Robot extends TimedRobot {
         selectButton.whileActiveContinuous(new ManualShoot(shooter));
 
         JoystickButton startButton = new JoystickButton(controller, 8);  //8 = start button
-        startButton.whileActiveContinuous(new AutoShoot(swerve,shooter,pi));
-
+        startButton.whileActiveContinuous(new AutoShoot(swerve, shooter, pi, controller));
         // this.setNetworkTablesFlushEnabled(true); //turn off 20ms Dashboard update
         // rate
         LiveWindow.setEnabled(false);
@@ -73,6 +77,8 @@ public class Robot extends TimedRobot {
     @Override
     public void disabledInit() {
         swerve.resetRobot();
+        controller.setRumble(RumbleType.kLeftRumble, 0.0);
+        controller.setRumble(RumbleType.kRightRumble, 0.0);
     }
 
     @Override

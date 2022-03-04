@@ -6,7 +6,6 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -31,12 +30,12 @@ public class Shooter extends SubsystemBase
     public Shooter(Pi pi) {
         this.pi = pi;
         isHomed = false;
-        // Example usage of a TalonSRX motor controller
-        shooterFx = new TalonFX(0); // creates a new TalonSRX with ID 0
+        
+        shooterFx = new TalonFX(Configuration.GetShooterId()); 
         shooterFx.setNeutralMode(NeutralMode.Coast);
         shooterFx.setInverted(false);
-        hoodMotor = new TalonSRX(2);
-        hoodMotor.setNeutralMode(NeutralMode.Brake);
+        // hoodMotor = new TalonSRX(2);
+        // hoodMotor.setNeutralMode(NeutralMode.Brake);
 
         TalonFXConfiguration config = new TalonFXConfiguration();
         //PID values from calibration on field, 6878 units/100ms = 32.3% power, 47.89% = 9892, 16.62%=3572 units=1046 rpm
@@ -58,10 +57,10 @@ public class Shooter extends SubsystemBase
         SmartDashboard.putNumber("Calc Hood Angle", getTargetHoodAngle());
 
         //if the limit switch is pressed, reset the hood angle position
-        if (hoodMotor.isRevLimitSwitchClosed() > 0) {
-            hoodMotor.setSelectedSensorPosition(0);
-            isHomed = true;
-        }
+        // if (hoodMotor.isRevLimitSwitchClosed() > 0) {
+        //     hoodMotor.setSelectedSensorPosition(0);
+        //     isHomed = true;
+        // }
     }
 
     public void setShootPct(double percent) {
@@ -86,13 +85,14 @@ public class Shooter extends SubsystemBase
 
     public double getHoodAngle() {
         //TODO: add angle scale factor and zeroing
-        return hoodMotor.getSelectedSensorPosition();
+        // return hoodMotor.getSelectedSensorPosition();
+        return 0.0;
     }
 
     public void setHoodSpeedPct(double pct) { 
         //allow control if homed or only down if not homed
         if(isHomed == true || pct < 0) {
-            hoodMotor.set(ControlMode.PercentOutput, pct);
+            // hoodMotor.set(ControlMode.PercentOutput, pct);
         }
     }
 
