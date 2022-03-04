@@ -1,4 +1,23 @@
 {
+  "HALProvider": {
+    "Other Devices": {
+      "Talon FX[7]/Fwd Limit": {
+        "header": {
+          "open": true
+        }
+      },
+      "Talon FX[7]/Integrated Sensor": {
+        "header": {
+          "open": true
+        }
+      },
+      "Talon FX[7]/Rev Limit": {
+        "header": {
+          "open": true
+        }
+      }
+    }
+  },
   "NTProvider": {
     "types": {
       "/FMSInfo": "FMSInfo",
@@ -36,8 +55,18 @@
       "/SmartDashboard/Stick Drive": "Command"
     },
     "windows": {
+      "/LiveWindow/Shooter": {
+        "window": {
+          "visible": true
+        }
+      },
       "/SmartDashboard/Field": {
         "image": "2022-field.png",
+        "window": {
+          "visible": true
+        }
+      },
+      "/SmartDashboard/Shooter": {
         "window": {
           "visible": true
         }
