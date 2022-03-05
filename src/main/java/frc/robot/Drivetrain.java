@@ -400,6 +400,12 @@ public class Drivetrain extends SubsystemBase {
         double xSpeed = xMove / time;
         double ySpeed = yMove / time;
         double rotSpeed = rotMag / time;
+
+        if(xSpeed>5 ){
+            double multiplier = xSpeed/5;
+            xSpeed=5/multiplier;
+        }
+        System.out.println(xSpeed);
         // System.out.println("X speed" + xSpeed);
         // System.out.println("y speed" +ySpeed);
         // System.out.println("rot speed" +rotSpeed);
