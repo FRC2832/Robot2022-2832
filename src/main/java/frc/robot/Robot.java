@@ -23,20 +23,24 @@ import frc.robot.commands.AutonOption2;
 import frc.robot.commands.AutonOption3;
 import frc.robot.commands.AutonOption4;
 import frc.robot.commands.AutonOption5;
+import frc.robot.commands.AutonOption6;
 import frc.robot.commands.DriveStick;
 import frc.robot.commands.DriveStickSlew;
+import frc.robot.commands.FourBallTerminal;
 import frc.robot.commands.ResetOrientation;
 
 public class Robot extends TimedRobot {
     private final XboxController controller = new XboxController(0);
     private final Drivetrain swerve = new Drivetrain();
     private boolean lastEnabled = false;
+    private AutonOption6 autonOption6;
     private AutonOption5 autonOption5;
     private AutonOption4 autonOption4;
     private AutonOption3 autonOption3;
     private AutonOption2 autonOption2;
     private AutonOption1 autonOption1;
     private AutonOption0 autonOption0;
+    private FourBallTerminal fourBallTerminal;
     /*private Command auton5;
     private Command auton4;
     private Command auton3;
@@ -82,7 +86,7 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousInit() {
         CommandScheduler.getInstance().cancelAll();
-
+        
        // m_selectedAuton = m_chooser.getSelected();
        // System.out.println("Auton Selected: " + m_selectedAuton);
        // CommandScheduler.getInstance().schedule(new AutonOption0(swerve));
@@ -96,7 +100,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousPeriodic(){
-       CommandScheduler.getInstance().schedule(new AutonOption0(swerve));
+       CommandScheduler.getInstance().schedule(new FourBallTerminal(swerve));
        // Pose2d pos = swerve.odometry.getPoseMeters();
            // swerve.setPosition(10.85, 6.13, 0, 2);
            // swerve.setPosition(8.57, 7.53, 0, 1);

@@ -371,19 +371,13 @@ public class Drivetrain extends SubsystemBase {
     }
 
     public int currentStep = 0;
-    // double xSpeed = 0;
-    // double ySpeed = 0;
-    // double rotSpeed = 0;
-    // double initDis = 0;
-    // double initTime = 0;
 
     public void setPosition(double xDesPosition, double yDesPosition, double desRotation, double time, int step) {
-        // initTime = time;
 
         Pose2d pos = odometry.getPoseMeters();
         double xCurrentPos = pos.getX();
         double yCurrentPos = pos.getY();
-        // System.out.println("Y pos " + yCurrentPos);
+
         double rotCurrentPos = pos.getRotation().getRadians();
 
         double xMove = xDesPosition - xCurrentPos;
@@ -396,28 +390,18 @@ public class Drivetrain extends SubsystemBase {
 
         double rotMag = desRotation - rotCurrentPos;
 
-        // if (xSpeed == 0 || ySpeed == 0 || rotSpeed == 0) {
         double xSpeed = xMove / time;
         double ySpeed = yMove / time;
         double rotSpeed = rotMag / time;
-        // System.out.println("X speed" + xSpeed);
-        // System.out.println("y speed" +ySpeed);
-        // System.out.println("rot speed" +rotSpeed);
-        // }
-        // System.out.println(xSpeed);
-        // System.out.println(ySpeed);
-        // System.out.println(rotSpeed);
 
         if (step == currentStep) {
 
             if (Math.abs(xCurrentPos - xDesPosition) > .1 || Math.abs(yCurrentPos - yDesPosition) > .1
                     || Math.abs(rotCurrentPos - desRotation) > .1) {
-                // System.out.println("x differance " + (xCurrentPos - xDesPosition));
-                // System.out.println("y differance " + (yCurrentPos - yDesPosition));
-                // System.out.println("rot differance " + (rotCurrentPos - desRotation));
+
                 drive(xSpeed, ySpeed, rotSpeed, true);
             } else {
-                // System.out.println();
+
                 xSpeed = 0;
                 ySpeed = 0;
                 rotSpeed = 0;
