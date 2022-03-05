@@ -11,34 +11,63 @@ import edu.wpi.first.wpilibj.XboxController;
 public class Ingestor {
     private WPI_TalonSRX ingestorWheels;
     //private WPI_TalonSRX ingestorGate;
-    private CANSparkMax ingestorConveyor;
+    private WPI_TalonSRX stage1Conveyor;
+    private WPI_TalonSRX stage2Conveyor;
+    private CANSparkMax ingestorLift;
+    private CANSparkMax.MotorType brushless;
     private XboxController driverController;
     private XboxController operatorController;
-    private CANSparkMaxLowLevel kBrushless;
+    private final double TRIGGER_SENSITIVITY = 0.5;
 
     public Ingestor(){
-        ingestorWheels = new WPI_TalonSRX(1);
+        ingestorWheels = new WPI_TalonSRX(27);
         //ingestorGate = new WPI_TalonSRX(2);
-        ingestorConveyor = new CANSparkMax(3, MotorType.kBrushless);
+        stage1Conveyor = new WPI_TalonSRX(25);
+        stage2Conveyor = new WPI_TalonSRX(23);
+        ingestorLift = new CANSparkMax(31, brushless);
         driverController = new XboxController(0);
         operatorController = new XboxController(1);
     }
 
     public void runIngestor(){
-        if (driverController.getLeftBumperPressed()){
+        if (driverController.getLeftBumperPressed()){ //ingest ball
             ingestorWheels.set(ControlMode.Velocity, 1000);
         }
-        if (driverController.getRightBumperPressed()){
+        if (driverController.getRightBumperPressed()){ //expell ball
             ingestorWheels.set(ControlMode.Velocity, -1000);
         }
         /*if (operatorController.getXButtonPressed()){
             ingestorGate.set(ControlMode.Velocity, 1000);
         }*/ //needs to be in shooter.java class
-        if(operatorController.getAButtonPressed()){
-            ingestorConveyor.set(1000);
+        if(operatorController.getAButtonPressed()){ //push ball to stage 2
+            stage1Conveyor.set(1000);
         }
-        if(operatorController.getBButtonPressed()){
-            ingestorConveyor.set(-1000);
+        if(operatorController.getBButtonPressed()){ //push ball to ingestor
+            stage1Conveyor.set(-1000);
+        }
+        if(operatorController.getXButtonPressed()){ //push ball to shooter
+            stage2Conveyor.set(1000);
+        }
+        if(operatorController.getYButtonPressed()){ //push ball to stage 1
+            stage2Conveyor.set(-1000);
+        }
+        if(driverController.getLeftTriggerAxis() >= TRIGGER_SENSITIVITY){ //lift ingestor
+            ingestorLift.set(1000);
+        }
+        if(driverController.getRightTriggerAxis() >= TRIGGER_SENSITIVITY){ //lower ingestor
+            ingestorLift.set(-1000);
         }
     }
+
+    /*public void ingest(){
+        ingestorWheels.set(ControlMode.Velocity, 1000);
+    }
+
+    public void expel(){
+        ingestorWheels.set(ControlMode.Velocity, -1000);
+    }
+    
+    public void stage1(){
+        
+    }*/
 }
