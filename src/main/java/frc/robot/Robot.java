@@ -72,6 +72,8 @@ public class Robot extends TimedRobot {
         m_chooser.addOption("Auton4", auton4);
         m_chooser.addOption("Auton5", auton5);
         SmartDashboard.putData(m_chooser);*/
+
+        SmartDashboard.putNumber("Shooting delay", 0.0);
     }
 
     @Override
@@ -82,24 +84,18 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousInit() {
         CommandScheduler.getInstance().cancelAll();
-
-       // m_selectedAuton = m_chooser.getSelected();
-       // System.out.println("Auton Selected: " + m_selectedAuton);
-       // CommandScheduler.getInstance().schedule(new AutonOption0(swerve));
-        //CommandScheduler.getInstance().schedule(new AutonOption4(swerve));
-        //CommandScheduler.getInstance().schedule(new AutonOption2(swerve));
-        //CommandScheduler.getInstance().schedule(new AutonOption3(swerve));
-       // Pose2d pos = swerve.odometry.getPoseMeters();
-        
-       
+        // m_selectedAuton = m_chooser.getSelected();
+        // System.out.println("Auton Selected: " + m_selectedAuton);
+        CommandScheduler.getInstance().schedule(new AutonOption2(swerve));
+        // Pose2d pos = swerve.odometry.getPoseMeters();
     }
 
     @Override
     public void autonomousPeriodic(){
-       CommandScheduler.getInstance().schedule(new AutonOption0(swerve));
-       // Pose2d pos = swerve.odometry.getPoseMeters();
-           // swerve.setPosition(10.85, 6.13, 0, 2);
-           // swerve.setPosition(8.57, 7.53, 0, 1);
+        // CommandScheduler.getInstance().schedule(new AutonOption0(swerve));
+        // Pose2d pos = swerve.odometry.getPoseMeters();
+        // swerve.setPosition(10.85, 6.13, 0, 2);
+        // swerve.setPosition(8.57, 7.53, 0, 1);
             
     }
 
