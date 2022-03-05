@@ -7,12 +7,13 @@ package frc.robot;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-
 
 import frc.robot.SwerveConstants;
 import frc.robot.SwerveModule;
@@ -30,6 +31,9 @@ import frc.robot.commands.ResetOrientation;
 public class Robot extends TimedRobot {
     private final XboxController controller = new XboxController(0);
     private final Drivetrain swerve = new Drivetrain();
+    private final Pi pi = new Pi();
+    private Shooter shooter;
+
     private boolean lastEnabled = false;
     private AutonOption5 autonOption5;
     private AutonOption4 autonOption4;
@@ -37,26 +41,49 @@ public class Robot extends TimedRobot {
     private AutonOption2 autonOption2;
     private AutonOption1 autonOption1;
     private AutonOption0 autonOption0;
-    /*private Command auton5;
-    private Command auton4;
-    private Command auton3;
-    private Command auton2;
-    private Command auton1;*/
+    /*
+     * private Command auton5;
+     * private Command auton4;
+     * private Command auton3;
+     * private Command auton2;
+     * private Command auton1;
+     */
     private static final String auton1 = "Auton 1";
     private static final String auton2 = "Auton 2";
     private static final String auton3 = "Auton 3";
     private static final String auton4 = "Auton 4";
     private static final String auton5 = "Auton 5";
-    SendableChooser<String> m_chooser = new SendableChooser<>();
     Odometry odometry;
     private String m_selectedAuton;
 
-
+    private static final String option1 = "Option1";
+    private static final String option2 = "Option2";
+    private static final String option3 = "Option3";
+    private static final String option4 = "Option4";
+    private static final String option5 = "Option5";
+    private static final String option6 = "Option6";
+    private String m_autoSelected;
+    private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
     @Override
     public void robotInit() {
+        Configuration.SetPersistentKeys();
+        GitVersion vers = GitVersion.loadVersion();
+        vers.printVersions();
+
+        ShooterConstants.LoadConstants();
+        shooter = new Shooter(pi);
+
+        swerve = new Drivetrain();
         CommandScheduler.getInstance().registerSubsystem(swerve);
         swerve.setDefaultCommand(new DriveStickSlew(swerve, controller));
+        shooter.setDefaultCommand(new NoShoot(shooter));
+
+        JoystickButton selectButton = new JoystickButton(controller, 7); // 7 = select button
+        selectButton.whileActiveContinuous(new ManualShoot(shooter));
+
+        JoystickButton startButton = new JoystickButton(controller, 8); // 8 = start button
+        startButton.whileActiveContinuous(new AutoShoot(swerve, shooter, pi, controller));
         // this.setNetworkTablesFlushEnabled(true); //turn off 20ms Dashboard update
         // rate
         LiveWindow.setEnabled(false);
@@ -66,41 +93,41 @@ public class Robot extends TimedRobot {
         SmartDashboard.putData("Drive FR 0.5mps", new AutoDrive(swerve, 0.5, 0.5));
         SmartDashboard.putData("Reset Orientation", new ResetOrientation(swerve));
 
-        /*m_chooser.setDefaultOption("Auton1", auton1);
-        m_chooser.addOption("Auton2", auton2);
-        m_chooser.addOption("Auton3", auton3);
-        m_chooser.addOption("Auton4", auton4);
-        m_chooser.addOption("Auton5", auton5);
-        SmartDashboard.putData(m_chooser);*/
+        /*
+         * m_chooser.setDefaultOption("Auton1", auton1);
+         * m_chooser.addOption("Auton2", auton2);
+         * m_chooser.addOption("Auton3", auton3);
+         * m_chooser.addOption("Auton4", auton4);
+         * m_chooser.addOption("Auton5", auton5);
+         * SmartDashboard.putData(m_chooser);
+         */
+
+        SmartDashboard.putNumber("Shooting delay", 0.0);
     }
 
     @Override
     public void disabledInit() {
         swerve.resetRobot();
+        controller.setRumble(RumbleType.kLeftRumble, 0.0);
+        controller.setRumble(RumbleType.kRightRumble, 0.0);
     }
 
     @Override
     public void autonomousInit() {
         CommandScheduler.getInstance().cancelAll();
-
-       // m_selectedAuton = m_chooser.getSelected();
-       // System.out.println("Auton Selected: " + m_selectedAuton);
-       // CommandScheduler.getInstance().schedule(new AutonOption0(swerve));
-        //CommandScheduler.getInstance().schedule(new AutonOption4(swerve));
-        //CommandScheduler.getInstance().schedule(new AutonOption2(swerve));
-        //CommandScheduler.getInstance().schedule(new AutonOption3(swerve));
-       // Pose2d pos = swerve.odometry.getPoseMeters();
-        
-       
+        // m_selectedAuton = m_chooser.getSelected();
+        // System.out.println("Auton Selected: " + m_selectedAuton);
+        CommandScheduler.getInstance().schedule(new AutonOption2(swerve));
+        // Pose2d pos = swerve.odometry.getPoseMeters();
     }
 
     @Override
-    public void autonomousPeriodic(){
-       CommandScheduler.getInstance().schedule(new AutonOption0(swerve));
-       // Pose2d pos = swerve.odometry.getPoseMeters();
-           // swerve.setPosition(10.85, 6.13, 0, 2);
-           // swerve.setPosition(8.57, 7.53, 0, 1);
-            
+    public void autonomousPeriodic() {
+        // CommandScheduler.getInstance().schedule(new AutonOption0(swerve));
+        // Pose2d pos = swerve.odometry.getPoseMeters();
+        // swerve.setPosition(10.85, 6.13, 0, 2);
+        // swerve.setPosition(8.57, 7.53, 0, 1);
+
     }
 
     @Override
@@ -113,8 +140,8 @@ public class Robot extends TimedRobot {
         CommandScheduler.getInstance().run();
         // have the field position constantly update
         swerve.updateOdometry();
-        //SmartDashboard.putNumber("XPosition", odometry.getXPosition());
-       // SmartDashboard.putNumber("YPosition", odometry.getYPosition());
+        // SmartDashboard.putNumber("XPosition", odometry.getXPosition());
+        // SmartDashboard.putNumber("YPosition", odometry.getYPosition());
 
         // automatically turn on/off recording
         if (lastEnabled != isEnabled()) {

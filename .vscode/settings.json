@@ -25,5 +25,10 @@
       }
     },
   ],
-  "java.test.defaultConfig": "WPIlibUnitTests"
+  "java.test.defaultConfig": "WPIlibUnitTests",
+  "wpilib.selectDefaultSimulateExtension": true,
+  "wpilib.skipSelectSimulateExtension": true,
+  "wpilib.skipTests": true,
+  "wpilib.offline": true,
+  "wpilib.alwaysAskForTeamNumber": true
 }
