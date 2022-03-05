@@ -28,12 +28,15 @@ public class AutonOption2 extends CommandBase {
             drive.currentStep++;
         }
 
+        // TODO: what happens if we start on the equivalent red side of the field?
         drive.setPosition(5.06, 5.96, Math.toRadians(135), 0.5, 1); // to blueBalls[0]
 
         // ingest
         // shoot - CommandScheduler.getInstance().schedule(new AutoShoot());?
 
         drive.setPosition(5.99, 6.95, Math.toRadians(50), .5, 2); // to redBalls[7]
+
+        // ingest
 
         drive.setPosition(4.65, 6.84, Math.toRadians(190), .5, 3); // to hangar
 

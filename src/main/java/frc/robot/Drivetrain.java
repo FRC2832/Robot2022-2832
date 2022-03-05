@@ -371,20 +371,26 @@ public class Drivetrain extends SubsystemBase {
         double xCurrentPos = pos.getX();
         double yCurrentPos = pos.getY();
         double rotCurrentPos = pos.getRotation().getRadians();
-        double xMove = xDesPosition-xCurrentPos;
-        double yMove = yDesPosition-yCurrentPos;
-        // rotCurrentPos = rotCurrentPos % 2*Math.PI;
-        if(rotCurrentPos < 0) {
+        double xMove = xDesPosition - xCurrentPos;
+        double yMove = yDesPosition - yCurrentPos;
+        // rotCurrentPos = rotCurrentPos % Math.toRadians(360);
+        if (rotCurrentPos < 0) {
             rotCurrentPos = rotCurrentPos + Math.toRadians(360);
-            // rotCurrentPos = rotCurrentPos % 2*Math.PI;
         }
-        double rotMag = desRotation-rotCurrentPos;
+        double rotMag = desRotation - rotCurrentPos;
 
-        if(step == currentStep){
-            if(Math.abs(xCurrentPos-xDesPosition) > 0.1 || Math.abs(yCurrentPos-yDesPosition) > 0.1 || Math.abs(rotCurrentPos-desRotation) > 0.1){
-                drive(xMove/time, yMove/time, rotMag, true);
+        double xSpeed = xMove / time;
+        double ySpeed = yMove / time;
+        double rotSpeed = rotMag / time;
+
+        if (step == currentStep) {
+            if (Math.abs(xCurrentPos - xDesPosition) > .1 || Math.abs(yCurrentPos - yDesPosition) > .1 || Math.abs(rotCurrentPos - desRotation) > .1) {
+                drive(xSpeed, ySpeed, rotSpeed, true);
             } else {
-                drive(0, 0, 0, false);
+                xSpeed = 0;
+                ySpeed = 0;
+                rotSpeed = 0;
+                drive(xSpeed, ySpeed, rotSpeed, false);
                 System.out.println("Arrived");
                 currentStep++;
             }
