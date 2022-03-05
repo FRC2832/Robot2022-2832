@@ -364,6 +364,7 @@ public class Drivetrain extends SubsystemBase {
         }
         return new Transform2d(trans, (new Rotation2d(angle)).minus(robot.getRotation()));
     }
+
     public int currentStep = 0;
     public void setPosition(double xDesPosition, double yDesPosition, double desRotation, double time, int step){
         Pose2d pos = odometry.getPoseMeters();
@@ -372,11 +373,11 @@ public class Drivetrain extends SubsystemBase {
         double rotCurrentPos = pos.getRotation().getRadians();
         double xMove = xDesPosition-xCurrentPos;
         double yMove = yDesPosition-yCurrentPos;
-        double rotMag = rotCurrentPos % 2*Math.PI;
-        rotMag = desRotation-rotCurrentPos;
+        rotCurrentPos = rotCurrentPos % 2*Math.PI;
+        double rotMag = desRotation-rotCurrentPos;
 
         if(step == currentStep){
-            if(Math.abs(xCurrentPos-xDesPosition) > 0.1 && Math.abs(yCurrentPos-yDesPosition) > 0.1){
+            if(Math.abs(xCurrentPos-xDesPosition) > 0.1 || Math.abs(yCurrentPos-yDesPosition) > 0.1 || Math.abs(rotCurrentPos-desRotation) > 0.1){
                 drive(xMove/time, yMove/time, rotMag/time, true);
                 System.out.println("Its working");
             }
@@ -384,6 +385,7 @@ public class Drivetrain extends SubsystemBase {
                 drive(0, 0, 0, false);
                 System.out.println("Arrived");
                 currentStep++;
+                System.out.println(currentStep);
             }
         }
 

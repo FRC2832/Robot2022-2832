@@ -15,6 +15,8 @@ public class Odometry{
     SwerveConstants constants = new SwerveConstants();
     SwerveModule swerveModule = new SwerveModule(constants);
     Drivetrain drivetrain = new Drivetrain();
+    //declaring SwerveModuleState variable for whole class instead of creating a new object every time setPositionv2() is called
+    SwerveModuleState swerveState = new SwerveModuleState();
 
     Translation2d m_frontLeftLocation = new Translation2d(0.381, 0.381);
     Translation2d m_frontRightLocation = new Translation2d(0.381, -0.381);
@@ -59,7 +61,7 @@ public class Odometry{
     } 
 
     public void setPositionv2(SwerveModuleState setState){
-        SwerveModuleState swerveState = setState;
+        swerveState = setState;
         
     }
 }

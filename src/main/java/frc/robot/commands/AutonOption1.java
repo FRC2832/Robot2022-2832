@@ -14,12 +14,12 @@ public class AutonOption1 extends CommandBase {
         this.drive = drive;
         timer = new Timer();
         timer.start();
-        delay = SmartDashboard.getNumber("Shooting delay", 4.0); // TODO: check that drivers can change this value
+        delay = SmartDashboard.getNumber("Shooting delay", 0.0); 
         addRequirements(drive);
     }
 
     public void execute() {
-        double driveTime = 3;
+        double driveTime = 1.5;
         if(timer.get() < driveTime) {
             drive.drive(-1.0, 0.0, 0.0, false);
         }
@@ -30,6 +30,7 @@ public class AutonOption1 extends CommandBase {
                 System.out.println("Shooting"); // TODO: actually shoot
             }
         }
+        
     }
 
 }

@@ -1,24 +1,39 @@
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+//import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Drivetrain;
 
 public class AutonOption6 extends CommandBase {
     private Drivetrain drive;
-    private Timer timer;
+    //private Timer timer;
 
     public AutonOption6(Drivetrain drive){
-        timer = new Timer();
+        //timer = new Timer();
         this.drive = drive; 
         addRequirements(drive);
-        timer.start();
+        //timer.start();
     }
+    /*
     private void stop(){
         drive.drive(0, 0, 0, true);
     }
+    */
 
     public void execute(){
+        if(drive.currentStep ==0){
+            drive.odometry.resetPosition(new Pose2d(8.3, 6.13, new Rotation2d()), new Rotation2d());
+            drive.currentStep++;       
+        }
+        drive.setPosition(8.57, 7.53, 0, .5, 1);
+        drive.setPosition(8.57, 7.53, 1, .5, 2);
+        
+
+
+
+        /*
         if(timer.get() < 2 ){
             drive.drive(.75, 0, 0, false);
             System.out.println("Getting ball 1");
@@ -48,6 +63,7 @@ public class AutonOption6 extends CommandBase {
             stop();
             System.out.println("SHOOTING!!!!");
         }
+        */
     }
         //Now we shoot!!!!!
 }
