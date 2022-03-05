@@ -5,11 +5,8 @@ import edu.wpi.first.math.system.plant.DCMotor;
 
 public class SwerveConstants {
     public String Name;
-    public int DriveMotorId;
-    public int TurnMotorId;
-    public int CanCoderId;
     public Translation2d Location;
-    public double ZeroAngle;
+    public byte Id;
     
     public DCMotor TurnMotor;
     public double  TurnMotorGearRatio;

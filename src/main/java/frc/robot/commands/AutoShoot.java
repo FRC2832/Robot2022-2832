@@ -1,5 +1,7 @@
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.*;
@@ -8,11 +10,13 @@ public class AutoShoot extends CommandBase {
     private Drivetrain drive;
     private Shooter shooter;
     private Pi pi;
+    private XboxController controller;
 
-    public AutoShoot(Drivetrain drive, Shooter shooter, Pi pi) {
+    public AutoShoot(Drivetrain drive, Shooter shooter, Pi pi, XboxController controller) {
         this.drive = drive;
         this.shooter = shooter;
         this.pi = pi;
+        this.controller = controller;
 
         addRequirements(drive);
         addRequirements(shooter);
@@ -39,6 +43,8 @@ public class AutoShoot extends CommandBase {
 
         //check if PI saw target
         if(pi.getCenterX() > 0) {
+            controller.setRumble(RumbleType.kLeftRumble, 0.0);
+            controller.setRumble(RumbleType.kRightRumble, 0.0);
             if(Pi.getTargetMoveLeft()) {
                 error = String.join(error, "TurnL ");
                 //left is positive turn
@@ -52,7 +58,8 @@ public class AutoShoot extends CommandBase {
             }
         } else {
             //pi is not seeing hub
-            //TODO: Rumble driver controller?
+            controller.setRumble(RumbleType.kLeftRumble, 1.0);
+            controller.setRumble(RumbleType.kRightRumble, 1.0);
             error = String.join(error, "Vision ");
             drive.drive(0, 0, 0, false);
         }
@@ -68,5 +75,10 @@ public class AutoShoot extends CommandBase {
             error = "SHOOT!!!";
         }
         SmartDashboard.putString("Auto Shoot Error", error);
+    }
+
+    public void end() {
+        controller.setRumble(RumbleType.kLeftRumble, 0.0);
+        controller.setRumble(RumbleType.kRightRumble, 0.0);
     }
 }
