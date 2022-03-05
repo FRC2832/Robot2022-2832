@@ -49,9 +49,9 @@ public class Drivetrain extends SubsystemBase {
     private ADXRS450_GyroSim gyroSim;
     private ADXRS450_Gyro gyroBase;
 
-    private final SwerveDriveKinematics kinematics;
+    private SwerveDriveKinematics kinematics;
 
-    private final SwerveDriveOdometry odometry;
+    public SwerveDriveOdometry odometry;
 
     private Field2d field = new Field2d();
 
@@ -349,4 +349,38 @@ public class Drivetrain extends SubsystemBase {
         }
         return new Transform2d(trans, (new Rotation2d(angle)).minus(robot.getRotation()));
     }
+
+    public int currentStep = 0;
+    public void setPosition(double xDesPosition, double yDesPosition, double desRotation, double time, int step){
+        Pose2d pos = odometry.getPoseMeters();
+        double xCurrentPos = pos.getX();
+        double yCurrentPos = pos.getY();
+        double rotCurrentPos = pos.getRotation().getRadians();
+        double xMove = xDesPosition - xCurrentPos;
+        double yMove = yDesPosition - yCurrentPos;
+        // rotCurrentPos = rotCurrentPos % Math.toRadians(360);
+        if (rotCurrentPos < 0) {
+            rotCurrentPos = rotCurrentPos + Math.toRadians(360);
+        }
+        double rotMag = desRotation - rotCurrentPos;
+
+        double xSpeed = xMove / time;
+        double ySpeed = yMove / time;
+        double rotSpeed = rotMag / time;
+
+        if (step == currentStep) {
+            if (Math.abs(xCurrentPos - xDesPosition) > .1 || Math.abs(yCurrentPos - yDesPosition) > .1 || Math.abs(rotCurrentPos - desRotation) > .1) {
+                drive(xSpeed, ySpeed, rotSpeed, true);
+            } else {
+                xSpeed = 0;
+                ySpeed = 0;
+                rotSpeed = 0;
+                drive(xSpeed, ySpeed, rotSpeed, false);
+                System.out.println("Arrived");
+                currentStep++;
+            }
+        }
+
+    } 
+
 }
