@@ -43,7 +43,8 @@ public class DriveStickSlew extends CommandBase {
         // positive value when we pull to the left (remember, CCW is positive in
         // mathematics). Xbox controllers return positive values when you pull to
         // the right by default.
-        final double rot = -rotLimiter.calculate(drive.deadbandStick(controller.getRightX()))
+        // no longer inverting this because it was turning the wrong way
+        final double rot = rotLimiter.calculate(drive.deadbandStick(controller.getRightX()))
                 * frc.robot.Drivetrain.kMaxAngularSpeed;
 
         // ask the drivetrain to run

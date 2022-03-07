@@ -26,6 +26,7 @@ public class ManualShoot extends CommandBase {
 
         // if target rpm is within range (+- 30)
         if(rpm - 30 < shooter.getShooterVelocity() && shooter.getShooterVelocity() < rpm + 30){
+            System.out.println("ready to shoot");
             // start treads in slipstream
         }
     }
