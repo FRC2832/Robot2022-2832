@@ -26,52 +26,50 @@ public class AutoShoot extends CommandBase {
         shooter.calcShot();
         String error = "";
 
-        //check hood angle is more than 3* off
-        //shooter.setHoodAngle(shooter.getTargetHoodAngle());
-        if(Math.abs(shooter.getHoodAngle()-shooter.getTargetHoodAngle()) > 3)
-        {
-            //TODO: turned off hood since it's broke
-            //error = String.join(error, "Hood ");
+        // check hood angle is more than 3* off
+        // shooter.setHoodAngle(shooter.getTargetHoodAngle());
+        if (Math.abs(shooter.getHoodAngle() - shooter.getTargetHoodAngle()) > 3) {
+            // TODO: turned off hood since it's broke
+            // error = String.join(error, "Hood ");
         }
 
-        //check shot speed is within 30 RPM
+        // check shot speed is within 30 RPM
         shooter.setShooterRpm(shooter.getTargetRpm());
-        if(Math.abs(shooter.getShooterVelocity()-shooter.getTargetRpm()) > 30)
-        {
+        if (Math.abs(shooter.getShooterVelocity() - shooter.getTargetRpm()) > 30) {
             error = String.join(error, "RPM ");
         }
 
-        //check if PI saw target
-        if(pi.getCenterX() > 0) {
+        // check if PI saw target
+        if (pi.getCenterX() > 0) {
             controller.setRumble(RumbleType.kLeftRumble, 0.0);
             controller.setRumble(RumbleType.kRightRumble, 0.0);
-            if(Pi.getTargetMoveLeft()) {
+            if (Pi.getTargetMoveLeft()) {
                 error = String.join(error, "TurnL ");
-                //left is positive turn
+                // left is positive turn
                 drive.drive(0, 0, Math.toRadians(70), false);
             } else if (Pi.getTargetMoveRight()) {
                 error = String.join(error, "TurnR ");
                 drive.drive(0, 0, -Math.toRadians(70), false);
             } else {
-                //robot centered, stop driving
+                // robot centered, stop driving
                 drive.drive(0, 0, 0, false);
             }
         } else {
-            //pi is not seeing hub
+            // pi is not seeing hub
             controller.setRumble(RumbleType.kLeftRumble, 1.0);
             controller.setRumble(RumbleType.kRightRumble, 1.0);
             error = String.join(error, "Vision ");
             drive.drive(0, 0, 0, false);
         }
 
-        //check for driving (0.15m/s == 6in/s)
-        if(Math.abs(drive.getModules()[0].getVelocity()) > 0.15) {
+        // check for driving (0.15m/s == 6in/s)
+        if (Math.abs(drive.getModules()[0].getVelocity()) > 0.15) {
             error = String.join(error, "Driving ");
-            //driving might be because of centering, so don't stop it
-        } 
+            // driving might be because of centering, so don't stop it
+        }
 
-        if(error.length() ==0) {
-            //TODO: SHOOT!!!
+        if (error.length() == 0) {
+            // TODO: SHOOT!!!
             error = "SHOOT!!!";
         }
         SmartDashboard.putString("Auto Shoot Error", error);

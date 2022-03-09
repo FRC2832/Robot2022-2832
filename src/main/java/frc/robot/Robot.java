@@ -27,16 +27,20 @@ import frc.robot.commands.AutonOption4;
 import frc.robot.commands.AutonOption5;
 import frc.robot.commands.DriveStick;
 import frc.robot.commands.DriveStickSlew;
+import frc.robot.commands.HomeHood;
 import frc.robot.commands.ManualShoot;
 import frc.robot.commands.NoShoot;
 import frc.robot.commands.ResetOrientation;
 
 public class Robot extends TimedRobot {
-    private final XboxController controller = new XboxController(0);
+    private final XboxController driverController = new XboxController(0);
+    private final XboxController operatorController = new XboxController(2);
     private final Drivetrain swerve = new Drivetrain();
     private final Pi pi = new Pi();
     private final Ingestor ingestor = new Ingestor();
     private Shooter shooter;
+    private Climber climber;
+    private boolean ranAuton = false;
 
     private boolean lastEnabled = false;
     private AutonOption5 autonOption5;
@@ -76,23 +80,27 @@ public class Robot extends TimedRobot {
         vers.printVersions();
 
         ShooterConstants.LoadConstants();
-        shooter = new Shooter(pi);
+        shooter = new Shooter(pi, driverController, operatorController);
+
+        climber = new Climber();
 
         CommandScheduler.getInstance().registerSubsystem(swerve);
-        swerve.setDefaultCommand(new DriveStickSlew(swerve, controller));
+        swerve.setDefaultCommand(new DriveStickSlew(swerve, driverController));
         shooter.setDefaultCommand(new NoShoot(shooter));
 
-        JoystickButton selectButton = new JoystickButton(controller, 7); // 7 = select button
-        selectButton.whileActiveContinuous(new ManualShoot(shooter));
+        JoystickButton selectButton = new JoystickButton(operatorController, 7); // 7 = select button
+        selectButton.whileActiveContinuous(new ManualShoot(shooter, ingestor, 2300.0));
 
-        JoystickButton startButton = new JoystickButton(controller, 8); // 8 = start button
-        startButton.whileActiveContinuous(new AutoShoot(swerve, shooter, pi, controller));
+        JoystickButton startButton = new JoystickButton(operatorController, 8); // 8 = start
+        // button
+        startButton.whileActiveContinuous(new AutoShoot(swerve, shooter, pi, driverController));
 
         // this.setNetworkTablesFlushEnabled(true); //turn off 20ms Dashboard update
         // rate
         LiveWindow.setEnabled(false);
         // add commands to the dashboard so we can run them seperately
-        SmartDashboard.putData("Stick Drive", new DriveStick(swerve, controller));
+
+        SmartDashboard.putData("Stick Drive", new DriveStick(swerve, driverController));
         SmartDashboard.putData("Drive Forward 0.5mps", new AutoDrive(swerve, 0.5, 0));
         SmartDashboard.putData("Drive FR 0.5mps", new AutoDrive(swerve, 0.5, 0.5));
         SmartDashboard.putData("Reset Orientation", new ResetOrientation(swerve));
@@ -111,18 +119,22 @@ public class Robot extends TimedRobot {
 
     @Override
     public void disabledInit() {
+        ranAuton = false;
         swerve.resetRobot();
-        controller.setRumble(RumbleType.kLeftRumble, 0.0);
-        controller.setRumble(RumbleType.kRightRumble, 0.0);
+        driverController.setRumble(RumbleType.kLeftRumble, 0.0);
+        driverController.setRumble(RumbleType.kRightRumble, 0.0);
     }
 
     @Override
     public void autonomousInit() {
         CommandScheduler.getInstance().cancelAll();
-        // m_selectedAuton = m_chooser.getSelected();
-        // System.out.println("Auton Selected: " + m_selectedAuton);
+        m_selectedAuton = m_chooser.getSelected();
+        System.out.println("Auton Selected: " + m_selectedAuton);
+
+        //CommandScheduler.getInstance().schedule(new HomeHood(shooter));
         CommandScheduler.getInstance().schedule(new AutonOption2(swerve));
-        // Pose2d pos = swerve.odometry.getPoseMeters();
+        Pose2d pos = swerve.odometry.getPoseMeters();
+        ranAuton = true;
     }
 
     @Override
@@ -134,28 +146,38 @@ public class Robot extends TimedRobot {
 
     }
 
+
+    @Override
+    public void teleopInit() {
+        CommandScheduler.getInstance().cancelAll();
+        if (!ranAuton) {
+            //CommandScheduler.getInstance().schedule(new HomeHood(shooter));
+        }
+    }
+
     @Override
     public void teleopPeriodic() {
         ingestor.runIngestor();
+        climber.runClimber();
     }
 
     @Override
     public void robotPeriodic() {
         CommandScheduler.getInstance().run();
         // have the field position constantly update
-        // swerve.updateOdometry();
-        // SmartDashboard.putNumber("XPosition", odometry.getXPosition());
-        // SmartDashboard.putNumber("YPosition", odometry.getYPosition());
+        swerve.updateOdometry();
+        //SmartDashboard.putNumber("XPosition", odometry.getXPosition());
+        //SmartDashboard.putNumber("YPosition", odometry.getYPosition());
 
         // automatically turn on/off recording
         if (lastEnabled != isEnabled()) {
             // we know the enabled status changed
-            if (lastEnabled == false) {
-                // robot started, start recording
-                Shuffleboard.startRecording();
-            } else {
+            if (lastEnabled) {
                 // robot stopped, stop recording
                 Shuffleboard.stopRecording();
+            } else {
+                // robot started, start recording
+                Shuffleboard.startRecording();
             }
         }
         // save the result for next loop
