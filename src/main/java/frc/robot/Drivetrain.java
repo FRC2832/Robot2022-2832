@@ -206,7 +206,9 @@ public class Drivetrain extends SubsystemBase {
 
         // plot it on the simulated field
         field.setRobotPose(pose);
-        updateVision(pose);
+        if(Robot.isSimulation()) {
+            updateSimulationVision(pose);
+        }
         field.getObject("Swerve Modules").setPoses(modulePoses);
     }
 
@@ -282,14 +284,14 @@ public class Drivetrain extends SubsystemBase {
         double absVal = Math.abs(value);
 
         if(absVal > deadband) {
-            return Math.signum(value) * (deadband + ((1-deadband) * absVal * absVal));
+            return Math.signum(value) * (deadband + ((.52) * absVal * absVal)); // TODO: change to 1 - x(deadband)
         } else {
             return 0;
         }
     }
 
 
-    public void updateVision(Pose2d robot) {
+    public void updateSimulationVision(Pose2d robot) {
         Translation2d[] balls;
         final double MAX_SIGHT_DIST = 1.219;  //48"
 
