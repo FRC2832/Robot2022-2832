@@ -8,7 +8,6 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Shooter extends SubsystemBase {
@@ -16,11 +15,16 @@ public class Shooter extends SubsystemBase {
     private TalonFX shooterFx;
     private TalonSRX hoodMotor;
     private boolean isHomed; // report if hood has been homed
+    private boolean wasLastHomed;
     private double hoodSensorOffset;
     private Pi pi;
     private double distance;
     private double targetHoodAngle;
     private double targetRpm;
+    private final int HOOD_SENSOR_ACTIVE = 700;
+    private final int MAX_ANGLE_COUNTS = 400;
+    private final int MIN_ANGLE = 20;
+    private final int MAX_ANGLE = 70;
     private XboxController driveController;
     private XboxController operatorController;
 
@@ -36,7 +40,7 @@ public class Shooter extends SubsystemBase {
         this.operatorController = operatorController;
         isHomed = false;
         hoodMotor = new TalonSRX(26);
-        //hoodMotor.setNeutralMode(NeutralMode.Brake);
+        hoodMotor.setNeutralMode(NeutralMode.Brake);
 
         shooterFx = new TalonFX(Configuration.GetShooterId());
         shooterFx.setNeutralMode(NeutralMode.Coast);
@@ -48,39 +52,38 @@ public class Shooter extends SubsystemBase {
         // = 9892, 16.62%=3572 units=1046 rpm
         config.slot0.kP = 0.8;
         config.slot0.kI = 0.001;
-        config.slot0.kD = 16;
+        config.slot0.kD = 16.0;
         config.slot0.kF = 0.05205;
-        config.slot0.integralZone = 65;
+        config.slot0.integralZone = 65.0;
         config.closedloopRamp = 0.1; // take 100ms to ramp to max power
         shooterFx.configAllSettings(config); // apply the config settings; this selects the quadrature encoder
     }
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Shooter Output Velocity", getShooterVelocity());
+        //SmartDashboard.putNumber("Shooter Output Velocity", getShooterVelocity());
         SmartDashboard.putNumber("Hood Angle Position", getHoodAngle());
-        SmartDashboard.putNumber("Shot Distance", getShotDist());
-        SmartDashboard.putNumber("Calc RPM", getTargetRpm());
+        //SmartDashboard.putNumber("Shot Distance", getShotDist());
+        //SmartDashboard.putNumber("Calc RPM", getTargetRpm());
         SmartDashboard.putNumber("Calc Hood Angle", getTargetHoodAngle());
+        SmartDashboard.putBoolean("Hood Bottom", hoodBottom());
+        SmartDashboard.putNumber("Hood Sensor", hoodMotor.getSensorCollection().getAnalogInRaw());
+        SmartDashboard.putBoolean("IsHomed", isHomed);
         // if the limit switch is pressed, reset the hood angle position
-        if (hoodMotor.isRevLimitSwitchClosed() > 0) {
+        // if (!operatorController.getStartButton()) { TODO: re-enable when we automatically adjust angle.
+        if (wasLastHomed && !hoodBottom()) {
             hoodMotor.setSelectedSensorPosition(0);
             isHomed = true;
         }
-        if (!operatorController.getStartButton()) {
-            if (driveController.getLeftBumper()) {
-                hoodMotor.set(ControlMode.PercentOutput, 0.25);
-            } else if (driveController.getRightBumper()) {
-                if (isHomed && hoodMotor.isRevLimitSwitchClosed() > 0) {
-                    hoodMotor.set(ControlMode.PercentOutput, 0.0);
-                } else {
-                    hoodMotor.set(ControlMode.PercentOutput, -0.25);
-                }
-            } else {
-                hoodMotor.set(ControlMode.PercentOutput, 0.0);
-            }
+        if (driveController.getLeftBumper()) {
+            hoodMotor.set(ControlMode.PercentOutput, 0.25);
+        } else if (driveController.getRightBumper() && !hoodBottom()) {
+            hoodMotor.set(ControlMode.PercentOutput, -0.25);
+        } else {
+            hoodMotor.set(ControlMode.PercentOutput, 0.0);
         }
-
+        //}
+        wasLastHomed = hoodBottom();
     }
 
     public void setShootPct(double percent) {
@@ -95,6 +98,10 @@ public class Shooter extends SubsystemBase {
         return isHomed;
     }
 
+    public boolean hoodBottom() {
+        return hoodMotor.getSensorCollection().getAnalogInRaw() > HOOD_SENSOR_ACTIVE;
+    }
+
     /**
      * Get shooter speed in RPM
      * 
@@ -107,12 +114,28 @@ public class Shooter extends SubsystemBase {
     public double getHoodAngle() {
         // TODO: add angle scale factor and zeroing
         // return hoodMotor.getSelectedSensorPosition();
-        return 0.0;
+        double sensor = hoodMotor.getSelectedSensorPosition();
+        return (sensor / MAX_ANGLE_COUNTS) * (MAX_ANGLE - MIN_ANGLE) + MIN_ANGLE;
     }
 
     public void setHoodSpeedPct(double pct) {
         // allow control if homed or only down if not homed
-        if (isHomed || pct < 0) {
+        /*
+         * if (isHomed || pct < 0) {
+         * hoodMotor.set(ControlMode.PercentOutput, pct);
+         * }
+         */
+        if (hoodBottom()) {
+            if (pct > 0.1) {
+                // if driving down, stop at home
+                hoodMotor.set(ControlMode.PercentOutput, 0.0);
+            } else {
+                // slowly drive out to get accurate home
+                hoodMotor.set(ControlMode.PercentOutput, 0.18);
+            }
+        } else if (hoodMotor.getSelectedSensorPosition() > MAX_ANGLE_COUNTS && pct > 0.0) {
+            hoodMotor.set(ControlMode.PercentOutput, 0.0);
+        } else {
             hoodMotor.set(ControlMode.PercentOutput, pct);
         }
     }

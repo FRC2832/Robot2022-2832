@@ -11,12 +11,14 @@ public class AutoShoot extends CommandBase {
     private Shooter shooter;
     private Pi pi;
     private XboxController controller;
+    private Ingestor ingestor;
 
-    public AutoShoot(Drivetrain drive, Shooter shooter, Pi pi, XboxController controller) {
+    public AutoShoot(Drivetrain drive, Shooter shooter, Ingestor ingestor, Pi pi, XboxController controller) {
         this.drive = drive;
         this.shooter = shooter;
         this.pi = pi;
         this.controller = controller;
+        this.ingestor = ingestor;
 
         addRequirements(drive);
         addRequirements(shooter);
@@ -28,11 +30,10 @@ public class AutoShoot extends CommandBase {
 
         // check hood angle is more than 3* off
         // shooter.setHoodAngle(shooter.getTargetHoodAngle());
-        if (Math.abs(shooter.getHoodAngle() - shooter.getTargetHoodAngle()) > 3) {
+        if (!shooter.isHoodHomed() || Math.abs(shooter.getHoodAngle() - shooter.getTargetHoodAngle()) > 3) {
             // TODO: turned off hood since it's broke
-            // error = String.join(error, "Hood ");
+            error = String.join(error, "Hood ");
         }
-
         // check shot speed is within 30 RPM
         shooter.setShooterRpm(shooter.getTargetRpm());
         if (Math.abs(shooter.getShooterVelocity() - shooter.getTargetRpm()) > 30) {
@@ -69,7 +70,7 @@ public class AutoShoot extends CommandBase {
         }
 
         if (error.length() == 0) {
-            // TODO: SHOOT!!!
+            ingestor.sendCargoToShooter();
             error = "SHOOT!!!";
         }
         SmartDashboard.putString("Auto Shoot Error", error);

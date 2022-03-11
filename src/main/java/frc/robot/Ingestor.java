@@ -26,9 +26,9 @@ public class Ingestor {
     private boolean timerStarted = false;
 
     // Targetted motor speeds
-    private static final double INGESTOR_SPEED = 0.75; //1000.0;
+    private static final double INGESTOR_SPEED = 0.38; //1000.0;
     private static final double STAGE_1_SPEED = 0.75;//1000.0;
-    private static final double STAGE_2_SPEED = 0.75; //1000.0;
+    private static final double STAGE_2_SPEED = 0.85; //1000.0;
     private static final double INGESTOR_LIFT_SPEED = 0.25;
 
     public Ingestor() {

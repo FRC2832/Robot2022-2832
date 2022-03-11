@@ -5,18 +5,15 @@
 package frc.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.GenericHID.RumbleType;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-
-import frc.robot.SwerveConstants;
-import frc.robot.SwerveModule;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.AutoDrive;
 import frc.robot.commands.AutoShoot;
 import frc.robot.commands.AutonOption0;
@@ -27,7 +24,6 @@ import frc.robot.commands.AutonOption4;
 import frc.robot.commands.AutonOption5;
 import frc.robot.commands.DriveStick;
 import frc.robot.commands.DriveStickSlew;
-import frc.robot.commands.HomeHood;
 import frc.robot.commands.ManualShoot;
 import frc.robot.commands.NoShoot;
 import frc.robot.commands.ResetOrientation;
@@ -93,7 +89,7 @@ public class Robot extends TimedRobot {
 
         JoystickButton startButton = new JoystickButton(operatorController, 8); // 8 = start
         // button
-        startButton.whileActiveContinuous(new AutoShoot(swerve, shooter, pi, driverController));
+        startButton.whileActiveContinuous(new AutoShoot(swerve, shooter, ingestor, pi, driverController));
 
         // this.setNetworkTablesFlushEnabled(true); //turn off 20ms Dashboard update
         // rate
