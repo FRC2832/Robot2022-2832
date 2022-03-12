@@ -41,9 +41,17 @@ public class AutoShoot extends CommandBase {
         }
 
         // check if PI saw target
+        for(Number n:pi.getTargetCenterXArray()){
+            System.out.print((double)(n) + " "); // TODO: Why are array vals just zero?
+        }
+        
+        System.out.println("getCenterX(): " + pi.getCenterX());
+
         if (pi.getCenterX() > 0) {
             controller.setRumble(RumbleType.kLeftRumble, 0.0);
             controller.setRumble(RumbleType.kRightRumble, 0.0);
+            System.out.println("No rumble");
+
             if (Pi.getTargetMoveLeft()) {
                 error = String.join(error, "TurnL ");
                 // left is positive turn
@@ -59,6 +67,8 @@ public class AutoShoot extends CommandBase {
             // pi is not seeing hub
             controller.setRumble(RumbleType.kLeftRumble, 1.0);
             controller.setRumble(RumbleType.kRightRumble, 1.0);
+            System.out.println("Rumble");
+            
             error = String.join(error, "Vision ");
             drive.drive(0, 0, 0, false);
         }

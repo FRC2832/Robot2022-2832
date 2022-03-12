@@ -45,25 +45,6 @@ public class Ingestor {
     }
 
     public void runIngestor() {
-        // color sensor conditions
-        if(stage2ColorSensor.getProximity() > 1000){
-            System.out.println("getProximity() > 1000");
-        }
-        
-        Color sensorColor = stage2ColorSensor.getColor();
-        if (stage2ColorSensor.getBlue() > 128) {
-            System.out.println("getBlue() returned more than 128");
-        }
-        if (stage2ColorSensor.getRed() > 128) {
-            System.out.println("getRed() returned more than 128");
-        }
-        if (sensorColor.blue > 128.0) {
-            System.out.println("sensorColor.blue is more than 128.0");
-        }
-        if (sensorColor.red > 128.0) {
-            System.out.println("sensorColor.red is more than 128.0");
-        }
-      
         if(operatorController.getAButton()){
             ingestorWheels.set(INGESTOR_SPEED);
             stage1Conveyor.set(-STAGE_1_SPEED);

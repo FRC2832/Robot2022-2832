@@ -47,6 +47,8 @@ public class Pi {
         targetHeight = table.getEntry("targetHeight");
         targetArea = table.getEntry("targetArea");
         centerYOutput = -1;
+        targetCenterXArray = new Number[0];
+        
     }
 
     // sends alliance color to the python code so it knows what color cargo to look for
@@ -211,5 +213,13 @@ public class Pi {
 
     public double getCenterX() {
         return centerXOutput;
+    }
+
+    public Number[] getTargetCenterXArray(){
+        return targetCenterXArray;
+    }
+
+    public NetworkTableEntry getAllianceColor(){
+        return allianceColor;
     }
 }

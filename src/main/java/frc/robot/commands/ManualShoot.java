@@ -31,7 +31,6 @@ public class ManualShoot extends CommandBase {
 
         // if target rpm is within range (+- 50)
         if (rpm - 50 < shooter.getShooterVelocity() && shooter.getShooterVelocity() < rpm + 50) {
-            System.out.println("ready to shoot");
             ingestor.sendCargoToShooter();
         }
     }

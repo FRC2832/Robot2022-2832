@@ -27,6 +27,8 @@ import frc.robot.commands.DriveStickSlew;
 import frc.robot.commands.ManualShoot;
 import frc.robot.commands.NoShoot;
 import frc.robot.commands.ResetOrientation;
+import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.*;
 
 public class Robot extends TimedRobot {
     private final XboxController driverController = new XboxController(0);
@@ -37,6 +39,8 @@ public class Robot extends TimedRobot {
     private Shooter shooter;
     private Climber climber;
     private boolean ranAuton = false;
+    private Drivetrain drive;
+    private XboxController controller;
 
     private boolean lastEnabled = false;
     private AutonOption5 autonOption5;
