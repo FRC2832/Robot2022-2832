@@ -41,11 +41,22 @@ public class AutoShoot extends CommandBase {
         }
 
         // check if PI saw target
+        /*
         for(Number n:pi.getTargetCenterXArray()){
             System.out.print((double)(n) + " "); // TODO: Why are array vals just zero?
         }
+        */
         
+        System.out.println("getTargetArea(): " + pi.getTargetArea());
+        System.out.println("getTargetHeight(): " + pi.getTargetHeight());
+        System.out.println("getTargetWidth(): " + pi.getTargetWidth());
+        System.out.println("getTargetCenterX(): " + pi.getTargetCenterX());
+        System.out.println("getTargetCenterY(): " + pi.getTargetCenterY());
+        System.out.println("getTargetXVal(): " + pi.getTargetXVal());
+        
+        System.out.println();
         System.out.println("getCenterX(): " + pi.getCenterX());
+
 
         if (pi.getCenterX() > 0) {
             controller.setRumble(RumbleType.kLeftRumble, 0.0);

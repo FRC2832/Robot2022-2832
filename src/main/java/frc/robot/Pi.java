@@ -34,6 +34,7 @@ public class Pi {
     private static boolean cargoMoveLeft;
     private double centerYOutput;
     private double centerXOutput;
+    private int index;
 
     public Pi() {
         netTableInstance = NetworkTableInstance.getDefault();
@@ -113,7 +114,7 @@ public class Pi {
         }
 
         // pick a target just right of center so the cargo hopefully doesn't bounce out
-        int index = 0;
+        index = 0;
         if (size <= 1) {
             index = 0; 
         } else {
@@ -213,6 +214,30 @@ public class Pi {
 
     public double getCenterX() {
         return centerXOutput;
+    }
+
+    public double getTargetXVal(){
+        return (double) targetCenterXArray[index];
+    }
+
+    public NetworkTableEntry getTargetArea() {
+        return targetArea;
+    }
+
+    public NetworkTableEntry getTargetHeight() {
+        return targetHeight;
+    }
+
+    public NetworkTableEntry getTargetWidth() {
+        return targetWidth;
+    }
+
+    public NetworkTableEntry getTargetCenterX() {
+        return targetCenterX;
+    }
+
+    public NetworkTableEntry getTargetCenterY() {
+        return targetCenterY;
     }
 
     public Number[] getTargetCenterXArray(){

@@ -25,23 +25,30 @@ public class DribbleShoot extends CommandBase {
 
     @Override
     public void execute() {
-      String detectedColor = colorSensor.getColor();
-      String allianceColor = pi.getAllianceColor().getString("default");
+      //String detectedColor = colorSensor.getColor();
+      //String allianceColor = pi.getAllianceColor().getString("default");
       
       // if detected color != alliance color  
-      if(!(detectedColor.equals(allianceColor))){
         // set shooter rpm
-          double rpm = 1000.0;
-          shooter.setShooterRpm(rpm);
+        double rpm = 1000.0;
+        shooter.setShooterRpm(rpm);
 
-          // set hood angle (knob 6, 39 degrees)
-          // shooter.setHoodAngle(position);
+        // set hood angle (knob 6, 39 degrees)
+        // shooter.setHoodAngle(position);
 
-          // if target rpm is within range (+- 50)
-          if (rpm - 50 < shooter.getShooterVelocity() && shooter.getShooterVelocity() < rpm + 50) {
-              ingestor.sendCargoToShooter();
-          }
-      }
+        // if target rpm is within range (+- 50)
+        if (rpm - 50 < shooter.getShooterVelocity() && shooter.getShooterVelocity() < rpm + 50) {
+            ingestor.sendOneCargoToShooter();
+        }
+    }
+
+    @Override
+    public boolean isFinished() {
+        // wehn color is unknown return true (maybe wait one more second?)
+        if((colorSensor.getColorSensor().toString()).equals("Unknown")){
+            return true;
+        }
+        return false;
     }
 
     @Override

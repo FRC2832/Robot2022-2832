@@ -109,6 +109,20 @@ public class Ingestor {
         }
     }
 
+    public void sendOneCargoToShooter() {
+        // TODO: replace timer with prox/color sensor
+        if (!timerStarted) {
+            timer.start();
+            timerStarted = true;
+        }
+        if (timer.get() < 5) {
+            stage2Conveyor.set(-STAGE_2_SPEED);
+        } else {
+            timer.reset();
+            timerStarted = false;
+        }
+    }
+
     /*
      * public void ingest(){
      * ingestorWheels.set(ControlMode.Velocity, 1000);

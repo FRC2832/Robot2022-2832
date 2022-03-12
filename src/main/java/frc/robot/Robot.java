@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.AutoDrive;
@@ -22,6 +23,7 @@ import frc.robot.commands.AutonOption2;
 import frc.robot.commands.AutonOption3;
 import frc.robot.commands.AutonOption4;
 import frc.robot.commands.AutonOption5;
+import frc.robot.commands.ColorSensor;
 import frc.robot.commands.DriveStick;
 import frc.robot.commands.DriveStickSlew;
 import frc.robot.commands.ManualShoot;
@@ -41,6 +43,7 @@ public class Robot extends TimedRobot {
     private boolean ranAuton = false;
     private Drivetrain drive;
     private XboxController controller;
+    private ColorSensor colorSensor = new ColorSensor();
 
     private boolean lastEnabled = false;
     private AutonOption5 autonOption5;
@@ -80,7 +83,7 @@ public class Robot extends TimedRobot {
         vers.printVersions();
 
         ShooterConstants.LoadConstants();
-        shooter = new Shooter(pi, driverController, operatorController);
+        shooter = new Shooter(pi, driverController, operatorController, colorSensor, ingestor);
 
         climber = new Climber();
 
@@ -169,6 +172,8 @@ public class Robot extends TimedRobot {
         //SmartDashboard.putNumber("XPosition", odometry.getXPosition());
         //SmartDashboard.putNumber("YPosition", odometry.getYPosition());
 
+        pi.processCargo();
+        pi.processTargets();
         // automatically turn on/off recording
         if (lastEnabled != isEnabled()) {
             // we know the enabled status changed

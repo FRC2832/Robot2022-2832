@@ -3,42 +3,61 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.util.Color;
 import com.revrobotics.ColorSensorV3;
+import com.revrobotics.ColorMatch;
+import com.revrobotics.ColorMatchResult;
 
+// borrowed from 6861 code
 public class ColorSensor {
-    private ColorSensorV3 stage2ColorSensor;
-    private Color detectedColor;
-    private String color;
+    private ColorSensorV3 colorSensor;
+    private Color color;
+    private ColorMatch m_colorMatcher = new ColorMatch();
+    private final Color kBlueTarget = new Color(0.171, 0.421, 0.406);
+    private final Color kRedTarget = new Color(0.499, 0.362, 0.138);
+    private final Color kUnknownTarget = new Color(0.269, 0.481, 0.249);
+    private CargoColor colorMatch;
+    // private DigitalInput proxSensor;
+
+    public enum CargoColor {
+        Red,
+        Blue,
+        Unknown
+    }
     
     public ColorSensor(){
         I2C.Port port = I2C.Port.kOnboard; // TODO: Need to verify this.
-        stage2ColorSensor = new ColorSensorV3(port);
-        color = "";
+        colorSensor = new ColorSensorV3(port);
+
+        m_colorMatcher.addColorMatch(kBlueTarget);
+        m_colorMatcher.addColorMatch(kRedTarget);
+        m_colorMatcher.addColorMatch(kUnknownTarget);
+        colorMatch = CargoColor.Unknown;
+        color = Color.kBlack;
+
+        // proxSensor = new DigitalInput(0);
     }
+
+    public CargoColor getColorSensor() {
+        return colorMatch;
+    }
+
+    /*
+    public boolean getProxSensor() {
+        return !proxSensor.get();
+    }
+    */
 
     public void runColorSensor(){
-        detectedColor = stage2ColorSensor.getColor();
-        if(stage2ColorSensor.getProximity() < 1000){ // 0-10 cm range; max .getProximity() value = 2470
-            System.out.println("getProximity() < 1000");
-            
-            if(detectedColor.red > 128.0){
-                System.out.println("Red detected @" + detectedColor.red);
-                color = "red";
-            }
-            else if(detectedColor.blue > 128.0){
-                System.out.println("Blue detected @" + detectedColor.blue);
-                color = "blue";
-            }
-            else{
-                System.out.println("Blue/Red not detected");
-            }
+        color = colorSensor.getColor();
+        ColorMatchResult match = m_colorMatcher.matchClosestColor(color);
+        if (match.color == kBlueTarget) {
+            System.out.println("BLUE");
+            colorMatch = CargoColor.Blue;
+        } else if (match.color == kRedTarget) {
+            System.out.println("RED");
+            colorMatch = CargoColor.Red;
+        } else {
+            System.out.println("UNKNOWN");
+            colorMatch = CargoColor.Unknown;
         }
-        else{
-            System.out.println("getProximity >= 1000");
-        }
-
-    }
-
-    public String getColor(){
-        return color;
     }
 }
