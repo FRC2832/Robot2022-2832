@@ -169,6 +169,8 @@ public class Robot extends TimedRobot {
         //SmartDashboard.putNumber("XPosition", odometry.getXPosition());
         //SmartDashboard.putNumber("YPosition", odometry.getYPosition());
 
+        pi.processCargo();
+        pi.processTargets();
         // automatically turn on/off recording
         if (lastEnabled != isEnabled()) {
             // we know the enabled status changed
