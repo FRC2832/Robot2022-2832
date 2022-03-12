@@ -78,5 +78,6 @@ public class AutoShoot extends CommandBase {
     public void end() {
         controller.setRumble(RumbleType.kLeftRumble, 0.0);
         controller.setRumble(RumbleType.kRightRumble, 0.0);
+        shooter.setDefaultCommand(new NoShoot(shooter));
     }
 }

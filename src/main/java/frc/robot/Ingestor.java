@@ -28,7 +28,7 @@ public class Ingestor {
     // Targetted motor speeds
     private static final double INGESTOR_SPEED = 0.75; //1000.0;
     private static final double STAGE_1_SPEED = 0.75;//1000.0;
-    private static final double STAGE_2_SPEED = 0.75; //1000.0;
+    private static final double STAGE_2_SPEED = 0.85; //1000.0;
     private static final double INGESTOR_LIFT_SPEED = 0.25;
 
     public Ingestor() {
@@ -52,10 +52,10 @@ public class Ingestor {
         
         Color sensorColor = stage2ColorSensor.getColor();
         if (stage2ColorSensor.getBlue() > 128) {
-            System.out.println("getBlue() returned more than 128");
+            // System.out.println("getBlue() returned more than 128");
         }
         if (stage2ColorSensor.getRed() > 128) {
-            System.out.println("getRed() returned more than 128");
+            // System.out.println("getRed() returned more than 128");
         }
         if (sensorColor.blue > 128.0) {
             System.out.println("sensorColor.blue is more than 128.0");
@@ -64,50 +64,28 @@ public class Ingestor {
             System.out.println("sensorColor.red is more than 128.0");
         }
       
-        if(operatorController.getAButton()){
-            ingestorWheels.set(INGESTOR_SPEED);
-            stage1Conveyor.set(-STAGE_1_SPEED);
-        } else if(operatorController.getBButton()){
+        if(operatorController.getRightTriggerAxis() >= TRIGGER_SENSITIVITY){ //ingestor in
             ingestorWheels.set(-INGESTOR_SPEED);
             stage1Conveyor.set(STAGE_1_SPEED);
+        } else if(operatorController.getLeftTriggerAxis() >= TRIGGER_SENSITIVITY){ //ingestor out
+            ingestorWheels.set(INGESTOR_SPEED);
+            stage1Conveyor.set(-STAGE_1_SPEED);
         } else {
             ingestorWheels.set(0);
             stage1Conveyor.set(0);
         }
 
-        // if (operatorController.getLeftBumper()) { // ingest ball
-        //     //ingestorWheels.set(ControlMode.Velocity, INGESTOR_SPEED);
-        //     ingestorWheels.set(INGESTOR_SPEED);
-        // } else if (operatorController.getRightBumper()) { // expell ball
-        //     //ingestorWheels.set(ControlMode.Velocity, -INGESTOR_SPEED);
-        //     ingestorWheels.set(-INGESTOR_SPEED);
-        // } else {
-        //     //ingestorWheels.set(ControlMode.Velocity, 0.0);
-        //     ingestorWheels.set(0.0);
-        // }
-        // if (operatorController.getAButton()) { // push ball to stage 2
-        //     stage1Conveyor.set(STAGE_1_SPEED);
-        //     //stage1Conveyor.set(ControlMode.Velocity, STAGE_1_SPEED);
-        // } else if (operatorController.getBButton()) { // push ball to ingestor
-        //     stage1Conveyor.set(-STAGE_1_SPEED);
-        //     //stage1Conveyor.set(ControlMode.Velocity, -STAGE_1_SPEED);
-        // } else {
-        //     //stage1Conveyor.set(ControlMode.Velocity, 0.0);
-        //     stage1Conveyor.set(0.0);
-        // }
         if (operatorController.getXButton()) { // push ball to shooter
             stage2Conveyor.set(STAGE_2_SPEED);
-            //stage2Conveyor.set(ControlMode.Velocity, STAGE_2_SPEED);
         } else if (operatorController.getYButton()) { // push ball to stage 1
             stage2Conveyor.set(-STAGE_2_SPEED);
-            //stage2Conveyor.set(ControlMode.Velocity, -STAGE_2_SPEED);
         } else {
-            //stage2Conveyor.set(ControlMode.Velocity, 0.0);
             stage2Conveyor.set(0.0);
         }
-        if (operatorController.getLeftTriggerAxis() >= TRIGGER_SENSITIVITY) { // lift ingestor
+
+        if (operatorController.getBButton()) { // lift ingestor
             ingestorLift.set(INGESTOR_LIFT_SPEED);
-        } else if (operatorController.getRightTriggerAxis() >= TRIGGER_SENSITIVITY) { // lower ingestor
+        } else if (operatorController.getAButton()) { // lower ingestor
             ingestorLift.set(-INGESTOR_LIFT_SPEED);
         } else {
             ingestorLift.set(0.0);
@@ -120,12 +98,20 @@ public class Ingestor {
             timer.start();
             timerStarted = true;
         }
-        if (timer.get() < 5) {
+        if (timer.get() < 1) {
             stage2Conveyor.set(-STAGE_2_SPEED);
+        } else if(timer.get() < 5) {
+            stage2Conveyor.set(-STAGE_2_SPEED);
+            stage1Conveyor.set(STAGE_1_SPEED);
         } else {
             timer.reset();
             timerStarted = false;
         }
+    }
+
+    public void liftIngestor() {
+        ingestorLift.set(INGESTOR_LIFT_SPEED);
+        // TODO: stop when ingestor is all the way up
     }
 
     /*
