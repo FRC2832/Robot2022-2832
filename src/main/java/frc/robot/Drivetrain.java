@@ -372,6 +372,7 @@ public class Drivetrain extends SubsystemBase {
 
         if (step == currentStep) {
             if (Math.abs(xCurrentPos - xDesPosition) > .1 || Math.abs(yCurrentPos - yDesPosition) > .1 || Math.abs(rotCurrentPos - desRotation) > .1) {
+                System.out.println("rotCurrent:" + rotCurrentPos + "\n rotDes:" + desRotation);
                 drive(xSpeed, ySpeed, rotSpeed, true);
             } else {
                 xSpeed = 0;

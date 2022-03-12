@@ -25,6 +25,7 @@ import frc.robot.commands.AutonOption2;
 import frc.robot.commands.AutonOption3;
 import frc.robot.commands.AutonOption4;
 import frc.robot.commands.AutonOption5;
+import frc.robot.commands.AutonThreeBall;
 import frc.robot.commands.DriveStick;
 import frc.robot.commands.DriveStickSlew;
 import frc.robot.commands.HomeHood;
@@ -132,7 +133,7 @@ public class Robot extends TimedRobot {
         System.out.println("Auton Selected: " + m_selectedAuton);
 
         //CommandScheduler.getInstance().schedule(new HomeHood(shooter));
-        CommandScheduler.getInstance().schedule(new AutonOption2(swerve));
+        CommandScheduler.getInstance().schedule(new AutonThreeBall(swerve));
         Pose2d pos = swerve.odometry.getPoseMeters();
         ranAuton = true;
     }

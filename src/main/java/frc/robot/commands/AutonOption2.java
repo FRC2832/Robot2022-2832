@@ -21,8 +21,10 @@ public class AutonOption2 extends CommandBase {
     }
 
     public void execute() {
+        System.out.println("it is executing \n" + drive.currentStep);
+
         drive.setPosition(5.06, 5.96, Math.toRadians(135), 1, 1); // to blueBalls[0]
-        // ingest
+        // ingest- CommandScheduler.getInstance().schedule(new Ingestor());?
         
         // shoot - CommandScheduler.getInstance().schedule(new AutoShoot());?
         drive.setPosition(5.99, 6.95, Math.toRadians(50), 1, 2); // to redBalls[7]

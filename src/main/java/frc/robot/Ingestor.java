@@ -46,7 +46,7 @@ public class Ingestor extends SubsystemBase{
         timer = new Timer();
         Port port = Port.kOnboard; // TODO: Need to verify this.
         stage2ColorSensor = new ColorSensorV3(port);
-        stage1ProxSensor = new DigitalInput(0);
+        //stage1ProxSensor = new DigitalInput(0);
     }
 
     public void runIngestor() {
