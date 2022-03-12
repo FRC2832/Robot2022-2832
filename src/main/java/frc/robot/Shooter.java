@@ -95,7 +95,7 @@ public class Shooter extends SubsystemBase {
         }
         else{
             // call Autoshoot (TODO)
-            // print "AUTOSHOOTING!!!"
+            System.out.println("AUTOSHOOTING!!!");
         }
         
         
