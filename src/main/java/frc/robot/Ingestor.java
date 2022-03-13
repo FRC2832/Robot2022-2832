@@ -26,9 +26,9 @@ public class Ingestor {
     private boolean timerStarted = false;
 
     // Targetted motor speeds
-    private static final double INGESTOR_SPEED = 0.75; //1000.0;
+    private static final double INGESTOR_SPEED = 0.38; //1000.0;
     private static final double STAGE_1_SPEED = 0.75;//1000.0;
-    private static final double STAGE_2_SPEED = 0.75; //1000.0;
+    private static final double STAGE_2_SPEED = 0.85; //1000.0;
     private static final double INGESTOR_LIFT_SPEED = 0.25;
 
     public Ingestor() {
@@ -45,25 +45,6 @@ public class Ingestor {
     }
 
     public void runIngestor() {
-        // color sensor conditions
-        if(stage2ColorSensor.getProximity() > 1000){
-            System.out.println("getProximity() > 1000");
-        }
-        
-        Color sensorColor = stage2ColorSensor.getColor();
-        if (stage2ColorSensor.getBlue() > 128) {
-            System.out.println("getBlue() returned more than 128");
-        }
-        if (stage2ColorSensor.getRed() > 128) {
-            System.out.println("getRed() returned more than 128");
-        }
-        if (sensorColor.blue > 128.0) {
-            System.out.println("sensorColor.blue is more than 128.0");
-        }
-        if (sensorColor.red > 128.0) {
-            System.out.println("sensorColor.red is more than 128.0");
-        }
-      
         if(operatorController.getAButton()){
             ingestorWheels.set(INGESTOR_SPEED);
             stage1Conveyor.set(-STAGE_1_SPEED);
@@ -115,6 +96,20 @@ public class Ingestor {
     }
 
     public void sendCargoToShooter() {
+        // TODO: replace timer with prox/color sensor
+        if (!timerStarted) {
+            timer.start();
+            timerStarted = true;
+        }
+        if (timer.get() < 5) {
+            stage2Conveyor.set(-STAGE_2_SPEED);
+        } else {
+            timer.reset();
+            timerStarted = false;
+        }
+    }
+
+    public void sendOneCargoToShooter() {
         // TODO: replace timer with prox/color sensor
         if (!timerStarted) {
             timer.start();
