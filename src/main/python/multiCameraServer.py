@@ -258,9 +258,9 @@ class TargetPipeline:
         """initializes all values to presets or None if need to be set
         """
 
-        self.__hsv_threshold_hue = [33.99280575539568, 98.60068259385666]
-        self.__hsv_threshold_saturation = [71.08812949640287, 255.0]
-        self.__hsv_threshold_value = [64.20863309352518, 255.0]
+        self.__hsv_threshold_hue = [51.79856115107913, 86.31399317406144]
+        self.__hsv_threshold_saturation = [155.93525179856115, 255.0]
+        self.__hsv_threshold_value = [73.38129496402877, 255.0]
 
         self.hsv_threshold_output = None
 
@@ -270,7 +270,7 @@ class TargetPipeline:
         self.find_contours_output = None
 
         self.__filter_contours_contours = self.find_contours_output
-        self.__filter_contours_min_area = 50.0
+        self.__filter_contours_min_area = 35.0
         self.__filter_contours_min_perimeter = 0.0
         self.__filter_contours_min_width = 0.0
         self.__filter_contours_max_width = 1000.0
@@ -621,6 +621,7 @@ class findTarget (threading.Thread):
             else:
                 ret = None
             if ret:
+                cv2.rectangle(img,(0,0),(190,80),(0,0,0),-1) # draws a black box over the webcam reflection
                 target_proc.process(img)
                 extra_target_processing(target_proc)
 

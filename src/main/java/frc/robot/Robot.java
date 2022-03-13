@@ -5,16 +5,18 @@
 package frc.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+
+import frc.robot.SwerveConstants;
+import frc.robot.SwerveModule;
 import frc.robot.commands.AutoDrive;
 import frc.robot.commands.AutoShoot;
 import frc.robot.commands.AutonOption0;
@@ -27,11 +29,12 @@ import frc.robot.commands.ColorSensor;
 import frc.robot.commands.AutonThreeBall;
 import frc.robot.commands.DriveStick;
 import frc.robot.commands.DriveStickSlew;
+import frc.robot.commands.HomeHood;
 import frc.robot.commands.ManualShoot;
-import frc.robot.commands.NoShoot;
 import frc.robot.commands.ResetOrientation;
-import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.*;
+import frc.robot.commands.RunClimber;
+import frc.robot.commands.SafeZoneShoot;
+import frc.robot.commands.ShooterOff;
 
 public class Robot extends TimedRobot {
     private final XboxController driverController = new XboxController(0);
@@ -42,9 +45,6 @@ public class Robot extends TimedRobot {
     private Shooter shooter;
     private Climber climber;
     private boolean ranAuton = false;
-    private Drivetrain drive;
-    private XboxController controller;
-    private ColorSensor colorSensor = new ColorSensor();
 
     private boolean lastEnabled = false;
     private AutonOption5 autonOption5;
@@ -84,20 +84,23 @@ public class Robot extends TimedRobot {
         vers.printVersions();
 
         ShooterConstants.LoadConstants();
-        shooter = new Shooter(pi, driverController, operatorController, colorSensor, ingestor);
+        shooter = new Shooter(pi, driverController, operatorController);
 
         climber = new Climber();
 
         CommandScheduler.getInstance().registerSubsystem(swerve);
         swerve.setDefaultCommand(new DriveStickSlew(swerve, driverController));
-        shooter.setDefaultCommand(new NoShoot(shooter));
+        shooter.setDefaultCommand(new ShooterOff(shooter));
+        climber.setDefaultCommand(new RunClimber(climber, ingestor, operatorController));
 
         JoystickButton selectButton = new JoystickButton(operatorController, 7); // 7 = select button
-        selectButton.whileActiveContinuous(new ManualShoot(shooter, ingestor, 2300.0));
+        selectButton.whileActiveContinuous(new ManualShoot(shooter, ingestor));
 
-        JoystickButton startButton = new JoystickButton(operatorController, 8); // 8 = start
-        // button
-        startButton.whileActiveContinuous(new AutoShoot(swerve, shooter, ingestor, pi, driverController));
+        JoystickButton startButton = new JoystickButton(operatorController, 8); // 8 = start button
+        startButton.whileActiveContinuous(new AutoShoot(swerve, shooter, pi, operatorController));
+
+        JoystickButton leftBumper = new JoystickButton(operatorController, 5);
+        leftBumper.whileActiveContinuous(new SafeZoneShoot(shooter, ingestor));
 
         // this.setNetworkTablesFlushEnabled(true); //turn off 20ms Dashboard update
         // rate
@@ -162,7 +165,6 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopPeriodic() {
         ingestor.runIngestor();
-        climber.runClimber();
     }
 
     @Override

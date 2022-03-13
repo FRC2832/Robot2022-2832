@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.*;
 
 public class AutoShoot extends CommandBase {
@@ -11,14 +12,12 @@ public class AutoShoot extends CommandBase {
     private Shooter shooter;
     private Pi pi;
     private XboxController controller;
-    private Ingestor ingestor;
 
-    public AutoShoot(Drivetrain drive, Shooter shooter, Ingestor ingestor, Pi pi, XboxController controller) {
+    public AutoShoot(Drivetrain drive, Shooter shooter, Pi pi, XboxController controller) {
         this.drive = drive;
         this.shooter = shooter;
         this.pi = pi;
         this.controller = controller;
-        this.ingestor = ingestor;
 
         addRequirements(drive);
         addRequirements(shooter);
@@ -30,10 +29,11 @@ public class AutoShoot extends CommandBase {
 
         // check hood angle is more than 3* off
         // shooter.setHoodAngle(shooter.getTargetHoodAngle());
-        if (!shooter.isHoodHomed() || Math.abs(shooter.getHoodAngle() - shooter.getTargetHoodAngle()) > 3) {
+        if (Math.abs(shooter.getHoodAngle() - shooter.getTargetHoodAngle()) > 3) {
             // TODO: turned off hood since it's broke
-            error = String.join(error, "Hood ");
+            // error = String.join(error, "Hood ");
         }
+
         // check shot speed is within 30 RPM
         shooter.setShooterRpm(shooter.getTargetRpm());
         if (Math.abs(shooter.getShooterVelocity() - shooter.getTargetRpm()) > 30) {
@@ -41,28 +41,9 @@ public class AutoShoot extends CommandBase {
         }
 
         // check if PI saw target
-        /*
-        for(Number n:pi.getTargetCenterXArray()){
-            System.out.print((double)(n) + " "); // TODO: Why are array vals just zero?
-        }
-        */
-        
-        System.out.println("getTargetArea(): " + pi.getTargetArea());
-        System.out.println("getTargetHeight(): " + pi.getTargetHeight());
-        System.out.println("getTargetWidth(): " + pi.getTargetWidth());
-        System.out.println("getTargetCenterX(): " + pi.getTargetCenterX());
-        System.out.println("getTargetCenterY(): " + pi.getTargetCenterY());
-        System.out.println("getTargetXVal(): " + pi.getTargetXVal());
-        
-        System.out.println();
-        System.out.println("getCenterX(): " + pi.getCenterX());
-
-
         if (pi.getCenterX() > 0) {
             controller.setRumble(RumbleType.kLeftRumble, 0.0);
             controller.setRumble(RumbleType.kRightRumble, 0.0);
-            System.out.println("No rumble");
-
             if (Pi.getTargetMoveLeft()) {
                 error = String.join(error, "TurnL ");
                 // left is positive turn
@@ -78,8 +59,6 @@ public class AutoShoot extends CommandBase {
             // pi is not seeing hub
             controller.setRumble(RumbleType.kLeftRumble, 1.0);
             controller.setRumble(RumbleType.kRightRumble, 1.0);
-            System.out.println("Rumble");
-            
             error = String.join(error, "Vision ");
             drive.drive(0, 0, 0, false);
         }
@@ -91,7 +70,7 @@ public class AutoShoot extends CommandBase {
         }
 
         if (error.length() == 0) {
-            ingestor.sendCargoToShooter();
+            // TODO: SHOOT!!!
             error = "SHOOT!!!";
         }
         SmartDashboard.putString("Auto Shoot Error", error);
@@ -100,5 +79,6 @@ public class AutoShoot extends CommandBase {
     public void end() {
         controller.setRumble(RumbleType.kLeftRumble, 0.0);
         controller.setRumble(RumbleType.kRightRumble, 0.0);
+        Shooter.setCoast(true);
     }
 }
