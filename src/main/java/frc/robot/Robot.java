@@ -29,8 +29,10 @@ import frc.robot.commands.DriveStick;
 import frc.robot.commands.DriveStickSlew;
 import frc.robot.commands.HomeHood;
 import frc.robot.commands.ManualShoot;
-import frc.robot.commands.NoShoot;
 import frc.robot.commands.ResetOrientation;
+import frc.robot.commands.RunClimber;
+import frc.robot.commands.SafeZoneShoot;
+import frc.robot.commands.ShooterOff;
 
 public class Robot extends TimedRobot {
     private final XboxController driverController = new XboxController(0);
@@ -86,14 +88,17 @@ public class Robot extends TimedRobot {
 
         CommandScheduler.getInstance().registerSubsystem(swerve);
         swerve.setDefaultCommand(new DriveStickSlew(swerve, driverController));
-        shooter.setDefaultCommand(new NoShoot(shooter));
+        shooter.setDefaultCommand(new ShooterOff(shooter));
+        climber.setDefaultCommand(new RunClimber(climber, ingestor, operatorController));
 
         JoystickButton selectButton = new JoystickButton(operatorController, 7); // 7 = select button
-        selectButton.whileActiveContinuous(new ManualShoot(shooter, ingestor, 2300.0));
+        selectButton.whileActiveContinuous(new ManualShoot(shooter, ingestor));
 
-        JoystickButton startButton = new JoystickButton(operatorController, 8); // 8 = start
-        // button
-        startButton.whileActiveContinuous(new AutoShoot(swerve, shooter, pi, driverController));
+        JoystickButton startButton = new JoystickButton(operatorController, 8); // 8 = start button
+        startButton.whileActiveContinuous(new AutoShoot(swerve, shooter, pi, operatorController));
+
+        JoystickButton leftBumper = new JoystickButton(operatorController, 5);
+        leftBumper.whileActiveContinuous(new SafeZoneShoot(shooter, ingestor));
 
         // this.setNetworkTablesFlushEnabled(true); //turn off 20ms Dashboard update
         // rate
@@ -158,7 +163,6 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopPeriodic() {
         ingestor.runIngestor();
-        climber.runClimber();
     }
 
     @Override

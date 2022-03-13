@@ -23,6 +23,7 @@ public class Shooter extends SubsystemBase {
     private double targetRpm;
     private XboxController driveController;
     private XboxController operatorController;
+    private static boolean coastMotor = false;
 
     // TODO: write home hood method
     // Distance to Target
@@ -140,5 +141,13 @@ public class Shooter extends SubsystemBase {
 
     public double getShotDist() {
         return distance;
+    }
+
+    public static void setCoast(boolean coast) {
+        coastMotor = coast;
+    }
+
+    public static boolean getCoast() {
+        return coastMotor;
     }
 }
