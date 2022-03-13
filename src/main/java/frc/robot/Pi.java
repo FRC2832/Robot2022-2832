@@ -25,15 +25,16 @@ public class Pi {
     private Number[] targetWidthArray;
     private Number[] targetHeightArray;
     private Number[] targetAreaArray;
-    private final double CAM_X_RES = 640;
-    private final double CAM_Y_RES = 480;
-    public final double TARGET_CENTER_X = 320;
+    private final double CAM_X_RES = 640.0;
+    private final double CAM_Y_RES = 480.0;
+    public final double TARGET_CENTER_X = 320.0;
     private static boolean targetMoveRight;
     private static boolean targetMoveLeft;
     private static boolean cargoMoveRight;
     private static boolean cargoMoveLeft;
     private double centerYOutput;
     private double centerXOutput;
+    private int index;
 
     public Pi() {
         netTableInstance = NetworkTableInstance.getDefault();
@@ -47,6 +48,8 @@ public class Pi {
         targetHeight = table.getEntry("targetHeight");
         targetArea = table.getEntry("targetArea");
         centerYOutput = -1;
+        targetCenterXArray = new Number[0];
+        
     }
 
     // sends alliance color to the python code so it knows what color cargo to look for
@@ -111,7 +114,7 @@ public class Pi {
         }
 
         // pick a target just right of center so the cargo hopefully doesn't bounce out
-        int index = 0;
+        index = 0;
         if (size <= 1) {
             index = 0; 
         } else {
@@ -211,5 +214,37 @@ public class Pi {
 
     public double getCenterX() {
         return centerXOutput;
+    }
+
+    public double getTargetXVal(){
+        return (double) targetCenterXArray[index];
+    }
+
+    public NetworkTableEntry getTargetArea() {
+        return targetArea;
+    }
+
+    public NetworkTableEntry getTargetHeight() {
+        return targetHeight;
+    }
+
+    public NetworkTableEntry getTargetWidth() {
+        return targetWidth;
+    }
+
+    public NetworkTableEntry getTargetCenterX() {
+        return targetCenterX;
+    }
+
+    public NetworkTableEntry getTargetCenterY() {
+        return targetCenterY;
+    }
+
+    public Number[] getTargetCenterXArray(){
+        return targetCenterXArray;
+    }
+
+    public NetworkTableEntry getAllianceColor(){
+        return allianceColor;
     }
 }
