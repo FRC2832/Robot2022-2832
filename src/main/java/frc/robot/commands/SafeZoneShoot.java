@@ -2,6 +2,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Ingestor;
 import frc.robot.Shooter;
 
@@ -32,6 +33,6 @@ public class SafeZoneShoot extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-        shooter.setDefaultCommand(new NoShoot(shooter));
+        Shooter.setCoast(true);
     }
 }

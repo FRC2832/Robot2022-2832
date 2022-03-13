@@ -114,17 +114,4 @@ public class Ingestor {
         // TODO: stop when ingestor is all the way up
     }
 
-    /*
-     * public void ingest(){
-     * ingestorWheels.set(ControlMode.Velocity, 1000);
-     * }
-     * 
-     * public void expel(){
-     * ingestorWheels.set(ControlMode.Velocity, -1000);
-     * }
-     * 
-     * public void stage1(){
-     * 
-     * }
-     */
 }

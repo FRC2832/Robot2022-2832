@@ -13,6 +13,10 @@ public class ShooterOff extends CommandBase{
     
     @Override
     public void execute() {
-        shooter.setShootPct(0);
+        if(Shooter.getCoast()) {
+            shooter.setShooterRpm(1000);
+        } else {
+            shooter.setShooterRpm(0);
+        }
     }
 }

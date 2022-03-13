@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.*;
 
 public class AutoShoot extends CommandBase {
@@ -78,6 +79,6 @@ public class AutoShoot extends CommandBase {
     public void end() {
         controller.setRumble(RumbleType.kLeftRumble, 0.0);
         controller.setRumble(RumbleType.kRightRumble, 0.0);
-        shooter.setDefaultCommand(new NoShoot(shooter));
+        Shooter.setCoast(true);
     }
 }
