@@ -5,6 +5,7 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.TalonSRXConfiguration;
 
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -16,6 +17,7 @@ public class Shooter extends SubsystemBase {
     private TalonFX shooterFx;
     private TalonSRX hoodMotor;
     private boolean isHomed; // report if hood has been homed
+    private boolean lastHomed;
     private double hoodSensorOffset;
     private Pi pi;
     private double distance;
@@ -24,6 +26,10 @@ public class Shooter extends SubsystemBase {
     private XboxController driveController;
     private XboxController operatorController;
     private static boolean coastMotor = false;
+    final int HOOD_SENSOR_ACTIVE = 700;
+    final int MAX_ANGLE_COUNTS = 400;
+    final int MIN_ANGLE = 20;
+    final int MAX_ANGLE = 70;
 
     // TODO: write home hood method
     // Distance to Target
@@ -37,7 +43,7 @@ public class Shooter extends SubsystemBase {
         this.operatorController = operatorController;
         isHomed = false;
         hoodMotor = new TalonSRX(26);
-        //hoodMotor.setNeutralMode(NeutralMode.Brake);
+        hoodMotor.setNeutralMode(NeutralMode.Brake);
 
         shooterFx = new TalonFX(Configuration.GetShooterId());
         shooterFx.setNeutralMode(NeutralMode.Coast);
@@ -54,6 +60,16 @@ public class Shooter extends SubsystemBase {
         config.slot0.integralZone = 65;
         config.closedloopRamp = 0.1; // take 100ms to ramp to max power
         shooterFx.configAllSettings(config); // apply the config settings; this selects the quadrature encoder
+
+        TalonSRXConfiguration hoodConfig = new TalonSRXConfiguration();
+        hoodMotor.getAllConfigs(hoodConfig);
+        hoodConfig.slot0.kP = 9;
+        hoodConfig.slot0.kI = 0.1;
+        hoodConfig.slot0.kD = 90;
+        hoodConfig.slot0.integralZone = 30;
+        hoodConfig.slot0.allowableClosedloopError = 2;
+        hoodConfig.slot0.closedLoopPeakOutput = 0.5;
+        hoodMotor.configAllSettings(hoodConfig);
     }
 
     @Override
@@ -64,10 +80,12 @@ public class Shooter extends SubsystemBase {
         SmartDashboard.putNumber("Calc RPM", getTargetRpm());
         SmartDashboard.putNumber("Calc Hood Angle", getTargetHoodAngle());
         // if the limit switch is pressed, reset the hood angle position
-        if (hoodMotor.isRevLimitSwitchClosed() > 0) {
+        //when we exit the home position, save the zero position
+        if (lastHomed == true && !hoodBottom()){
             hoodMotor.setSelectedSensorPosition(0);
             isHomed = true;
         }
+        lastHomed = hoodBottom();
         if (!operatorController.getStartButton()) {
             if (driveController.getLeftBumper()) {
                 hoodMotor.set(ControlMode.PercentOutput, 0.25);
@@ -106,20 +124,36 @@ public class Shooter extends SubsystemBase {
     }
 
     public double getHoodAngle() {
-        // TODO: add angle scale factor and zeroing
-        // return hoodMotor.getSelectedSensorPosition();
-        return 0.0;
+        double sensor = hoodMotor.getSelectedSensorPosition();
+        return (sensor/MAX_ANGLE_COUNTS)*(MAX_ANGLE-MIN_ANGLE) + MIN_ANGLE;
     }
 
     public void setHoodSpeedPct(double pct) {
         // allow control if homed or only down if not homed
-        if (isHomed || pct < 0) {
+        if(hoodBottom()) {
+            if(pct > 0.1) {
+                //if driving down, stop at home
+                hoodMotor.set(ControlMode.PercentOutput, 0);
+            } else {
+                //slowly drive out to get accurate home
+                hoodMotor.set(ControlMode.PercentOutput, 0.18);
+            }
+        }
+        else if(hoodMotor.getSelectedSensorPosition() > MAX_ANGLE_COUNTS && pct > 0){
+            hoodMotor.set(ControlMode.PercentOutput, 0);
+        }
+        else {
             hoodMotor.set(ControlMode.PercentOutput, pct);
         }
     }
 
+    public boolean hoodBottom() {
+        return hoodMotor.getSensorCollection().getAnalogInRaw() > HOOD_SENSOR_ACTIVE;
+    }
+
     public void setHoodAngle(double position) {
-        // TODO: set hood angle
+        double value = (position-MIN_ANGLE) * MAX_ANGLE_COUNTS/ (MAX_ANGLE-MIN_ANGLE);
+        hoodMotor.set(ControlMode.Position, value);
     }
 
     public void calcShot() {

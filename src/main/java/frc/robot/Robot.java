@@ -95,7 +95,7 @@ public class Robot extends TimedRobot {
         selectButton.whileActiveContinuous(new ManualShoot(shooter, ingestor));
 
         JoystickButton startButton = new JoystickButton(operatorController, 8); // 8 = start button
-        startButton.whileActiveContinuous(new AutoShoot(swerve, shooter, pi, operatorController));
+        startButton.whileActiveContinuous(new AutoShoot(swerve, shooter, pi, operatorController, ingestor));
 
         JoystickButton leftBumper = new JoystickButton(operatorController, 5);
         leftBumper.whileActiveContinuous(new SafeZoneShoot(shooter, ingestor));
@@ -128,6 +128,7 @@ public class Robot extends TimedRobot {
         swerve.resetRobot();
         driverController.setRumble(RumbleType.kLeftRumble, 0.0);
         driverController.setRumble(RumbleType.kRightRumble, 0.0);
+        Shooter.setCoast(false);
     }
 
     @Override
@@ -156,7 +157,7 @@ public class Robot extends TimedRobot {
     public void teleopInit() {
         CommandScheduler.getInstance().cancelAll();
         if (!ranAuton) {
-            //CommandScheduler.getInstance().schedule(new HomeHood(shooter));
+            // CommandScheduler.getInstance().schedule(new HomeHood(shooter));
         }
     }
 
