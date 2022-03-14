@@ -119,6 +119,14 @@ public class Ingestor extends SubsystemBase{
         // TODO: stop when ingestor is all the way up
     }
 
+    public void lowerIngestor(double multiplier) {
+        ingestorLift.set(-INGESTOR_LIFT_SPEED * multiplier);
+    }
+
+    public void threeBallAutonIngest() {
+        stage1Conveyor.set(ControlMode.PercentOutput, STAGE_1_SPEED);
+        ingestorWheels.set(ControlMode.PercentOutput, -INGESTOR_SPEED);
+    }
 
     public boolean getStage1Proximity(){
         return stage1ProxSensor.get();
@@ -131,6 +139,11 @@ public class Ingestor extends SubsystemBase{
     public WPI_TalonSRX getStage1Conveyor(){
         return stage1Conveyor;
     }
+
+    public WPI_TalonSRX getStage2Conveyor() {
+        return stage2Conveyor;
+    }
+
     /*
      * public void ingest(){
      * ingestorWheels.set(ControlMode.Velocity, 1000);
