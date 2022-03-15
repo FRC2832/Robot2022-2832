@@ -114,6 +114,22 @@ public class Ingestor extends SubsystemBase{
         }
     }
 
+    public boolean sendOneCargoToShooter() {
+        // TODO: replace timer with prox/color sensor
+        if (!timerStarted) {
+            timer.start();
+            timerStarted = true;
+        }
+        if (timer.get() < 3) {
+            stage2Conveyor.set(-STAGE_2_SPEED);
+        } else {
+            timer.reset();
+            timerStarted = false;
+            return true;
+        }
+        return false;
+    }
+
     public void liftIngestor() {
         ingestorLift.set(INGESTOR_LIFT_SPEED);
         // TODO: stop when ingestor is all the way up
