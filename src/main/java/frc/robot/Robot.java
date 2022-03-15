@@ -5,10 +5,9 @@
 package frc.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.GenericHID.RumbleType;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -19,6 +18,7 @@ import edu.wpi.first.wpilibj.util.Color;
 import frc.robot.SwerveConstants;
 import frc.robot.SwerveModule;
 import frc.robot.ColorSensor;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.AutoDrive;
 import frc.robot.commands.AutoShoot;
 import frc.robot.commands.AutonOption0;
@@ -27,9 +27,9 @@ import frc.robot.commands.AutonOption2;
 import frc.robot.commands.AutonOption3;
 import frc.robot.commands.AutonOption4;
 import frc.robot.commands.AutonOption5;
+import frc.robot.commands.AutonThreeBall;
 import frc.robot.commands.DriveStick;
 import frc.robot.commands.DriveStickSlew;
-import frc.robot.commands.HomeHood;
 import frc.robot.commands.ManualShoot;
 import frc.robot.commands.ResetOrientation;
 import frc.robot.commands.RunClimber;
@@ -140,7 +140,7 @@ public class Robot extends TimedRobot {
         System.out.println("Auton Selected: " + m_selectedAuton);
 
         //CommandScheduler.getInstance().schedule(new HomeHood(shooter));
-        CommandScheduler.getInstance().schedule(new AutonOption2(swerve));
+        CommandScheduler.getInstance().schedule(new AutonThreeBall(swerve, shooter, ingestor));
         Pose2d pos = swerve.odometry.getPoseMeters();
         ranAuton = true;
     }

@@ -6,12 +6,15 @@ import com.revrobotics.CANSparkMax;
 // import com.revrobotics.CANSparkMaxLowLevel;
 // import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.I2C.Port;
 import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
 import com.revrobotics.ColorSensorV3;
 
-public class Ingestor {
+public class Ingestor extends SubsystemBase{
     private WPI_TalonSRX ingestorWheels;
     private ColorSensorV3 stage2ColorSensor;
     //private WPI_TalonSRX ingestorGate;
@@ -24,7 +27,7 @@ public class Ingestor {
     private static final double TRIGGER_SENSITIVITY = 0.5;
     private Timer timer;
     private boolean timerStarted = false;
-
+    private DigitalInput stage1ProxSensor;
     // Targetted motor speeds
     private static final double INGESTOR_SPEED = 0.75; //1000.0;
     private static final double STAGE_1_SPEED = 0.75;//1000.0;
@@ -42,6 +45,8 @@ public class Ingestor {
         timer = new Timer();
         Port port = Port.kOnboard; // TODO: Need to verify this.
         stage2ColorSensor = new ColorSensorV3(port);
+        //stage1ProxSensor = new DigitalInput(0);
+        
     }
 
     public void runIngestor() {
@@ -130,4 +135,45 @@ public class Ingestor {
         // TODO: stop when ingestor is all the way up
     }
 
+    public void lowerIngestor(double multiplier) {
+        ingestorLift.set(-INGESTOR_LIFT_SPEED * multiplier);
+    }
+
+    public void threeBallAutonIngest() {
+        stage1Conveyor.set(ControlMode.PercentOutput, STAGE_1_SPEED);
+        ingestorWheels.set(ControlMode.PercentOutput, -INGESTOR_SPEED);
+    }
+
+    public boolean getStage1Proximity(){
+        return stage1ProxSensor.get();
+    } 
+
+    public int getStage2Proximity(){
+        return stage2ColorSensor.getProximity();
+    }
+    public WPI_TalonSRX getIngestorWheels(){
+        return ingestorWheels;
+    }
+
+    public WPI_TalonSRX getStage1Conveyor(){
+        return stage1Conveyor;
+    }
+
+    public WPI_TalonSRX getStage2Conveyor() {
+        return stage2Conveyor;
+    }
+
+    /*
+     * public void ingest(){
+     * ingestorWheels.set(ControlMode.Velocity, 1000);
+     * }
+     * 
+     * public void expel(){
+     * ingestorWheels.set(ControlMode.Velocity, -1000);
+     * }
+     * 
+     * public void stage1(){
+     * 
+     * }
+     */
 }

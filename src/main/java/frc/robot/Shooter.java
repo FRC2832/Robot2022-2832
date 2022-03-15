@@ -49,7 +49,7 @@ public class Shooter extends SubsystemBase {
         currentCargoColor = "none";
         isHomed = false;
         hoodMotor = new TalonSRX(26);
-        //hoodMotor.setNeutralMode(NeutralMode.Brake);
+        hoodMotor.setNeutralMode(NeutralMode.Brake);
 
         shooterFx = new TalonFX(Configuration.GetShooterId());
         shooterFx.setNeutralMode(NeutralMode.Coast);
