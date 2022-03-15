@@ -31,6 +31,7 @@ import frc.robot.commands.HomeHood;
 import frc.robot.commands.ManualShoot;
 import frc.robot.commands.ResetOrientation;
 import frc.robot.commands.RunClimber;
+import frc.robot.commands.RunIngestor;
 import frc.robot.commands.SafeZoneShoot;
 import frc.robot.commands.ShooterOff;
 
@@ -90,6 +91,7 @@ public class Robot extends TimedRobot {
         swerve.setDefaultCommand(new DriveStickSlew(swerve, driverController));
         shooter.setDefaultCommand(new ShooterOff(shooter));
         climber.setDefaultCommand(new RunClimber(climber, ingestor, operatorController));
+        ingestor.setDefaultCommand(new RunIngestor(ingestor, operatorController));
 
         JoystickButton selectButton = new JoystickButton(operatorController, 7); // 7 = select button
         selectButton.whileActiveContinuous(new ManualShoot(shooter, ingestor));
@@ -162,7 +164,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopPeriodic() {
-        ingestor.runIngestor();
+
     }
 
     @Override
