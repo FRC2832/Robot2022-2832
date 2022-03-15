@@ -9,10 +9,15 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.I2C.Port;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import com.revrobotics.ColorSensorV3;
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.Counter;
+
+//import edu.wpi.first.wpilibj.DigitalOutput;
 
 public class Ingestor extends SubsystemBase{
     private WPI_TalonSRX ingestorWheels;
@@ -28,6 +33,10 @@ public class Ingestor extends SubsystemBase{
     private Timer timer;
     private boolean timerStarted = false;
     private DigitalInput stage1ProxSensor;
+    private Counter counter;
+    private int totalBalls;
+    private boolean ballAtColorSensor;
+    //private SmartDashboard smartDashboard;
 
     // Targetted motor speeds
     private static final double INGESTOR_SPEED = 0.75; //1000.0;
@@ -47,13 +56,44 @@ public class Ingestor extends SubsystemBase{
         Port port = Port.kOnboard; // TODO: Need to verify this.
         stage2ColorSensor = new ColorSensorV3(port);
         //stage1ProxSensor = new DigitalInput(0);
+        stage1ProxSensor = new DigitalInput(0);
+        counter = new Counter(stage1ProxSensor);
+        totalBalls = 0;
+        ballAtColorSensor = false;
     }
 
     public void runIngestor() {
+        System.out.println("counter - " + counter.get());
+        //prox sensor checking
+        if(counter.get() > 0){
+            System.out.println("Ball ingested!");
+            totalBalls++;
+            System.out.println("Total Balls 1:" + totalBalls);
+            SmartDashboard.putNumber("Total Balls", totalBalls);
+            if(counter.get() >= 2){
+                totalBalls = 0;
+                counter.reset();
+            }
+        }
+
         // color sensor conditions
         if(stage2ColorSensor.getProximity() > 1000){
             System.out.println("getProximity() > 1000");
+            ballAtColorSensor = true;
+            System.out.println("Total Balls 2:" + totalBalls);
+            SmartDashboard.putNumber("Total Balls", totalBalls);
         }
+        if(stage2ColorSensor.getProximity() <= 1000){
+            System.out.println("getProximity() > 1000");
+            ballAtColorSensor = false;
+            System.out.println("Total Balls 3:" + totalBalls);
+            SmartDashboard.putNumber("Total Balls", totalBalls);
+        }
+        /*if(!stage1ProxSensor.get() && !ballAtColorSensor){
+            totalBalls--;
+            System.out.println(totalBalls);
+            SmartDashboard.putNumber("Total Balls", totalBalls);
+        }*/
         
         Color sensorColor = stage2ColorSensor.getColor();
         if (stage2ColorSensor.getBlue() > 128) {
