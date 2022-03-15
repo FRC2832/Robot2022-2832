@@ -28,7 +28,6 @@ public class Ingestor extends SubsystemBase{
     private Timer timer;
     private boolean timerStarted = false;
     private DigitalInput stage1ProxSensor;
-
     // Targetted motor speeds
     private static final double INGESTOR_SPEED = 0.75; //1000.0;
     private static final double STAGE_1_SPEED = 0.75;//1000.0;
@@ -47,6 +46,7 @@ public class Ingestor extends SubsystemBase{
         Port port = Port.kOnboard; // TODO: Need to verify this.
         stage2ColorSensor = new ColorSensorV3(port);
         //stage1ProxSensor = new DigitalInput(0);
+        
     }
 
     public void runIngestor() {
@@ -132,6 +132,9 @@ public class Ingestor extends SubsystemBase{
         return stage1ProxSensor.get();
     } 
 
+    public int getStage2Proximity(){
+        return stage2ColorSensor.getProximity();
+    }
     public WPI_TalonSRX getIngestorWheels(){
         return ingestorWheels;
     }
