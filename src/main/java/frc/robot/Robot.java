@@ -14,9 +14,11 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj.util.Color;
 
 import frc.robot.SwerveConstants;
 import frc.robot.SwerveModule;
+import frc.robot.ColorSensor;
 import frc.robot.commands.AutoDrive;
 import frc.robot.commands.AutoShoot;
 import frc.robot.commands.AutonOption0;
@@ -40,6 +42,7 @@ public class Robot extends TimedRobot {
     private final Drivetrain swerve = new Drivetrain();
     private final Pi pi = new Pi();
     private final Ingestor ingestor = new Ingestor();
+    private ColorSensor colorSensor = new ColorSensor();
     private Shooter shooter;
     private Climber climber;
     private boolean ranAuton = false;
@@ -82,7 +85,7 @@ public class Robot extends TimedRobot {
         vers.printVersions();
 
         ShooterConstants.LoadConstants();
-        shooter = new Shooter(pi, driverController, operatorController);
+        shooter = new Shooter(pi, driverController, operatorController, colorSensor, ingestor);
 
         climber = new Climber();
 
