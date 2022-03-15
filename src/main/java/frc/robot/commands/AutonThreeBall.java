@@ -2,7 +2,6 @@ package frc.robot.commands;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -16,6 +15,7 @@ public class AutonThreeBall extends CommandBase {
     private Ingestor ingestor;
     private Timer timer;
     private boolean sentToShooter;
+    private Rotation2d startRotation;
 
 
     public AutonThreeBall(Drivetrain drive, Shooter shooter, Ingestor ingestor) {
@@ -35,6 +35,7 @@ public class AutonThreeBall extends CommandBase {
         // Rotation2d());
         timer.reset();
         timer.start();
+        startRotation = drive.getRotation();
         // drive.currentStep++;
     }
 
@@ -62,7 +63,7 @@ public class AutonThreeBall extends CommandBase {
                 ingestor.lowerIngestor(0.0);
                 ingestor.threeBallAutonIngest();
                 shooter.setShooterRpm(1000.0);
-                if(timer.get() >= 4.0 || ingestor.getStage1Proximity()){
+                if(timer.get() >= 3.0) {//|| ingestor.getStage1Proximity()){
                     drive.currentStep++;
                     timer.reset();
                 }
@@ -73,17 +74,26 @@ public class AutonThreeBall extends CommandBase {
                 }
                 */
                 break;
-            case 2: // turn to hub. TODO: Maybe add vision?
+            case 2:
+                drive.drive(Drivetrain.kMaxSpeed / 4, 0, 0, false);
+                ingestor.lowerIngestor(0.0);
+                ingestor.threeBallAutonIngest();
+                shooter.setShooterRpm(1000.0);
+                if(timer.get() >= 1.0) {
+                    drive.currentStep++;
+                    timer.reset();
+                }
+            case 3: // turn to hub. TODO: Maybe add vision?
                 drive.drive(0.0, 0.0, Math.PI, false);
                 ingestor.threeBallAutonIngest();
                 ingestor.liftIngestor();
                 shooter.setShooterRpm(1000.0);
-                if (timer.get() >= 1.25) {
+                if (Math.abs(drive.getRotation().getDegrees() - startRotation.getDegrees()) >= 180) {
                     drive.currentStep++;
                     timer.reset();
                 }
                 break;
-            case 3: // shoot 2 balls with hood angle set at 2.5 knobs (aka, manual shot)
+            case 4: // shoot 2 balls with hood angle set at 2.5 knobs (aka, manual shot)
                 drive.drive(0, 0, 0, false);
                 double speed = 2300.0;
                 // TODO: Might be able to schedule AutoLShoot later.
@@ -95,12 +105,12 @@ public class AutonThreeBall extends CommandBase {
                     sentToShooter = true;
                     timer.reset();
                 }
-                if (timer.get() >= 1.5 && sentToShooter) {
+                if (timer.get() >= 2.0 && sentToShooter) {
                     drive.currentStep++;
                     timer.reset();
                 }
                 break;
-            case 4: 
+            case 5:
                 drive.drive(0.0 , 0.0, -Math.PI, false); // Turn to cargo 3.
                 ingestor.threeBallAutonIngest();
                 ingestor.lowerIngestor(1.5);
@@ -146,7 +156,7 @@ public class AutonThreeBall extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return drive.currentStep == 4; // change this if any setPosition steps are added in execute()
+        return drive.currentStep == 6; // change this if any setPosition steps are added in execute()
     }
 
     @Override

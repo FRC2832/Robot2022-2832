@@ -382,7 +382,10 @@ public class Drivetrain extends SubsystemBase {
                 currentStep++;
             }
         }
+    }
 
-    } 
+    public Rotation2d getRotation() {
+        return odometry.getPoseMeters().getRotation();
+    }
 
 }

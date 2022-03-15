@@ -49,13 +49,13 @@ public class ColorSensor {
         color = colorSensor.getColor();
         ColorMatchResult match = m_colorMatcher.matchClosestColor(color);
         if (match.color == kBlueTarget) {
-            System.out.println("BLUE");
+            //System.out.println("BLUE");
             colorMatch = CargoColor.Blue;
         } else if (match.color == kRedTarget) {
-            System.out.println("RED");
+            //System.out.println("RED");
             colorMatch = CargoColor.Red;
         } else {
-            System.out.println("UNKNOWN");
+            //System.out.println("UNKNOWN");
             colorMatch = CargoColor.Unknown;
         }
     }
