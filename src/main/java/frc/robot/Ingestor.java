@@ -60,6 +60,7 @@ public class Ingestor extends SubsystemBase{
         counter = new Counter(stage1ProxSensor);
         totalBalls = 0;
         ballAtColorSensor = false;
+        
     }
 
     public void runIngestor() {
@@ -154,6 +155,22 @@ public class Ingestor extends SubsystemBase{
         }
     }
 
+    public boolean sendOneCargoToShooter() {
+        // TODO: replace timer with prox/color sensor
+        if (!timerStarted) {
+            timer.start();
+            timerStarted = true;
+        }
+        if (timer.get() < 3) {
+            stage2Conveyor.set(-STAGE_2_SPEED);
+        } else {
+            timer.reset();
+            timerStarted = false;
+            return true;
+        }
+        return false;
+    }
+
     public void liftIngestor() {
         ingestorLift.set(INGESTOR_LIFT_SPEED);
         // TODO: stop when ingestor is all the way up
@@ -172,6 +189,9 @@ public class Ingestor extends SubsystemBase{
         return stage1ProxSensor.get();
     } 
 
+    public int getStage2Proximity(){
+        return stage2ColorSensor.getProximity();
+    }
     public WPI_TalonSRX getIngestorWheels(){
         return ingestorWheels;
     }
