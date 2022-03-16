@@ -95,7 +95,7 @@ public class Robot extends TimedRobot {
         selectButton.whileActiveContinuous(new ManualShoot(shooter, ingestor));
 
         JoystickButton startButton = new JoystickButton(operatorController, 8); // 8 = start button
-        startButton.whileActiveContinuous(new AutoShoot(swerve, shooter, pi, operatorController, ingestor));
+        startButton.whileActiveContinuous(new AutoShoot(swerve, shooter, operatorController, ingestor));
 
         JoystickButton leftBumper = new JoystickButton(operatorController, 5);
         leftBumper.whileActiveContinuous(new SafeZoneShoot(shooter, ingestor));
@@ -129,6 +129,7 @@ public class Robot extends TimedRobot {
         driverController.setRumble(RumbleType.kLeftRumble, 0.0);
         driverController.setRumble(RumbleType.kRightRumble, 0.0);
         Shooter.setCoast(false);
+        swerve.setBrakeMode(false);
     }
 
     @Override

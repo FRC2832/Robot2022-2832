@@ -14,6 +14,7 @@ public class HomeHood extends CommandBase {
     @Override
     public void execute() {
         shooter.setHoodSpeedPct(-0.25);
+        System.out.println("homing hood");
     }
 
     @Override
@@ -24,5 +25,6 @@ public class HomeHood extends CommandBase {
     @Override
     public void end(boolean interrupted) {
         shooter.setHoodSpeedPct(0);
+        System.out.println("hood stopped!");
     }
 }

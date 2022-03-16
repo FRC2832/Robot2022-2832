@@ -92,7 +92,7 @@ public class Ingestor {
         }
     }
 
-    public void sendCargoToShooter() {
+    public boolean sendCargoToShooter() {
         // TODO: replace timer with prox/color sensor
         if (!timerStarted) {
             timer.start();
@@ -106,7 +106,9 @@ public class Ingestor {
         } else {
             timer.reset();
             timerStarted = false;
+            return true;
         }
+        return false;
     }
 
     public void liftIngestor() {

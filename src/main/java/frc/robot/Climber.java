@@ -1,5 +1,6 @@
 package frc.robot;
 
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -12,6 +13,8 @@ public class Climber extends SubsystemBase {
     public Climber() {
         rung1 = new WPI_TalonFX(33);
         rung23 = new WPI_TalonFX(22);
+        rung1.setNeutralMode(NeutralMode.Brake);
+        rung23.setNeutralMode(NeutralMode.Brake);
     }
 
     public void arm1Up() {

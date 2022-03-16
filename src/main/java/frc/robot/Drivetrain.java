@@ -6,6 +6,7 @@ package frc.robot;
 
 import java.util.ArrayList;
 
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.sensors.PigeonIMU;
 
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
@@ -45,7 +46,7 @@ public class Drivetrain extends SubsystemBase {
     NetworkTable visionTable;
 
     // private final AnalogGyro gyro = new AnalogGyro(0);
-    private final PigeonIMU pigeon = new PigeonIMU(13);
+    private PigeonIMU pigeon;
     private ADXRS450_GyroSim gyroSim;
     private ADXRS450_Gyro gyroBase;
 
@@ -86,7 +87,10 @@ public class Drivetrain extends SubsystemBase {
             visionTable = inst.getTable("/vision");
         }
 
-        //set defaults for all swerve moules
+        TalonSRX motor = new TalonSRX(27);
+        pigeon = new PigeonIMU(motor);
+
+        //set defaults for all swerve modules
         for(int i=0; i<constants.length; i++) {
             constants[i] = new SwerveConstants();
             constants[i].Id = (byte)i;
@@ -138,7 +142,6 @@ public class Drivetrain extends SubsystemBase {
         //set the robot to x=0.5m, y=4m, rot=0*
         odometry.resetPosition(new Pose2d(0.5, 4, new Rotation2d()), new Rotation2d());
 
-        // gyro.reset();
         pigeon.clearStickyFaults();
         SmartDashboard.putData("Field", field);
         SmartDashboard.putBoolean("Reset Position", false);
@@ -383,6 +386,12 @@ public class Drivetrain extends SubsystemBase {
             }
         }
 
-    } 
+    }
+    
+    public void setBrakeMode(boolean brake) {
+        for(SwerveModule module:modules) {
+            module.setBrakeMode(brake);
+        }
+    }
 
 }

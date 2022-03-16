@@ -7,6 +7,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.TalonSRXConfiguration;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -85,6 +86,11 @@ public class Shooter extends SubsystemBase {
             hoodMotor.setSelectedSensorPosition(0);
             isHomed = true;
         }
+        // if (hoodMotor.isRevLimitSwitchClosed() > 0) {
+        //     hoodMotor.setSelectedSensorPosition(0);
+        //     isHomed = true;
+        //     System.out.println("isHomed = true");
+        // }
         lastHomed = hoodBottom();
         if (!operatorController.getStartButton()) {
             if (driveController.getLeftBumper()) {
@@ -100,6 +106,11 @@ public class Shooter extends SubsystemBase {
             }
         }
 
+        if(DriverStation.isDisabled()) {
+            hoodMotor.setNeutralMode(NeutralMode.Coast);
+        } else {
+            hoodMotor.setNeutralMode(NeutralMode.Brake);
+        }
     }
 
     public void setShootPct(double percent) {
@@ -148,7 +159,7 @@ public class Shooter extends SubsystemBase {
     }
 
     public boolean hoodBottom() {
-        return hoodMotor.getSensorCollection().getAnalogInRaw() > HOOD_SENSOR_ACTIVE;
+        return hoodMotor.isRevLimitSwitchClosed() > 0;
     }
 
     public void setHoodAngle(double position) {
@@ -158,7 +169,7 @@ public class Shooter extends SubsystemBase {
 
     public void calcShot() {
         // first, calculate distance to target
-        double centerY = pi.getCenterY();
+        double centerY = pi.getTargetCenterY();
         distance = Pi.LinearInterp(ShooterConstants.VISION_DIST_TABLE, centerY);
 
         targetHoodAngle = Pi.LinearInterp(ShooterConstants.DIST_HOOD_TABLE, distance);

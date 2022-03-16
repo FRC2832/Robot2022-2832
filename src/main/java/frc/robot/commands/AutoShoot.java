@@ -10,16 +10,16 @@ import frc.robot.*;
 public class AutoShoot extends CommandBase {
     private Drivetrain drive;
     private Shooter shooter;
-    private Pi pi;
     private XboxController controller;
     private Ingestor ingestor;
+    private boolean finished;
 
-    public AutoShoot(Drivetrain drive, Shooter shooter, Pi pi, XboxController controller, Ingestor ingestor) {
+    public AutoShoot(Drivetrain drive, Shooter shooter, XboxController controller, Ingestor ingestor) {
         this.drive = drive;
         this.shooter = shooter;
-        this.pi = pi;
         this.controller = controller;
         this.ingestor = ingestor;
+        finished = false;
 
         addRequirements(drive);
         addRequirements(shooter);
@@ -42,16 +42,16 @@ public class AutoShoot extends CommandBase {
         }
 
         // check if PI saw target
-        if (pi.getCenterX() > 0) {
+        if (Pi.getTargetCenterX() > 0) {
             controller.setRumble(RumbleType.kLeftRumble, 0.0);
             controller.setRumble(RumbleType.kRightRumble, 0.0);
             if (Pi.getTargetMoveLeft()) {
                 error = String.join(error, "TurnL ");
                 // left is positive turn
-                drive.drive(0, 0, Math.toRadians(70), false);
+                drive.drive(0, 0, -Math.toRadians(70), false);
             } else if (Pi.getTargetMoveRight()) {
                 error = String.join(error, "TurnR ");
-                drive.drive(0, 0, -Math.toRadians(70), false);
+                drive.drive(0, 0, Math.toRadians(70), false);
             } else {
                 // robot centered, stop driving
                 drive.drive(0, 0, 0, false);
@@ -71,11 +71,16 @@ public class AutoShoot extends CommandBase {
         }
 
         if (error.length() == 0) {
-            // TODO: SHOOT!!!
-            error = "SHOOT!!!";
-            ingestor.sendCargoToShooter();
+            // error = "SHOOT!!!";
+            if(ingestor.sendCargoToShooter()) { //sends cargo to shooter and returns true once it finishes sending cargo
+                finished = true;
+            }
         }
         SmartDashboard.putString("Auto Shoot Error", error);
+    }
+
+    public boolean isFinished() {
+        return finished;
     }
 
     public void end() {

@@ -50,21 +50,21 @@ public class ShooterConstants {
         // 88 degrees is when the hood is down and touching the limit switch
         // 36 degrees is when the hood is practically all the way up at knob 6
         // formula for measured angle conversion to angle in this table: 88 - measured value + 20
-        DIST_HOOD_TABLE.add(new Pair<Double, Double>(60d, 42d));
-        DIST_HOOD_TABLE.add(new Pair<Double, Double>(72d, 42d));
-        DIST_HOOD_TABLE.add(new Pair<Double, Double>(84d, 42d));
-        DIST_HOOD_TABLE.add(new Pair<Double, Double>(96d, 48d));
-        DIST_HOOD_TABLE.add(new Pair<Double, Double>(108d, 48d));   
-        DIST_HOOD_TABLE.add(new Pair<Double, Double>(120d, 60d));   
-        DIST_HOOD_TABLE.add(new Pair<Double, Double>(132d, 61d));
-        DIST_HOOD_TABLE.add(new Pair<Double, Double>(144d, 60d));
-        DIST_HOOD_TABLE.add(new Pair<Double, Double>(156d, 60d));
-        DIST_HOOD_TABLE.add(new Pair<Double, Double>(168d, 60d)); 
-        DIST_HOOD_TABLE.add(new Pair<Double, Double>(180d, 61d));
-        DIST_HOOD_TABLE.add(new Pair<Double, Double>(192d, 61d));
-        DIST_HOOD_TABLE.add(new Pair<Double, Double>(204d, 61d)); 
-        DIST_HOOD_TABLE.add(new Pair<Double, Double>(216d, 65d));
-        DIST_HOOD_TABLE.add(new Pair<Double, Double>(228d, 65d));
+        DIST_HOOD_TABLE.add(new Pair<Double, Double>(60d, 31d)); // hood 2.5
+        DIST_HOOD_TABLE.add(new Pair<Double, Double>(72d, 31d)); // hood 2.5
+        DIST_HOOD_TABLE.add(new Pair<Double, Double>(84d, 31d)); // hood 2.5
+        DIST_HOOD_TABLE.add(new Pair<Double, Double>(96d, 42d)); // hood 3.5
+        DIST_HOOD_TABLE.add(new Pair<Double, Double>(108d, 42d)); // hood 3.5   
+        DIST_HOOD_TABLE.add(new Pair<Double, Double>(120d, 53d)); // hood 4.5
+        DIST_HOOD_TABLE.add(new Pair<Double, Double>(132d, 58d)); // hood 5
+        DIST_HOOD_TABLE.add(new Pair<Double, Double>(144d, 53d)); // hood 4.5
+        DIST_HOOD_TABLE.add(new Pair<Double, Double>(156d, 53d)); // hood 4.5
+        DIST_HOOD_TABLE.add(new Pair<Double, Double>(168d, 53d)); // hood 4.5 
+        DIST_HOOD_TABLE.add(new Pair<Double, Double>(180d, 58d)); // hood 5
+        DIST_HOOD_TABLE.add(new Pair<Double, Double>(192d, 58d)); // hood 5
+        DIST_HOOD_TABLE.add(new Pair<Double, Double>(204d, 58d)); // hood 5 
+        DIST_HOOD_TABLE.add(new Pair<Double, Double>(216d, 63d)); // hood 5.5
+        DIST_HOOD_TABLE.add(new Pair<Double, Double>(228d, 63d)); // hood 5.5
 
     }
 }
