@@ -41,6 +41,7 @@ public class Robot extends TimedRobot {
     private Shooter shooter;
     private Climber climber;
     private boolean ranAuton = false;
+    //private TurtleMode turtleMode;
 
     private boolean lastEnabled = false;
     private AutonOption5 autonOption5;
@@ -84,10 +85,13 @@ public class Robot extends TimedRobot {
 
         climber = new Climber();
 
+        //turtleMode = new TurtleMode(swerve, driverController);
+
         CommandScheduler.getInstance().registerSubsystem(swerve);
         swerve.setDefaultCommand(new DriveStickSlew(swerve, driverController));
         shooter.setDefaultCommand(new ShooterOff(shooter));
         climber.setDefaultCommand(new RunClimber(climber, ingestor, operatorController));
+        //swerve.setDefaultCommand(new TurtleMode(swerve, driverController));
 
         JoystickButton selectButton = new JoystickButton(operatorController, 7); // 7 = select button
         selectButton.whileActiveContinuous(new ManualShoot(shooter, ingestor));
@@ -160,6 +164,7 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopPeriodic() {
         ingestor.runIngestor();
+        swerve.runTurtleMode(driverController);
     }
 
     @Override

@@ -11,6 +11,7 @@ import com.ctre.phoenix.sensors.PigeonIMU;
 
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -35,8 +36,10 @@ public class Drivetrain extends SubsystemBase {
     public static final int RL = 2;
     public static final int RR = 3;
 
-    public static final double kMaxSpeed = 2.85; // per Thirfty Bot, max speed with Falcon 500 is 15.9ft/s, or 4.85 m/s
-    public static final double kMaxAngularSpeed = 2 * Math.PI; // 1 rotation per second
+    public static double kMaxSpeed = 2.85; // per Thirfty Bot, max speed with Falcon 500 is 15.9ft/s, or 4.85 m/s
+    public static double kMaxAngularSpeed = 2 * Math.PI; // 1 rotation per second
+
+    private XboxController driverController = new XboxController(0);
 
     private final SwerveModule[] modules = new SwerveModule[4];
     private final SwerveConstants[] constants = new SwerveConstants[4];
@@ -296,6 +299,30 @@ public class Drivetrain extends SubsystemBase {
         }
     }
 
+<<<<<<< Updated upstream
+=======
+<<<<<<< Updated upstream
+=======
+    public void runTurtleMode(XboxController controller){
+        driverController = controller;
+        /*if(driverController.getRightTriggerAxis() >= TRIGGER_SENSITIVITY){
+            driveStickSlew.setLimiters(1.5, 1.5, 1.5);
+        }
+        else{
+            driveStickSlew.setLimiters(3.0, 3.0, 3.0);
+        }*/
+        if(driverController.getRightTriggerAxis() >= 0.5){
+            kMaxSpeed = 0.75;
+            kMaxAngularSpeed = 1.5;
+        }
+        else{
+            kMaxSpeed = 2.85;
+            kMaxAngularSpeed = 2 * Math.PI;
+        }
+    }
+>>>>>>> Stashed changes
+
+>>>>>>> Stashed changes
     public void updateSimulationVision(Pose2d robot) {
         Translation2d[] balls;
         final double MAX_SIGHT_DIST = 1.219; // 48"
