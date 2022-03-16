@@ -299,10 +299,6 @@ public class Drivetrain extends SubsystemBase {
         }
     }
 
-<<<<<<< Updated upstream
-=======
-<<<<<<< Updated upstream
-=======
     public void runTurtleMode(XboxController controller){
         driverController = controller;
         /*if(driverController.getRightTriggerAxis() >= TRIGGER_SENSITIVITY){
@@ -320,9 +316,6 @@ public class Drivetrain extends SubsystemBase {
             kMaxAngularSpeed = 2 * Math.PI;
         }
     }
->>>>>>> Stashed changes
-
->>>>>>> Stashed changes
     public void updateSimulationVision(Pose2d robot) {
         Translation2d[] balls;
         final double MAX_SIGHT_DIST = 1.219; // 48"
