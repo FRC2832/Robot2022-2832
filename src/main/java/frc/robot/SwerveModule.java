@@ -37,13 +37,15 @@ public class SwerveModule {
 
     private final CANCoder absEncoder;
     private final RelativeEncoder turningEncoder;
-    //private double turnMotorAngle;
+    // private double turnMotorAngle;
     private final double DriveScaleFactor = 44836;
 
     private final PIDController drivePIDController = new PIDController(0.5, 0.0, 0.0);
 
-    //private final ProfiledPIDController turningPIDController = new ProfiledPIDController(5.0, 0.0, 0.0,
-    //        new TrapezoidProfile.Constraints(kModuleMaxAngularVelocity, kModuleMaxAngularAcceleration));
+    // private final ProfiledPIDController turningPIDController = new
+    // ProfiledPIDController(5.0, 0.0, 0.0,
+    // new TrapezoidProfile.Constraints(kModuleMaxAngularVelocity,
+    // kModuleMaxAngularAcceleration));
     private final PIDController turningPIDController = new PIDController(5.0, 0.0, 0.0);
 
     private SimpleMotorFeedforward driveFeedForward;
@@ -76,19 +78,23 @@ public class SwerveModule {
         driveMotor.setNeutralMode(NeutralMode.Brake);
         turningMotor.setIdleMode(IdleMode.kBrake);
 
-        /* TODO: Turn on hardware PID control 
-        var encoder = turningMotor.getEncoder();
-        encoder.setInverted(false);
-        //This example assumes a 4" wheel on a 15:1 reduction
-        encoder.setPositionConversionFactor(factor);
-        CANPIDController pidController = turningMotor.getPIDController();
-        pidController.setP(p);
-        pidController.setI(i);
-        pidController.setD(d);
-        pidController.setFF(ff);
-        pidController.setIZone(IZone);  //IZone is the amount of error before the I term is considered.  It is designed so you don't get a ton of I-term build up at the beginning of the PID control.  You set it when you want I to kick in near the end of control.  It should be positive, 0 disables it.
-        pidController.setOutputRange(min, max);
-        */
+        /*
+         * TODO: Turn on hardware PID control
+         * var encoder = turningMotor.getEncoder();
+         * encoder.setInverted(false);
+         * //This example assumes a 4" wheel on a 15:1 reduction
+         * encoder.setPositionConversionFactor(factor);
+         * CANPIDController pidController = turningMotor.getPIDController();
+         * pidController.setP(p);
+         * pidController.setI(i);
+         * pidController.setD(d);
+         * pidController.setFF(ff);
+         * pidController.setIZone(IZone); //IZone is the amount of error before the I
+         * term is considered. It is designed so you don't get a ton of I-term build up
+         * at the beginning of the PID control. You set it when you want I to kick in
+         * near the end of control. It should be positive, 0 disables it.
+         * pidController.setOutputRange(min, max);
+         */
 
         absEncoder = new CANCoder(Configuration.GetCanCoderId(constants.Id));
         absEncoder.setPositionToAbsolute();
@@ -101,24 +107,22 @@ public class SwerveModule {
 
         driveFeedForward = new SimpleMotorFeedforward(0, constants.DriveMotorKv, constants.DriveMotorKa);
 
-        if(Robot.isSimulation()) {
+        if (Robot.isSimulation()) {
             m_turnMotorSim = new FlywheelSim(
-                LinearSystemId.identifyVelocitySystem(constants.TurnMotorKv, constants.TurnMotorKa),
-                constants.TurnMotor,
-                constants.TurnMotorGearRatio
-            );
+                    LinearSystemId.identifyVelocitySystem(constants.TurnMotorKv, constants.TurnMotorKa),
+                    constants.TurnMotor,
+                    constants.TurnMotorGearRatio);
 
             m_driveMotorSim = new FlywheelSim(
-                LinearSystemId.identifyVelocitySystem(constants.DriveMotorKv, constants.DriveMotorKa),
-                constants.DriveMotor,
-                constants.DriveMotorGearRatio
-            );
+                    LinearSystemId.identifyVelocitySystem(constants.DriveMotorKv, constants.DriveMotorKa),
+                    constants.DriveMotor,
+                    constants.DriveMotorGearRatio);
 
-            var enc = new Encoder(encoderIndex,encoderIndex+1);
+            var enc = new Encoder(encoderIndex, encoderIndex + 1);
             enc.setDistancePerPulse(0.001);
             driveEncoderSim = new EncoderSim(enc);
 
-            enc = new Encoder(encoderIndex+2,encoderIndex+3);
+            enc = new Encoder(encoderIndex + 2, encoderIndex + 3);
             enc.setDistancePerPulse(0.001);
             turnEncoderSim = new EncoderSim(enc);
             encoderIndex += 4;
@@ -135,32 +139,28 @@ public class SwerveModule {
     }
 
     public double getVelocity() {
-        if(Robot.isReal()) {
+        if (Robot.isReal()) {
             return driveMotor.getSelectedSensorVelocity() / DriveScaleFactor;
-        }
-        else {
+        } else {
             return driveEncoderSim.getRate();
         }
     }
 
     public double getDistance() {
-        if(Robot.isReal()) {
+        if (Robot.isReal()) {
             return driveMotor.getSelectedSensorPosition() / DriveScaleFactor;
-        }
-        else {
+        } else {
             return driveEncoderSim.getDistance();
         }
     }
 
     public double getAbsoluteAngle() {
-        if(Robot.isReal()) {
+        if (Robot.isReal()) {
             return -absEncoder.getAbsolutePosition() + zeroAngle;
         } else {
             return turnEncoderSim.getDistance();
         }
     }
-
-    
 
     public Rotation2d getRotation() {
         return new Rotation2d(Math.toRadians(getAbsoluteAngle()));
@@ -179,7 +179,8 @@ public class SwerveModule {
         final double driveFeedforward = driveFeedForward.calculate(state.speedMetersPerSecond);
 
         // Calculate the turning motor output from the turning PID controller.
-        final double turnOutput = turningPIDController.calculate(Math.toRadians(getAbsoluteAngle()), state.angle.getRadians());
+        final double turnOutput = turningPIDController.calculate(Math.toRadians(getAbsoluteAngle()),
+                state.angle.getRadians());
 
         turnVoltCommand = -turnOutput;
         driveVoltCommand = driveOutput + driveFeedforward;
@@ -187,10 +188,12 @@ public class SwerveModule {
         driveMotor.setVoltage(driveVoltCommand);
         turningMotor.setVoltage(turnVoltCommand);
 
-        /* TODO: use hardware control of motor control instead of SW
-        //set the motor to 10 revolutions.  We should divide the encoder to degrees for better control 
-        pidController.setReference(10.0, ControlType.kPosition);
-        */
+        /*
+         * TODO: use hardware control of motor control instead of SW
+         * //set the motor to 10 revolutions. We should divide the encoder to degrees
+         * for better control
+         * pidController.setReference(10.0, ControlType.kPosition);
+         */
     }
 
     public void setDrive(double value) {
@@ -199,13 +202,14 @@ public class SwerveModule {
     }
 
     public void simulationPeriodic(double rate) {
-        //we need to calculate the motor velocities and encoder positions since they aren't real here
+        // we need to calculate the motor velocities and encoder positions since they
+        // aren't real here
         m_turnMotorSim.setInputVoltage(turnVoltCommand);
         m_driveMotorSim.setInputVoltage(driveVoltCommand);
-    
+
         m_turnMotorSim.update(rate);
         m_driveMotorSim.update(rate);
-    
+
         // Calculate distance traveled using RPM * dt
         var dist = turnEncoderSim.getDistance();
         dist -= Math.toDegrees(m_turnMotorSim.getAngularVelocityRadPerSec() * rate);

@@ -5,18 +5,15 @@
 package frc.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.GenericHID.RumbleType;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-
-import frc.robot.SwerveConstants;
-import frc.robot.SwerveModule;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.AutoDrive;
 import frc.robot.commands.AutoShoot;
 import frc.robot.commands.AutonOption0;
@@ -25,9 +22,9 @@ import frc.robot.commands.AutonOption2;
 import frc.robot.commands.AutonOption3;
 import frc.robot.commands.AutonOption4;
 import frc.robot.commands.AutonOption5;
+import frc.robot.commands.AutonTwoBall;
 import frc.robot.commands.DriveStick;
 import frc.robot.commands.DriveStickSlew;
-import frc.robot.commands.HomeHood;
 import frc.robot.commands.ManualShoot;
 import frc.robot.commands.ResetOrientation;
 import frc.robot.commands.RunClimber;
@@ -39,7 +36,8 @@ public class Robot extends TimedRobot {
     private final XboxController operatorController = new XboxController(2);
     private final Drivetrain swerve = new Drivetrain();
     private final Pi pi = new Pi();
-    private final Ingestor ingestor = new Ingestor();
+    private ColorSensor colorSensor = new ColorSensor();
+    private final Ingestor ingestor = new Ingestor(colorSensor);
     private Shooter shooter;
     private Climber climber;
     private boolean ranAuton = false;
@@ -82,7 +80,7 @@ public class Robot extends TimedRobot {
         vers.printVersions();
 
         ShooterConstants.LoadConstants();
-        shooter = new Shooter(pi, driverController, operatorController);
+        shooter = new Shooter(pi, driverController, operatorController, colorSensor, ingestor);
 
         climber = new Climber();
 
@@ -138,8 +136,8 @@ public class Robot extends TimedRobot {
         m_selectedAuton = m_chooser.getSelected();
         System.out.println("Auton Selected: " + m_selectedAuton);
 
-        //CommandScheduler.getInstance().schedule(new HomeHood(shooter));
-        CommandScheduler.getInstance().schedule(new AutonOption2(swerve));
+        // CommandScheduler.getInstance().schedule(new HomeHood(shooter));
+        CommandScheduler.getInstance().schedule(new AutonTwoBall(swerve, shooter, ingestor));
         Pose2d pos = swerve.odometry.getPoseMeters();
         ranAuton = true;
     }
@@ -152,7 +150,6 @@ public class Robot extends TimedRobot {
         // swerve.setPosition(8.57, 7.53, 0, 1);
 
     }
-
 
     @Override
     public void teleopInit() {
@@ -172,8 +169,8 @@ public class Robot extends TimedRobot {
         CommandScheduler.getInstance().run();
         // have the field position constantly update
         swerve.updateOdometry();
-        //SmartDashboard.putNumber("XPosition", odometry.getXPosition());
-        //SmartDashboard.putNumber("YPosition", odometry.getYPosition());
+        // SmartDashboard.putNumber("XPosition", odometry.getXPosition());
+        // SmartDashboard.putNumber("YPosition", odometry.getYPosition());
 
         pi.processCargo();
         pi.processTargets();

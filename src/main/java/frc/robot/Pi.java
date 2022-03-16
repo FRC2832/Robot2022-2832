@@ -109,7 +109,7 @@ public class Pi {
           && size == targetAreaArray.length
           )
         {
-            sortTargets();
+           sortTargets();
         }
         else {
             //unknown order, skip this loop
