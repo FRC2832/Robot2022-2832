@@ -6,10 +6,13 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.commands.DribbleShoot;
 
 public class Shooter extends SubsystemBase {
     private final double SENSOR_UNITS_TO_RPM = 3.414;
@@ -24,6 +27,9 @@ public class Shooter extends SubsystemBase {
     private XboxController driveController;
     private XboxController operatorController;
     private static boolean coastMotor = false;
+    private ColorSensor colorSensor;
+    private String currentCargoColor;
+    private Ingestor ingestor;
 
     // TODO: write home hood method
     // Distance to Target
@@ -31,13 +37,16 @@ public class Shooter extends SubsystemBase {
     // Turn robot to goal
     // Turret Angle?
 
-    public Shooter(Pi pi, XboxController driveController, XboxController operatorController) {
+    public Shooter(Pi pi, XboxController driveController, XboxController operatorController, ColorSensor colorSensor, Ingestor ingestor) {
         this.pi = pi;
         this.driveController = driveController;
         this.operatorController = operatorController;
+        this.colorSensor = colorSensor;
+        this.ingestor = ingestor;
+        currentCargoColor = "none";
         isHomed = false;
         hoodMotor = new TalonSRX(26);
-        //hoodMotor.setNeutralMode(NeutralMode.Brake);
+        hoodMotor.setNeutralMode(NeutralMode.Brake);
 
         shooterFx = new TalonFX(Configuration.GetShooterId());
         shooterFx.setNeutralMode(NeutralMode.Coast);
@@ -58,6 +67,31 @@ public class Shooter extends SubsystemBase {
 
     @Override
     public void periodic() {
+        colorSensor.runColorSensor();
+        currentCargoColor = colorSensor.getColorSensor().toString();
+
+        //System.out.println("currentCargoColor: " + currentCargoColor);
+
+        String allianceString;
+        Alliance alliance = DriverStation.getAlliance();
+        if(alliance == Alliance.Red) {
+            allianceString = "Red";
+        } else {
+            allianceString = "Blue";
+        }
+
+        if(currentCargoColor.equals("Unknown")){
+            // no ball detected, so don't shoot
+        }
+        // if detected color != alliance color 
+        else if(!(currentCargoColor.equalsIgnoreCase(allianceString))){
+            CommandScheduler.getInstance().schedule(new DribbleShoot(this, ingestor, colorSensor, pi));
+        }
+        else{
+            // call Autoshoot (TODO)
+            // print "AUTOSHOOTING!!!"
+        }
+
         SmartDashboard.putNumber("Shooter Output Velocity", getShooterVelocity());
         SmartDashboard.putNumber("Hood Angle Position", getHoodAngle());
         SmartDashboard.putNumber("Shot Distance", getShotDist());
@@ -149,5 +183,9 @@ public class Shooter extends SubsystemBase {
 
     public static boolean getCoast() {
         return coastMotor;
+    }
+
+    public String getCurrentCargoColor(){
+        return currentCargoColor;
     }
 }

@@ -5,18 +5,15 @@
 package frc.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.GenericHID.RumbleType;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-
-import frc.robot.SwerveConstants;
-import frc.robot.SwerveModule;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.AutoDrive;
 import frc.robot.commands.AutoShoot;
 import frc.robot.commands.AutonOption0;
@@ -25,9 +22,9 @@ import frc.robot.commands.AutonOption2;
 import frc.robot.commands.AutonOption3;
 import frc.robot.commands.AutonOption4;
 import frc.robot.commands.AutonOption5;
+import frc.robot.commands.AutonTwoBall;
 import frc.robot.commands.DriveStick;
 import frc.robot.commands.DriveStickSlew;
-import frc.robot.commands.HomeHood;
 import frc.robot.commands.ManualShoot;
 import frc.robot.commands.ResetOrientation;
 import frc.robot.commands.RunClimber;
@@ -39,10 +36,12 @@ public class Robot extends TimedRobot {
     private final XboxController operatorController = new XboxController(2);
     private final Drivetrain swerve = new Drivetrain();
     private final Pi pi = new Pi();
-    private final Ingestor ingestor = new Ingestor();
+    private ColorSensor colorSensor = new ColorSensor();
+    private final Ingestor ingestor = new Ingestor(colorSensor);
     private Shooter shooter;
     private Climber climber;
     private boolean ranAuton = false;
+    //private TurtleMode turtleMode;
 
     private boolean lastEnabled = false;
     private AutonOption5 autonOption5;
@@ -82,14 +81,17 @@ public class Robot extends TimedRobot {
         vers.printVersions();
 
         ShooterConstants.LoadConstants();
-        shooter = new Shooter(pi, driverController, operatorController);
+        shooter = new Shooter(pi, driverController, operatorController, colorSensor, ingestor);
 
         climber = new Climber();
+
+        //turtleMode = new TurtleMode(swerve, driverController);
 
         CommandScheduler.getInstance().registerSubsystem(swerve);
         swerve.setDefaultCommand(new DriveStickSlew(swerve, driverController));
         shooter.setDefaultCommand(new ShooterOff(shooter));
         climber.setDefaultCommand(new RunClimber(climber, ingestor, operatorController));
+        //swerve.setDefaultCommand(new TurtleMode(swerve, driverController));
 
         JoystickButton selectButton = new JoystickButton(operatorController, 7); // 7 = select button
         selectButton.whileActiveContinuous(new ManualShoot(shooter, ingestor));
@@ -136,8 +138,8 @@ public class Robot extends TimedRobot {
         m_selectedAuton = m_chooser.getSelected();
         System.out.println("Auton Selected: " + m_selectedAuton);
 
-        //CommandScheduler.getInstance().schedule(new HomeHood(shooter));
-        CommandScheduler.getInstance().schedule(new AutonOption2(swerve));
+        // CommandScheduler.getInstance().schedule(new HomeHood(shooter));
+        CommandScheduler.getInstance().schedule(new AutonTwoBall(swerve, shooter, ingestor));
         Pose2d pos = swerve.odometry.getPoseMeters();
         ranAuton = true;
     }
@@ -151,18 +153,18 @@ public class Robot extends TimedRobot {
 
     }
 
-
     @Override
     public void teleopInit() {
         CommandScheduler.getInstance().cancelAll();
         if (!ranAuton) {
-            //CommandScheduler.getInstance().schedule(new HomeHood(shooter));
+            // CommandScheduler.getInstance().schedule(new HomeHood(shooter));
         }
     }
 
     @Override
     public void teleopPeriodic() {
         ingestor.runIngestor();
+        swerve.runTurtleMode(driverController);
     }
 
     @Override
@@ -170,8 +172,8 @@ public class Robot extends TimedRobot {
         CommandScheduler.getInstance().run();
         // have the field position constantly update
         swerve.updateOdometry();
-        //SmartDashboard.putNumber("XPosition", odometry.getXPosition());
-        //SmartDashboard.putNumber("YPosition", odometry.getYPosition());
+        // SmartDashboard.putNumber("XPosition", odometry.getXPosition());
+        // SmartDashboard.putNumber("YPosition", odometry.getYPosition());
 
         pi.processCargo();
         pi.processTargets();
