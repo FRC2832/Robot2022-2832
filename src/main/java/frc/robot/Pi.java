@@ -32,8 +32,10 @@ public class Pi {
     private static boolean targetMoveLeft;
     private static boolean cargoMoveRight;
     private static boolean cargoMoveLeft;
-    private double centerYOutput;
-    private double centerXOutput;
+    private static double targetCenterYOutput;
+    private static double targetCenterXOutput;
+    private static double cargoCenterXOutput;
+    private static double cargoCenterYOutput;
 
     public Pi() {
         netTableInstance = NetworkTableInstance.getDefault();
@@ -46,7 +48,7 @@ public class Pi {
         targetWidth = table.getEntry("targetWidth");
         targetHeight = table.getEntry("targetHeight");
         targetArea = table.getEntry("targetArea");
-        centerYOutput = -1;
+        targetCenterYOutput = -1;
     }
 
     // sends alliance color to the python code so it knows what color cargo to look for
@@ -65,10 +67,14 @@ public class Pi {
         if (cargoCenterXArray.length == 0) {
             cargoMoveRight = false;
             cargoMoveLeft = false;
+            cargoCenterXOutput = -1;
+            cargoCenterYOutput = -1;
             return;
         }
         // currently just taking the first cargo but considering taking the cargo with the largest y value becuase it should be closest to the robot
         double cargoX = (double) cargoCenterXArray[0];
+        cargoCenterXOutput = cargoX;
+        cargoCenterYOutput = (double) cargoCenterYArray[0];
         if (cargoX < (CAM_X_RES / 2) - (CAM_X_RES * 0.05)) {
             cargoMoveRight = false;
             cargoMoveLeft = true;
@@ -92,8 +98,8 @@ public class Pi {
         if (size == 0) {
             targetMoveRight = false;
             targetMoveLeft = false;
-            centerYOutput = -1;
-            centerXOutput = -1;
+            targetCenterYOutput = -1;
+            targetCenterXOutput = -1;
             return;
         }
         //consistency check
@@ -118,8 +124,8 @@ public class Pi {
             index = (int) Math.ceil((double) size / 2);
         }
         double targetX = (double) targetCenterXArray[index];
-        centerYOutput = (double) targetCenterYArray[index];
-        centerXOutput = targetX;
+        targetCenterYOutput = (double) targetCenterYArray[index];
+        targetCenterXOutput = targetX;
         if (targetX < ((CAM_X_RES / 2) - (CAM_X_RES * 0.05))) {
             targetMoveRight = false;
             targetMoveLeft = true;
@@ -185,31 +191,43 @@ public class Pi {
         return !cargoMoveRight && !cargoMoveLeft;
     }
 
+    // if true, the robot needs to turn right to see the cargo
     public static boolean getCargoMoveRight() {
         return cargoMoveRight;
     }
 
+    // if true, the robot needs to turn left to see the cargo
     public static boolean getCargoMoveLeft() {
         return cargoMoveLeft;
+    }
+
+    public static double getCargoCenterX() {
+        return cargoCenterXOutput;
+    }
+
+    public static double getCargoCenterY() {
+        return cargoCenterYOutput;
     }
 
     public static boolean isTargetCentered() {
         return !targetMoveRight && !targetMoveLeft;
     }
 
+    // if true, the robot needs to turn right to see the target
     public static boolean getTargetMoveRight() {
         return targetMoveRight;
     }
 
+    // if true, the robot needs to turn left to see the target
     public static boolean getTargetMoveLeft() {
         return targetMoveLeft;
     }
 
-    public double getCenterY() {
-        return centerYOutput;
+    public static double getTargetCenterY() {
+        return targetCenterYOutput;
     }
 
-    public double getCenterX() {
-        return centerXOutput;
+    public static double getTargetCenterX() {
+        return targetCenterXOutput;
     }
 }

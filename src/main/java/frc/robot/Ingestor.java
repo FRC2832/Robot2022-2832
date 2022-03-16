@@ -127,7 +127,7 @@ public class Ingestor extends SubsystemBase {
         }
     }
 
-    public void sendCargoToShooter() {
+    public boolean sendCargoToShooter() {
         // TODO: replace timer with prox/color sensor
         if (!timerStarted) {
             timer.start();
@@ -135,13 +135,15 @@ public class Ingestor extends SubsystemBase {
         }
         if (timer.get() < 1) {
             stage2Conveyor.set(-STAGE_2_SPEED);
-        } else if (timer.get() < 5) {
+        } else if (timer.get() < 2.5) {
             stage2Conveyor.set(-STAGE_2_SPEED);
             stage1Conveyor.set(STAGE_1_SPEED);
         } else {
             timer.reset();
             timerStarted = false;
+            return true;
         }
+        return false;
     }
 
     public boolean sendOneCargoToShooter() {

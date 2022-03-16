@@ -10,28 +10,32 @@ import frc.robot.*;
 public class AutoShoot extends CommandBase {
     private Drivetrain drive;
     private Shooter shooter;
-    private Pi pi;
     private XboxController controller;
+    private Ingestor ingestor;
+    private boolean cargoSentToShooter;
+    private boolean autonShootFinished;
 
-    public AutoShoot(Drivetrain drive, Shooter shooter, Pi pi, XboxController controller) {
+    public AutoShoot(Drivetrain drive, Shooter shooter, XboxController controller, Ingestor ingestor) {
         this.drive = drive;
         this.shooter = shooter;
-        this.pi = pi;
         this.controller = controller;
+        this.ingestor = ingestor;
+        cargoSentToShooter = false;
+        autonShootFinished = false;
 
         addRequirements(drive);
         addRequirements(shooter);
     }
 
+    @Override
     public void execute() {
         shooter.calcShot();
         String error = "";
 
         // check hood angle is more than 3* off
-        // shooter.setHoodAngle(shooter.getTargetHoodAngle());
-        if (Math.abs(shooter.getHoodAngle() - shooter.getTargetHoodAngle()) > 3) {
-            // TODO: turned off hood since it's broke
-            // error = String.join(error, "Hood ");
+        shooter.setHoodAngle(shooter.getTargetHoodAngle());
+        if (Math.abs(shooter.getHoodAngle() - shooter.getTargetHoodAngle()) > 0.5) {
+            error = String.join(error, "Hood ");
         }
 
         // check shot speed is within 30 RPM
@@ -41,24 +45,28 @@ public class AutoShoot extends CommandBase {
         }
 
         // check if PI saw target
-        if (pi.getCenterX() > 0) {
-            controller.setRumble(RumbleType.kLeftRumble, 0.0);
-            controller.setRumble(RumbleType.kRightRumble, 0.0);
+        if (Pi.getTargetCenterX() > 0) {
+            if(controller != null) {
+                controller.setRumble(RumbleType.kLeftRumble, 0.0);
+                controller.setRumble(RumbleType.kRightRumble, 0.0);
+            }
             if (Pi.getTargetMoveLeft()) {
                 error = String.join(error, "TurnL ");
                 // left is positive turn
-                drive.drive(0, 0, Math.toRadians(70), false);
+                drive.drive(0, 0, -Math.toRadians(70), false);
             } else if (Pi.getTargetMoveRight()) {
                 error = String.join(error, "TurnR ");
-                drive.drive(0, 0, -Math.toRadians(70), false);
+                drive.drive(0, 0, Math.toRadians(70), false);
             } else {
                 // robot centered, stop driving
                 drive.drive(0, 0, 0, false);
             }
         } else {
             // pi is not seeing hub
-            controller.setRumble(RumbleType.kLeftRumble, 1.0);
-            controller.setRumble(RumbleType.kRightRumble, 1.0);
+            if(controller != null) {
+                controller.setRumble(RumbleType.kLeftRumble, 1.0);
+                controller.setRumble(RumbleType.kRightRumble, 1.0);
+            }
             error = String.join(error, "Vision ");
             drive.drive(0, 0, 0, false);
         }
@@ -70,15 +78,28 @@ public class AutoShoot extends CommandBase {
         }
 
         if (error.length() == 0) {
-            // TODO: SHOOT!!!
-            error = "SHOOT!!!";
+            // error = "SHOOT!!!";
+            if(ingestor.sendCargoToShooter()) { //sends cargo to shooter and returns true once it finishes sending cargo
+                cargoSentToShooter = true;
+            }
         }
         SmartDashboard.putString("Auto Shoot Error", error);
     }
 
-    public void end() {
-        controller.setRumble(RumbleType.kLeftRumble, 0.0);
-        controller.setRumble(RumbleType.kRightRumble, 0.0);
+    @Override
+    public boolean isFinished() {
+        System.out.println("AutoShoot is finished");
+        return cargoSentToShooter;
+    }
+
+    @Override
+    public void end(boolean interrupted) {
+        if(controller != null) {
+            controller.setRumble(RumbleType.kLeftRumble, 0.0);
+            controller.setRumble(RumbleType.kRightRumble, 0.0);
+        }
         Shooter.setCoast(true);
+        System.out.println("AutoShoot end");
+        cargoSentToShooter = false;
     }
 }

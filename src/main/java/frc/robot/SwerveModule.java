@@ -228,4 +228,14 @@ public class SwerveModule {
         SmartDashboard.putNumber(constants.Name + "/absEncoderRaw", absEncoder.getAbsolutePosition());
         SmartDashboard.putNumber(constants.Name + "/turnEncoderRaw", turningEncoder.getPosition());
     }
+
+    public void setBrakeMode(boolean brake) {
+        if(brake) {
+            driveMotor.setNeutralMode(NeutralMode.Brake);
+            turningMotor.setIdleMode(IdleMode.kBrake);
+        } else {
+            driveMotor.setNeutralMode(NeutralMode.Coast);
+            turningMotor.setIdleMode(IdleMode.kCoast);
+        }
+    }
 }

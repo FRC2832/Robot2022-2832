@@ -22,9 +22,7 @@ public class ManualShoot extends CommandBase {
     @Override
     public void execute() {
         shooter.setShooterRpm(speed);
-
-        // set hood angle (knob 2.5, 66 degrees)
-        // shooter.setHoodAngle(position);
+        shooter.setHoodAngle(31); // knob 2.5
 
         // if target rpm is within range (+- 50)
         if (speed - 50 < shooter.getShooterVelocity() && shooter.getShooterVelocity() < speed + 50) {

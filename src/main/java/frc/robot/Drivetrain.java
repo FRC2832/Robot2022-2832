@@ -145,7 +145,6 @@ public class Drivetrain extends SubsystemBase {
         // set the robot to x=0.5m, y=4m, rot=0*
         odometry.resetPosition(new Pose2d(0.5, 4, new Rotation2d()), new Rotation2d());
 
-        // gyro.reset();
         pigeon.clearStickyFaults();
         SmartDashboard.putData("Field", field);
         SmartDashboard.putBoolean("Reset Position", false);
@@ -413,5 +412,13 @@ public class Drivetrain extends SubsystemBase {
                 currentStep++;
             }
         }
+
     }
+    
+    public void setBrakeMode(boolean brake) {
+        for(SwerveModule module:modules) {
+            module.setBrakeMode(brake);
+        }
+    }
+
 }
