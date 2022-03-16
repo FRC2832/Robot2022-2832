@@ -135,7 +135,7 @@ public class Ingestor extends SubsystemBase {
         }
         if (timer.get() < 1) {
             stage2Conveyor.set(-STAGE_2_SPEED);
-        } else if (timer.get() < 5) {
+        } else if (timer.get() < 2.5) {
             stage2Conveyor.set(-STAGE_2_SPEED);
             stage1Conveyor.set(STAGE_1_SPEED);
         } else {

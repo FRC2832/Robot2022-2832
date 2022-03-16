@@ -132,6 +132,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousInit() {
+        AutonTwoBall.resetAutonShoot();
         CommandScheduler.getInstance().cancelAll();
         m_selectedAuton = m_chooser.getSelected();
         System.out.println("Auton Selected: " + m_selectedAuton);

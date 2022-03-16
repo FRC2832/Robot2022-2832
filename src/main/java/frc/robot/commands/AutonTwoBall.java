@@ -4,7 +4,9 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Drivetrain;
 import frc.robot.Ingestor;
 import frc.robot.Shooter;
@@ -17,11 +19,16 @@ public class AutonTwoBall extends CommandBase {
     private boolean sentToShooter;
     private double startAngle;
     private double startEncoderCount;
+    private AutoShoot autoShoot;
+    private static boolean scheduled;
+
 
     public AutonTwoBall(Drivetrain drive, Shooter shooter, Ingestor ingestor) {
         this.drive = drive;
         this.shooter = shooter;
         this.ingestor = ingestor;
+        autoShoot = new AutoShoot(drive, shooter, null, ingestor);
+        scheduled = false;
 
         timer = new Timer();
         addRequirements(drive, shooter, ingestor);
@@ -111,19 +118,22 @@ public class AutonTwoBall extends CommandBase {
                 break;
             case 4: // shoot 2 balls with hood angle set at 2.5 knobs (aka, manual shot)
                 drive.drive(0.0, 0.0, 0.0, false);
-                double speed = 2300.0;
-                // TODO: Might be able to schedule AutoLShoot later.
-                // TODO add in hood angle code when working
-                ingestor.lowerIngestor(0.0);
-                shooter.setShooterRpm(speed);
-                if (speed - 50 < shooter.getShooterVelocity() && shooter.getShooterVelocity() < speed + 50) {
-                    ingestor.sendCargoToShooter();
-                    sentToShooter = true;
-                    timer.reset();
+                // double speed = 2300.0;
+                // // TODO: Might be able to schedule AutoLShoot later.
+                // // TODO add in hood angle code when working
+                // ingestor.lowerIngestor(0.0);
+                // shooter.setShooterRpm(speed);
+                // if (speed - 50 < shooter.getShooterVelocity() && shooter.getShooterVelocity() < speed + 50) {
+                //     ingestor.sendCargoToShooter();
+                //     sentToShooter = true;
+                //     timer.reset();
+                // }
+                if (!scheduled) {
+                    CommandScheduler.getInstance().schedule(autoShoot);
+                    scheduled = true;
                 }
-                if (timer.get() >= 2.0 && sentToShooter) {
+                if (autoShoot.isFinished()) {
                     drive.currentStep++;
-                    timer.reset();
                 }
                 break;
             // 8.586, 7.107836, 90 for first ball
@@ -167,6 +177,10 @@ public class AutonTwoBall extends CommandBase {
         ingestor.getStage1Conveyor().set(ControlMode.PercentOutput, 0);
         ingestor.getStage2Conveyor().set(ControlMode.PercentOutput, 0);
         ingestor.getIngestorWheels().set(ControlMode.PercentOutput, 0);
+    }
+
+    public static void resetAutonShoot() {
+        scheduled = false;
     }
 
 }
