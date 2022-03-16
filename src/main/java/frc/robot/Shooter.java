@@ -6,16 +6,13 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.ColorSensor;
 import frc.robot.commands.DribbleShoot;
-import frc.robot.ColorSensor.CargoColor;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 public class Shooter extends SubsystemBase {
     private final double SENSOR_UNITS_TO_RPM = 3.414;
@@ -73,7 +70,7 @@ public class Shooter extends SubsystemBase {
         colorSensor.runColorSensor();
         currentCargoColor = colorSensor.getColorSensor().toString();
 
-        System.out.println("currentCargoColor: " + currentCargoColor);
+        //System.out.println("currentCargoColor: " + currentCargoColor);
 
         String allianceString;
         Alliance alliance = DriverStation.getAlliance();

@@ -14,11 +14,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import edu.wpi.first.wpilibj.util.Color;
-
-import frc.robot.SwerveConstants;
-import frc.robot.SwerveModule;
-import frc.robot.ColorSensor;
 import frc.robot.commands.AutoDrive;
 import frc.robot.commands.AutoShoot;
 import frc.robot.commands.AutonOption0;
@@ -27,7 +22,7 @@ import frc.robot.commands.AutonOption2;
 import frc.robot.commands.AutonOption3;
 import frc.robot.commands.AutonOption4;
 import frc.robot.commands.AutonOption5;
-import frc.robot.commands.AutonThreeBall;
+import frc.robot.commands.AutonTwoBall;
 import frc.robot.commands.DriveStick;
 import frc.robot.commands.DriveStickSlew;
 import frc.robot.commands.ManualShoot;
@@ -41,8 +36,8 @@ public class Robot extends TimedRobot {
     private final XboxController operatorController = new XboxController(2);
     private final Drivetrain swerve = new Drivetrain();
     private final Pi pi = new Pi();
-    private final Ingestor ingestor = new Ingestor();
     private ColorSensor colorSensor = new ColorSensor();
+    private final Ingestor ingestor = new Ingestor(colorSensor);
     private Shooter shooter;
     private Climber climber;
     private boolean ranAuton = false;
@@ -140,7 +135,7 @@ public class Robot extends TimedRobot {
         System.out.println("Auton Selected: " + m_selectedAuton);
 
         // CommandScheduler.getInstance().schedule(new HomeHood(shooter));
-        CommandScheduler.getInstance().schedule(new AutonThreeBall(swerve, shooter, ingestor));
+        CommandScheduler.getInstance().schedule(new AutonTwoBall(swerve, shooter, ingestor));
         Pose2d pos = swerve.odometry.getPoseMeters();
         ranAuton = true;
     }

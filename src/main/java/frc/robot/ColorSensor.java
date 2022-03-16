@@ -2,6 +2,8 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
 import com.revrobotics.ColorSensorV3;
 import com.revrobotics.ColorMatch;
 import com.revrobotics.ColorMatchResult;
@@ -35,6 +37,10 @@ public class ColorSensor {
         // proxSensor = new DigitalInput(0);
     }
 
+
+    public int getProx(){
+        return colorSensor.getProximity();
+    }
     public CargoColor getColorSensor() {
         return colorMatch;
     }

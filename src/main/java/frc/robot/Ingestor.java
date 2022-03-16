@@ -3,26 +3,22 @@ package frc.robot;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.revrobotics.CANSparkMax;
+
+import edu.wpi.first.wpilibj.Counter;
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.Timer;
 // import com.revrobotics.CANSparkMaxLowLevel;
 // import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.I2C.Port;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
-import com.revrobotics.ColorSensorV3;
-import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.Counter;
+import frc.robot.ColorSensor.CargoColor;
 
 //import edu.wpi.first.wpilibj.DigitalOutput;
 
-public class Ingestor extends SubsystemBase{
+public class Ingestor extends SubsystemBase {
     private WPI_TalonSRX ingestorWheels;
-    private ColorSensorV3 stage2ColorSensor;
-    //private WPI_TalonSRX ingestorGate;
+    // private WPI_TalonSRX ingestorGate;
     private WPI_TalonSRX stage1Conveyor;
     private WPI_TalonSRX stage2Conveyor;
     private CANSparkMax ingestorLift;
@@ -35,16 +31,17 @@ public class Ingestor extends SubsystemBase{
     private DigitalInput stage1ProxSensor;
     private Counter counter;
     private int totalBalls;
+    private ColorSensor stage2ColorSensor;
     private boolean ballAtColorSensor;
-    //private SmartDashboard smartDashboard;
+    // private SmartDashboard smartDashboard;
 
     // Targetted motor speeds
-    private static final double INGESTOR_SPEED = 0.75; //1000.0;
-    private static final double STAGE_1_SPEED = 0.75;//1000.0;
-    private static final double STAGE_2_SPEED = 0.85; //1000.0;
+    private static final double INGESTOR_SPEED = 0.75; // 1000.0;
+    private static final double STAGE_1_SPEED = 0.75;// 1000.0;
+    private static final double STAGE_2_SPEED = 0.85; // 1000.0;
     private static final double INGESTOR_LIFT_SPEED = 0.25;
 
-    public Ingestor() {
+    public Ingestor(ColorSensor colorSensor) {
         ingestorWheels = new WPI_TalonSRX(27);
         // ingestorGate = new WPI_TalonSRX(2);
         stage1Conveyor = new WPI_TalonSRX(25);
@@ -53,67 +50,59 @@ public class Ingestor extends SubsystemBase{
         // driverController = new XboxController(0);
         operatorController = new XboxController(2);
         timer = new Timer();
-        Port port = Port.kOnboard; // TODO: Need to verify this.
-        stage2ColorSensor = new ColorSensorV3(port);
-        //stage1ProxSensor = new DigitalInput(0);
+        // Port port = Port.kOnboard; // TODO: Need to verify this.
+        this.stage2ColorSensor = colorSensor;
+        // stage1ProxSensor = new DigitalInput(0);
         stage1ProxSensor = new DigitalInput(0);
         counter = new Counter(stage1ProxSensor);
         totalBalls = 0;
         ballAtColorSensor = false;
-        
+
     }
 
     public void runIngestor() {
-        System.out.println("counter - " + counter.get());
-        //prox sensor checking
-        if(counter.get() > 0){
-            System.out.println("Ball ingested!");
+        //System.out.println("counter - " + counter.get());
+        // prox sensor checking
+        if (counter.get() > 0) {
+            //System.out.println("Ball ingested!");
             totalBalls++;
-            System.out.println("Total Balls 1:" + totalBalls);
+            //System.out.println("Total Balls 1:" + totalBalls);
             SmartDashboard.putNumber("Total Balls", totalBalls);
-            if(counter.get() >= 2){
+            if (counter.get() >= 2) {
                 totalBalls = 0;
                 counter.reset();
             }
         }
 
         // color sensor conditions
-        if(stage2ColorSensor.getProximity() > 1000){
-            System.out.println("getProximity() > 1000");
+        if (stage2ColorSensor.getProx() > 1000) {
+            //System.out.println("getProximity() > 1000");
             ballAtColorSensor = true;
-            System.out.println("Total Balls 2:" + totalBalls);
+            //System.out.println("Total Balls 2:" + totalBalls);
             SmartDashboard.putNumber("Total Balls", totalBalls);
-        }
-        if(stage2ColorSensor.getProximity() <= 1000){
-            System.out.println("getProximity() > 1000");
+        } else {
+            //System.out.println("getProximity() <= 1000");
             ballAtColorSensor = false;
-            System.out.println("Total Balls 3:" + totalBalls);
+            //System.out.println("Total Balls 3:" + totalBalls);
             SmartDashboard.putNumber("Total Balls", totalBalls);
         }
-        /*if(!stage1ProxSensor.get() && !ballAtColorSensor){
+        /* if(!stage1ProxSensor.get() && !ballAtColorSensor){
             totalBalls--;
-            System.out.println(totalBalls);
+            System.out.println("Total Balls " + totalBalls);
             SmartDashboard.putNumber("Total Balls", totalBalls);
+        } */
+
+        CargoColor cargoColor = stage2ColorSensor.getColorSensor();
+        /*if (cargoColor == CargoColor.Blue) {
+            System.out.println("Cargo is blue");
+        } else if (cargoColor == CargoColor.Red) {
+            System.out.println("Cargo is red");
         }*/
-        
-        Color sensorColor = stage2ColorSensor.getColor();
-        if (stage2ColorSensor.getBlue() > 128) {
-            // System.out.println("getBlue() returned more than 128");
-        }
-        if (stage2ColorSensor.getRed() > 128) {
-            // System.out.println("getRed() returned more than 128");
-        }
-        if (sensorColor.blue > 128.0) {
-            System.out.println("sensorColor.blue is more than 128.0");
-        }
-        if (sensorColor.red > 128.0) {
-            System.out.println("sensorColor.red is more than 128.0");
-        }
-      
-        if(operatorController.getRightTriggerAxis() >= TRIGGER_SENSITIVITY){ //ingestor in
+
+        if (operatorController.getRightTriggerAxis() >= TRIGGER_SENSITIVITY ) { // ingestor in
             ingestorWheels.set(-INGESTOR_SPEED);
             stage1Conveyor.set(STAGE_1_SPEED);
-        } else if(operatorController.getLeftTriggerAxis() >= TRIGGER_SENSITIVITY){ //ingestor out
+        } else if (operatorController.getLeftTriggerAxis() >= TRIGGER_SENSITIVITY) { // ingestor out
             ingestorWheels.set(INGESTOR_SPEED);
             stage1Conveyor.set(-STAGE_1_SPEED);
         } else {
@@ -146,7 +135,7 @@ public class Ingestor extends SubsystemBase{
         }
         if (timer.get() < 1) {
             stage2Conveyor.set(-STAGE_2_SPEED);
-        } else if(timer.get() < 5) {
+        } else if (timer.get() < 5) {
             stage2Conveyor.set(-STAGE_2_SPEED);
             stage1Conveyor.set(STAGE_1_SPEED);
         } else {
@@ -185,18 +174,19 @@ public class Ingestor extends SubsystemBase{
         ingestorWheels.set(ControlMode.PercentOutput, -INGESTOR_SPEED);
     }
 
-    public boolean getStage1Proximity(){
+    public boolean getStage1Proximity() {
         return stage1ProxSensor.get();
-    } 
-
-    public int getStage2Proximity(){
-        return stage2ColorSensor.getProximity();
     }
-    public WPI_TalonSRX getIngestorWheels(){
+
+    public int getStage2Proximity() {
+        return stage2ColorSensor.getProx();
+    }
+
+    public WPI_TalonSRX getIngestorWheels() {
         return ingestorWheels;
     }
 
-    public WPI_TalonSRX getStage1Conveyor(){
+    public WPI_TalonSRX getStage1Conveyor() {
         return stage1Conveyor;
     }
 

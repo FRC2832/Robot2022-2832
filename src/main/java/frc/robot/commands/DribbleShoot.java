@@ -33,7 +33,7 @@ public class DribbleShoot extends CommandBase {
         shooter.setShooterRpm(rpm);
 
         // set hood angle (knob 6, 39? degrees)
-        // shooter.setHoodAngle(position);
+        shooter.setHoodAngle(69);
 
         // if target rpm is within range (+- 50)
         if (rpm - 50 < shooter.getShooterVelocity() && shooter.getShooterVelocity() < rpm + 50) {
