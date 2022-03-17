@@ -10,10 +10,12 @@ public class SafeZoneShoot extends CommandBase {
     private Shooter shooter;
     private Ingestor ingestor;
     private double speed;
+    private boolean changeHood;
 
-    public SafeZoneShoot(Shooter shooter, Ingestor ingestor) {
+    public SafeZoneShoot(Shooter shooter, Ingestor ingestor, boolean changeHood) {
         this.shooter = shooter;
         this.ingestor = ingestor;
+        this.changeHood = changeHood;
         speed = 2650;
         addRequirements(shooter);
         SmartDashboard.putNumber("Target RPM", speed); // 2650 = sweet spot based on '2022 shooter speed table'
@@ -22,7 +24,10 @@ public class SafeZoneShoot extends CommandBase {
     @Override
     public void execute() {
         shooter.setShooterRpm(speed);
-        shooter.setHoodAngle(53); // knob 4.5
+        
+        if(changeHood) {
+            shooter.setHoodAngle(53); // knob 4.5
+        }
 
         if (speed - 50 < shooter.getShooterVelocity() && shooter.getShooterVelocity() < speed + 50) {
             ingestor.sendCargoToShooter();

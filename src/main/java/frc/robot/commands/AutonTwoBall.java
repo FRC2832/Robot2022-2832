@@ -27,7 +27,7 @@ public class AutonTwoBall extends CommandBase {
         this.drive = drive;
         this.shooter = shooter;
         this.ingestor = ingestor;
-        autoShoot = new AutoShoot(drive, shooter, null, ingestor);
+        autoShoot = new AutoShoot(drive, shooter, ingestor, null, null);
         scheduled = false;
 
         timer = new Timer();

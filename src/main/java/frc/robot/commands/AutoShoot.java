@@ -10,15 +10,17 @@ import frc.robot.*;
 public class AutoShoot extends CommandBase {
     private Drivetrain drive;
     private Shooter shooter;
-    private XboxController controller;
+    private XboxController operatorController;
+    private XboxController driverController;
     private Ingestor ingestor;
     private boolean cargoSentToShooter;
     private boolean autonShootFinished;
 
-    public AutoShoot(Drivetrain drive, Shooter shooter, XboxController controller, Ingestor ingestor) {
+    public AutoShoot(Drivetrain drive, Shooter shooter, Ingestor ingestor, XboxController operatorController, XboxController driverController) {
         this.drive = drive;
         this.shooter = shooter;
-        this.controller = controller;
+        this.operatorController = operatorController;
+        this.driverController = driverController;
         this.ingestor = ingestor;
         cargoSentToShooter = false;
         autonShootFinished = false;
@@ -46,9 +48,11 @@ public class AutoShoot extends CommandBase {
 
         // check if PI saw target
         if (Pi.getTargetCenterX() > 0) {
-            if(controller != null) {
-                controller.setRumble(RumbleType.kLeftRumble, 0.0);
-                controller.setRumble(RumbleType.kRightRumble, 0.0);
+            if(operatorController != null && driverController != null) {
+                operatorController.setRumble(RumbleType.kLeftRumble, 0.0);
+                operatorController.setRumble(RumbleType.kRightRumble, 0.0);
+                driverController.setRumble(RumbleType.kLeftRumble, 0.0);
+                driverController.setRumble(RumbleType.kRightRumble, 0.0);
             }
             if (Pi.getTargetMoveLeft()) {
                 error = String.join(error, "TurnL ");
@@ -63,9 +67,11 @@ public class AutoShoot extends CommandBase {
             }
         } else {
             // pi is not seeing hub
-            if(controller != null) {
-                controller.setRumble(RumbleType.kLeftRumble, 1.0);
-                controller.setRumble(RumbleType.kRightRumble, 1.0);
+            if(operatorController != null && driverController != null) {
+                operatorController.setRumble(RumbleType.kLeftRumble, 1.0);
+                operatorController.setRumble(RumbleType.kRightRumble, 1.0);
+                driverController.setRumble(RumbleType.kLeftRumble, 1.0);
+                driverController.setRumble(RumbleType.kRightRumble, 1.0);
             }
             error = String.join(error, "Vision ");
             drive.drive(0, 0, 0, false);
@@ -94,9 +100,11 @@ public class AutoShoot extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-        if(controller != null) {
-            controller.setRumble(RumbleType.kLeftRumble, 0.0);
-            controller.setRumble(RumbleType.kRightRumble, 0.0);
+        if(operatorController != null && driverController != null) {
+            operatorController.setRumble(RumbleType.kLeftRumble, 0.0);
+            operatorController.setRumble(RumbleType.kRightRumble, 0.0);
+            driverController.setRumble(RumbleType.kLeftRumble, 0.0);
+            driverController.setRumble(RumbleType.kRightRumble, 0.0);
         }
         Shooter.setCoast(true);
         System.out.println("AutoShoot end");
