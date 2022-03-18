@@ -93,14 +93,17 @@ public class Robot extends TimedRobot {
         climber.setDefaultCommand(new RunClimber(climber, ingestor, operatorController));
         //swerve.setDefaultCommand(new TurtleMode(swerve, driverController));
 
-        JoystickButton selectButton = new JoystickButton(operatorController, 7); // 7 = select button
+        JoystickButton selectButton = new JoystickButton(operatorController, 7); 
         selectButton.whileActiveContinuous(new ManualShoot(shooter, ingestor));
 
-        JoystickButton startButton = new JoystickButton(operatorController, 8); // 8 = start button
-        startButton.whileActiveContinuous(new AutoShoot(swerve, shooter, operatorController, ingestor));
+        JoystickButton startButton = new JoystickButton(operatorController, 8); 
+        startButton.whileActiveContinuous(new SafeZoneShoot(shooter, ingestor, false));
+
+        JoystickButton rightBumper = new JoystickButton(operatorController, 6);
+        rightBumper.whileActiveContinuous(new AutoShoot(swerve, shooter, ingestor, operatorController, driverController));
 
         JoystickButton leftBumper = new JoystickButton(operatorController, 5);
-        leftBumper.whileActiveContinuous(new SafeZoneShoot(shooter, ingestor));
+        leftBumper.whileActiveContinuous(new SafeZoneShoot(shooter, ingestor, true));
 
         // this.setNetworkTablesFlushEnabled(true); //turn off 20ms Dashboard update
         // rate
