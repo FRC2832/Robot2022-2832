@@ -188,7 +188,7 @@ class CargoPipeline:
         else:
             mode = cv2.RETR_LIST
         method = cv2.CHAIN_APPROX_SIMPLE
-        im2, contours, hierarchy =cv2.findContours(input, mode=mode, method=method)
+        contours, hierarchy =cv2.findContours(input, mode=mode, method=method)
         return contours
 
     @staticmethod
@@ -258,9 +258,9 @@ class TargetPipeline:
         """initializes all values to presets or None if need to be set
         """
 
-        self.__hsv_threshold_hue = [43, 97]
-        self.__hsv_threshold_saturation = [155.93525179856115, 255.0]
-        self.__hsv_threshold_value = [73.38129496402877, 255.0]
+        self.__hsv_threshold_hue = [40.46762589928056, 86.31399317406144]
+        self.__hsv_threshold_saturation = [142.17625899280574, 255.0]
+        self.__hsv_threshold_value = [61.915467625899275, 255.0]
 
         self.hsv_threshold_output = None
 
@@ -270,7 +270,7 @@ class TargetPipeline:
         self.find_contours_output = None
 
         self.__filter_contours_contours = self.find_contours_output
-        self.__filter_contours_min_area = 35.0
+        self.__filter_contours_min_area = 10.0
         self.__filter_contours_min_perimeter = 0.0
         self.__filter_contours_min_width = 0.0
         self.__filter_contours_max_width = 1000.0
@@ -621,7 +621,7 @@ class findTarget (threading.Thread):
             else:
                 ret = None
             if ret:
-                cv2.rectangle(img,(0,0),(190,80),(0,0,0),-1) # draws a black box over the webcam reflection
+                # cv2.rectangle(img,(0,0),(190,80),(0,0,0),-1) # draws a black box over the webcam reflection
                 target_proc.process(img)
                 extra_target_processing(target_proc)
 
