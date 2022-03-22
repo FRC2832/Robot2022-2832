@@ -71,8 +71,8 @@ public class SwerveModule {
      */
     public SwerveModule(SwerveConstants cornerConstants) {
         constants = cornerConstants;
-        driveMotor = new WPI_TalonFX(Configuration.GetDriveMotorId(constants.Id));
-        turningMotor = new CANSparkMax(Configuration.GetTurnMotorId(constants.Id), MotorType.kBrushless);
+        driveMotor = new WPI_TalonFX(constants.TalonFXId);
+        turningMotor = new CANSparkMax(constants.SparkId, MotorType.kBrushless);
         turningEncoder = turningMotor.getEncoder();
         turningEncoder.setPositionConversionFactor(6.82);
         driveMotor.setNeutralMode(NeutralMode.Brake);
