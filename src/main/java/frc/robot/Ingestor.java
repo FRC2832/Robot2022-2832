@@ -40,6 +40,9 @@ public class Ingestor extends SubsystemBase {
     private static final double STAGE_1_SPEED = 0.75;// 1000.0;
     private static final double STAGE_2_SPEED = 0.85; // 1000.0;
     private static final double INGESTOR_LIFT_SPEED = 0.25;
+    private static final double SEND_CARGO_STEP_1_TIME = 0.5; // 1.0
+    private static final double SEND_CARGO_STEP_2_TIME = 2.5;
+
 
     public Ingestor(ColorSensor colorSensor) {
         ingestorWheels = new WPI_TalonSRX(27);
@@ -133,13 +136,14 @@ public class Ingestor extends SubsystemBase {
             timer.start();
             timerStarted = true;
         }
-        if (timer.get() < 1) {
+        if (timer.get() < SEND_CARGO_STEP_1_TIME) {
             stage2Conveyor.set(-STAGE_2_SPEED);
-        } else if (timer.get() < 2.5) {
+        } else if (timer.get() < SEND_CARGO_STEP_2_TIME) {
             stage2Conveyor.set(-STAGE_2_SPEED);
             stage1Conveyor.set(STAGE_1_SPEED);
         } else {
             timer.reset();
+            timer.stop();
             timerStarted = false;
             return true;
         }
@@ -156,6 +160,7 @@ public class Ingestor extends SubsystemBase {
             stage2Conveyor.set(-STAGE_2_SPEED);
         } else {
             timer.reset();
+            timer.stop();
             timerStarted = false;
             return true;
         }

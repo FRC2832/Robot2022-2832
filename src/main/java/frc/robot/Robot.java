@@ -146,7 +146,6 @@ public class Robot extends TimedRobot {
 
         // CommandScheduler.getInstance().schedule(new HomeHood(shooter));
         CommandScheduler.getInstance().schedule(new AutonTwoBall(swerve, shooter, ingestor));
-        Pose2d pos = swerve.odometry.getPoseMeters();
         ranAuton = true;
     }
 

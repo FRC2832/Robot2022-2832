@@ -121,7 +121,7 @@ public class AutonTwoBall extends CommandBase {
                 // double speed = 2300.0;
                 // // TODO: Might be able to schedule AutoLShoot later.
                 // // TODO add in hood angle code when working
-                // ingestor.lowerIngestor(0.0);
+                //ingestor.lowerIngestor(0.0);
                 // shooter.setShooterRpm(speed);
                 // if (speed - 50 < shooter.getShooterVelocity() && shooter.getShooterVelocity() < speed + 50) {
                 //     ingestor.sendCargoToShooter();
@@ -169,7 +169,7 @@ public class AutonTwoBall extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-        timer.stop();
+]       timer.stop();
         drive.drive(0, 0, 0, false);
         shooter.setShooterRpm(1000.0);
         Shooter.setCoast(true);

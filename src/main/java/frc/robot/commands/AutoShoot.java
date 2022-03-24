@@ -14,7 +14,6 @@ public class AutoShoot extends CommandBase {
     private XboxController driverController;
     private Ingestor ingestor;
     private boolean cargoSentToShooter;
-    private boolean autonShootFinished;
 
     public AutoShoot(Drivetrain drive, Shooter shooter, Ingestor ingestor, XboxController operatorController, XboxController driverController) {
         this.drive = drive;
@@ -23,10 +22,14 @@ public class AutoShoot extends CommandBase {
         this.driverController = driverController;
         this.ingestor = ingestor;
         cargoSentToShooter = false;
-        autonShootFinished = false;
 
         addRequirements(drive);
         addRequirements(shooter);
+    }
+
+    @Override
+    public void initialize() {
+        cargoSentToShooter = false;
     }
 
     @Override
@@ -67,7 +70,7 @@ public class AutoShoot extends CommandBase {
             }
         } else {
             // pi is not seeing hub
-            if(operatorController != null && driverController != null) {
+            if (operatorController != null && driverController != null) {
                 operatorController.setRumble(RumbleType.kLeftRumble, 1.0);
                 operatorController.setRumble(RumbleType.kRightRumble, 1.0);
                 driverController.setRumble(RumbleType.kLeftRumble, 1.0);
@@ -100,7 +103,7 @@ public class AutoShoot extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-        if(operatorController != null && driverController != null) {
+        if (operatorController != null && driverController != null) {
             operatorController.setRumble(RumbleType.kLeftRumble, 0.0);
             operatorController.setRumble(RumbleType.kRightRumble, 0.0);
             driverController.setRumble(RumbleType.kLeftRumble, 0.0);
