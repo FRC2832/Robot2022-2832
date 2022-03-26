@@ -42,11 +42,11 @@ public class Ingestor extends SubsystemBase {
     private static final double INGESTOR_LIFT_SPEED = 0.25;
 
     public Ingestor(ColorSensor colorSensor) {
-        ingestorWheels = new WPI_TalonSRX(27);
+        ingestorWheels = new WPI_TalonSRX(CanIDConstants.intakeWheels);
         // ingestorGate = new WPI_TalonSRX(2);
-        stage1Conveyor = new WPI_TalonSRX(25);
-        stage2Conveyor = new WPI_TalonSRX(23);
-        ingestorLift = new CANSparkMax(31, BRUSHLESS);
+        stage1Conveyor = new WPI_TalonSRX(CanIDConstants.stage1);
+        stage2Conveyor = new WPI_TalonSRX(CanIDConstants.stage2);
+        ingestorLift = new CANSparkMax(CanIDConstants.intakeLift, BRUSHLESS);
         // driverController = new XboxController(0);
         operatorController = new XboxController(2);
         timer = new Timer();
