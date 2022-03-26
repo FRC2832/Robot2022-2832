@@ -11,9 +11,8 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.commands.DribbleShoot;
+import frc.robot.ColorSensor.CargoColor;
 
 public class Shooter extends SubsystemBase {
     private final double SENSOR_UNITS_TO_RPM = 3.414;
@@ -21,7 +20,7 @@ public class Shooter extends SubsystemBase {
     private TalonSRX hoodMotor;
     private boolean isHomed; // report if hood has been homed
     private boolean lastHomed;
-    //private double hoodSensorOffset;
+    // private double hoodSensorOffset;
     private double distance;
     private double targetHoodAngle;
     private double targetRpm;
@@ -32,8 +31,9 @@ public class Shooter extends SubsystemBase {
     final int MAX_ANGLE_COUNTS = 400;
     final int MIN_ANGLE = 20;
     final int MAX_ANGLE = 70;
-    private String currentCargoColor;
+    private CargoColor currentCargoColor;
     private Ingestor ingestor;
+    private static String allianceString;
 
     // TODO: write home hood method
     // Distance to Target
@@ -45,12 +45,12 @@ public class Shooter extends SubsystemBase {
         this.driveController = driveController;
         this.operatorController = operatorController;
         this.ingestor = ingestor;
-        currentCargoColor = "none";
+        currentCargoColor = CargoColor.Unknown;
         isHomed = false;
-        hoodMotor = new TalonSRX(CanIDConstants.hoodMotor);
+        hoodMotor = new TalonSRX(CanIDConstants.HOOD_MOTOR);
         hoodMotor.setNeutralMode(NeutralMode.Brake);
 
-        shooterFx = new TalonFX(CanIDConstants.shooterDrive);
+        shooterFx = new TalonFX(CanIDConstants.SHOOTER_DRIVE);
         shooterFx.setNeutralMode(NeutralMode.Coast);
         shooterFx.setInverted(false);
         // hoodMotor.setNeutralMode(NeutralMode.Brake);
@@ -75,33 +75,25 @@ public class Shooter extends SubsystemBase {
         hoodConfig.slot0.allowableClosedloopError = 2;
         hoodConfig.slot0.closedLoopPeakOutput = 0.5;
         hoodMotor.configAllSettings(hoodConfig);
+        updateAllianceColor();
+
     }
 
     @Override
     public void periodic() {
         currentCargoColor = ColorSensor.getCargoColor();
-
-        //System.out.println("currentCargoColor: " + currentCargoColor);
-
-        String allianceString;
-        Alliance alliance = DriverStation.getAlliance();
-        if(alliance == Alliance.Red) {
-            allianceString = "Red";
-        } else {
-            allianceString = "Blue";
-        }
-
-        if(currentCargoColor.equals("Unknown")){
+        System.out.println("Current Alliance color: " + allianceString);
+        // System.out.println("currentCargoColor: " + currentCargoColor);
+        /*if (currentCargoColor.equals("Unknown")) {
             // no ball detected, so don't shoot
         }
-        // if detected color != alliance color 
-        else if(!(currentCargoColor.equalsIgnoreCase(allianceString))){
-            CommandScheduler.getInstance().schedule(new DribbleShoot(this, ingestor));
-        }
-        else{
+        // if detected color != alliance color
+        else if (!(currentCargoColor.equalsIgnoreCase(allianceString))) {
+            //CommandScheduler.getInstance().schedule(new DribbleShoot(this, ingestor));
+        } else {
             // call Autoshoot (TODO)
             // print "AUTOSHOOTING!!!"
-        }
+        }*/
 
         SmartDashboard.putNumber("Shooter Output Velocity", getShooterVelocity());
         SmartDashboard.putNumber("Hood Angle Position", getHoodAngle());
@@ -109,36 +101,38 @@ public class Shooter extends SubsystemBase {
         SmartDashboard.putNumber("Calc RPM", getTargetRpm());
         SmartDashboard.putNumber("Calc Hood Angle", getTargetHoodAngle());
         // if the limit switch is pressed, reset the hood angle position
-        //when we exit the home position, save the zero position
-        if (lastHomed == true && !hoodBottom()){
+        // when we exit the home position, save the zero position
+        if (lastHomed && !hoodBottom()) {
             hoodMotor.setSelectedSensorPosition(0);
             isHomed = true;
         }
         // if (hoodMotor.isRevLimitSwitchClosed() > 0) {
-        //     hoodMotor.setSelectedSensorPosition(0);
-        //     isHomed = true;
-        //     System.out.println("isHomed = true");
+        // hoodMotor.setSelectedSensorPosition(0);
+        // isHomed = true;
+        // System.out.println("isHomed = true");
         // }
         lastHomed = hoodBottom();
         if (!operatorController.getStartButton()) {
+            double percent;
             if (driveController.getLeftBumper()) {
-                hoodMotor.set(ControlMode.PercentOutput, 0.25);
+                percent = 0.25;
             } else if (driveController.getRightBumper()) {
                 if (isHomed && hoodMotor.isRevLimitSwitchClosed() > 0) {
-                    hoodMotor.set(ControlMode.PercentOutput, 0.0);
+                    percent = 0.0;
                 } else {
-                    hoodMotor.set(ControlMode.PercentOutput, -0.25);
+                    percent = -0.25;
                 }
             } else {
-                hoodMotor.set(ControlMode.PercentOutput, 0.0);
+                percent = 0.0;
             }
+            hoodMotor.set(ControlMode.PercentOutput, percent);
         }
 
-        if(DriverStation.isDisabled()) {
-            hoodMotor.setNeutralMode(NeutralMode.Coast);
-        } else {
-            hoodMotor.setNeutralMode(NeutralMode.Brake);
+        NeutralMode mode = NeutralMode.Brake;
+        if (DriverStation.isDisabled()) {
+            mode = NeutralMode.Coast;
         }
+        hoodMotor.setNeutralMode(mode);
     }
 
     public void setShootPct(double percent) {
@@ -153,6 +147,10 @@ public class Shooter extends SubsystemBase {
         return isHomed;
     }
 
+    public static String getAllianceString() {
+        return allianceString;
+    }
+
     /**
      * Get shooter speed in RPM
      * 
@@ -162,28 +160,37 @@ public class Shooter extends SubsystemBase {
         return shooterFx.getSelectedSensorVelocity() / SENSOR_UNITS_TO_RPM;
     }
 
+    public void updateAllianceColor() {
+        Alliance alliance = DriverStation.getAlliance();
+        if (alliance == Alliance.Red) {
+            allianceString = "Red";
+        } else {
+            allianceString = "Blue";
+        }
+    }
+
     public double getHoodAngle() {
         double sensor = hoodMotor.getSelectedSensorPosition();
-        return (sensor/MAX_ANGLE_COUNTS)*(MAX_ANGLE-MIN_ANGLE) + MIN_ANGLE;
+        return (sensor / MAX_ANGLE_COUNTS) * (MAX_ANGLE - MIN_ANGLE) + MIN_ANGLE;
     }
 
     public void setHoodSpeedPct(double pct) {
         // allow control if homed or only down if not homed
-        if(hoodBottom()) {
-            if(pct > 0.1) {
-                //if driving down, stop at home
-                hoodMotor.set(ControlMode.PercentOutput, 0);
+        double percentage;
+        if (hoodBottom()) {
+            if (pct > 0.1) {
+                // if driving down, stop at home
+                percentage = 0.0;
             } else {
-                //slowly drive out to get accurate home
-                hoodMotor.set(ControlMode.PercentOutput, 0.18);
+                // slowly drive out to get accurate home
+                percentage = 0.18;
             }
+        } else if (hoodMotor.getSelectedSensorPosition() > MAX_ANGLE_COUNTS && pct > 0) {
+            percentage = 0.0;
+        } else {
+            percentage = pct;
         }
-        else if(hoodMotor.getSelectedSensorPosition() > MAX_ANGLE_COUNTS && pct > 0){
-            hoodMotor.set(ControlMode.PercentOutput, 0);
-        }
-        else {
-            hoodMotor.set(ControlMode.PercentOutput, pct);
-        }
+        hoodMotor.set(ControlMode.PercentOutput, percentage);
     }
 
     public boolean hoodBottom() {
@@ -191,7 +198,7 @@ public class Shooter extends SubsystemBase {
     }
 
     public void setHoodAngle(double position) {
-        double value = (position-MIN_ANGLE) * MAX_ANGLE_COUNTS/ (MAX_ANGLE-MIN_ANGLE);
+        double value = (position - MIN_ANGLE) * MAX_ANGLE_COUNTS / (MAX_ANGLE - MIN_ANGLE);
         hoodMotor.set(ControlMode.Position, value);
     }
 
@@ -224,7 +231,7 @@ public class Shooter extends SubsystemBase {
         return coastMotor;
     }
 
-    public String getCurrentCargoColor(){
+    public CargoColor getCurrentCargoColor() {
         return currentCargoColor;
     }
 }

@@ -9,22 +9,21 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoder;
-import com.ctre.phoenix.sensors.CANCoderStatusFrame;
-import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.RelativeEncoder;
 
-import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.system.plant.LinearSystemId;
+import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.EncoderSim;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.math.system.plant.LinearSystemId;
 
 public class SwerveModule {
     // private static final double kWheelRadius = 0.0508;
@@ -72,8 +71,8 @@ public class SwerveModule {
      */
     public SwerveModule(SwerveConstants cornerConstants) {
         constants = cornerConstants;
-        driveMotor = new WPI_TalonFX(CanIDConstants.swerveDrives[constants.Id]);
-        turningMotor = new CANSparkMax(CanIDConstants.swerveRots[constants.Id], MotorType.kBrushless);
+        driveMotor = new WPI_TalonFX(CanIDConstants.SWERVE_DRIVES[constants.Id]);
+        turningMotor = new CANSparkMax(CanIDConstants.SWERVE_ROTS[constants.Id], MotorType.kBrushless);
         turningEncoder = turningMotor.getEncoder();
         turningEncoder.setPositionConversionFactor(6.82);
         driveMotor.setNeutralMode(NeutralMode.Brake);
@@ -97,10 +96,10 @@ public class SwerveModule {
          * pidController.setOutputRange(min, max);
          */
 
-        absEncoder = new CANCoder(CanIDConstants.swerveRotSensors[constants.Id]);
+        absEncoder = new CANCoder(CanIDConstants.SWERVE_ROTSENSORS[constants.Id]);
         absEncoder.setPositionToAbsolute();
         absEncoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180, 0);
-        zeroAngle = CanIDConstants.swerveZeros[constants.Id];
+        zeroAngle = CanIDConstants.SWERVE_ZEROS[constants.Id];
 
         // Limit the PID Controller's input range between -pi and pi and set the input
         // to be continuous.

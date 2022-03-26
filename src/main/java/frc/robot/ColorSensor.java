@@ -1,12 +1,12 @@
 package frc.robot;
 
+import com.revrobotics.ColorMatch;
+import com.revrobotics.ColorMatchResult;
+import com.revrobotics.ColorSensorV3;
+
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
-import com.revrobotics.ColorSensorV3;
-import com.revrobotics.ColorMatch;
-import com.revrobotics.ColorMatchResult;
 
 public class ColorSensor extends SubsystemBase {
     private static ColorSensorV3 colorSensor;
@@ -41,8 +41,8 @@ public class ColorSensor extends SubsystemBase {
         return colorSensor.getProximity();
     }
 
-    public static String getCargoColor() {
-        return cargoColor.toString();
+    public static CargoColor getCargoColor() {
+        return cargoColor;
     }
 
     /*
@@ -56,13 +56,13 @@ public class ColorSensor extends SubsystemBase {
         color = colorSensor.getColor();
         ColorMatchResult match = colorMatcher.matchClosestColor(color);
         if (match.color == BLUE_TARGET) {
-            // System.out.println("BLUE");
+            System.out.println("Current Cargo Color: BLUE");
             cargoColor = CargoColor.Blue;
         } else if (match.color == RED_TARGET) {
-            // System.out.println("RED");
+            System.out.println("Current Cargo Color: RED");
             cargoColor = CargoColor.Red;
         } else {
-            // System.out.println("UNKNOWN");
+            System.out.println("Current Cargo Color: UNKNOWN");
             cargoColor = CargoColor.Unknown;
         }
     }

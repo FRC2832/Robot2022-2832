@@ -6,24 +6,24 @@ public class CanIDConstants {
     // swerve order: "FL", "FR", "RL", "RR"
 
     // swerve motors
-    public static byte[] swerveDrives = {32, 28, 38, 21};
-    public static byte[] swerveRots = {30, 29, 39, 20};
-    public static byte[] swerveRotSensors = {50, 49, 59, 40};
-    public static double[] swerveZeros = {93.52, -2.29, 178, -92.5};
+    public static final byte[] SWERVE_DRIVES = {32, 28, 38, 21};
+    public static final byte[] SWERVE_ROTS = {30, 29, 39, 20};
+    public static final byte[] SWERVE_ROTSENSORS = {50, 49, 59, 40};
+    public static final double[] SWERVE_ZEROS = {93.52, -2.29, 178.0, -92.5};
 
     // intake and slipstream
-    public static int intakeWheels = 27;
-    public static int intakeLift = 31;
-    public static int stage1 = 25;
-    public static int stage2 = 23;
+    public static final int INTAKE_WHEELS = 27;
+    public static final int INTAKE_LIFT = 31;
+    public static final int STAGE_1 = 25;
+    public static final int STAGE_2 = 23;
 
     // shooter
-    public static int shooterDrive = 24;
+    public static final int SHOOTER_DRIVE = 24;
     
     // climber
-    public static int rung12Winch = 33;
-    public static int rung34Winch = 34;
+    public static final int RUNG_1_2_WINCH = 33;
+    public static final int RUNG_3_4_WINCH = 34;
 
-    public static int hoodMotor = 26;
+    public static final int HOOD_MOTOR = 26;
     
 }
