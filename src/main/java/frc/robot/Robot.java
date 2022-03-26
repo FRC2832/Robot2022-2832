@@ -74,7 +74,8 @@ public class Robot extends TimedRobot {
         vers.printVersions();
 
         ShooterConstants.LoadConstants();
-        shooter = new Shooter(driverController, operatorController, colorSensor, ingestor);
+        CommandScheduler.getInstance().registerSubsystem(pi);
+        shooter = new Shooter(driverController, operatorController, ingestor);
 
         climber = new Climber();
 
@@ -174,8 +175,8 @@ public class Robot extends TimedRobot {
         // SmartDashboard.putNumber("XPosition", odometry.getXPosition());
         // SmartDashboard.putNumber("YPosition", odometry.getYPosition());
 
-        pi.processCargo();
-        pi.processTargets();
+        //pi.processCargo();
+        //pi.processTargets();
         // automatically turn on/off recording
         if (lastEnabled != isEnabled()) {
             // we know the enabled status changed

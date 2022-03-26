@@ -41,7 +41,7 @@ public class Shooter extends SubsystemBase {
     // Turn robot to goal
     // Turret Angle?
 
-    public Shooter(XboxController driveController, XboxController operatorController, ColorSensor colorSensor, Ingestor ingestor) {
+    public Shooter(XboxController driveController, XboxController operatorController, Ingestor ingestor) {
         this.driveController = driveController;
         this.operatorController = operatorController;
         this.ingestor = ingestor;
