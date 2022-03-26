@@ -12,7 +12,6 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.ColorSensor.CargoColor;
 
 //import edu.wpi.first.wpilibj.DigitalOutput;
 
@@ -31,8 +30,7 @@ public class Ingestor extends SubsystemBase {
     private DigitalInput stage1ProxSensor;
     private Counter counter;
     private int totalBalls;
-    private ColorSensor stage2ColorSensor;
-    private boolean ballAtColorSensor;
+    //private boolean ballAtColorSensor;
     // private SmartDashboard smartDashboard;
 
     // Targetted motor speeds
@@ -51,12 +49,11 @@ public class Ingestor extends SubsystemBase {
         operatorController = new XboxController(2);
         timer = new Timer();
         // Port port = Port.kOnboard; // TODO: Need to verify this.
-        this.stage2ColorSensor = colorSensor;
         // stage1ProxSensor = new DigitalInput(0);
         stage1ProxSensor = new DigitalInput(0);
         counter = new Counter(stage1ProxSensor);
         totalBalls = 0;
-        ballAtColorSensor = false;
+        //ballAtColorSensor = false;
 
     }
 
@@ -75,24 +72,24 @@ public class Ingestor extends SubsystemBase {
         }
 
         // color sensor conditions
-        if (stage2ColorSensor.getProx() > 1000) {
+        /*if (ColorSensor.getProx() > 1000) {
             //System.out.println("getProximity() > 1000");
-            ballAtColorSensor = true;
+            //ballAtColorSensor = true;
             //System.out.println("Total Balls 2:" + totalBalls);
             SmartDashboard.putNumber("Total Balls", totalBalls);
         } else {
             //System.out.println("getProximity() <= 1000");
-            ballAtColorSensor = false;
+            //ballAtColorSensor = false;
             //System.out.println("Total Balls 3:" + totalBalls);
             SmartDashboard.putNumber("Total Balls", totalBalls);
-        }
+        }*/
         /* if(!stage1ProxSensor.get() && !ballAtColorSensor){
             totalBalls--;
             System.out.println("Total Balls " + totalBalls);
             SmartDashboard.putNumber("Total Balls", totalBalls);
         } */
 
-        CargoColor cargoColor = stage2ColorSensor.getColorSensor();
+        //String cargoColor = ColorSensor.getCargoColor();
         /*if (cargoColor == CargoColor.Blue) {
             System.out.println("Cargo is blue");
         } else if (cargoColor == CargoColor.Red) {
@@ -139,6 +136,7 @@ public class Ingestor extends SubsystemBase {
             stage2Conveyor.set(-STAGE_2_SPEED);
             stage1Conveyor.set(STAGE_1_SPEED);
         } else {
+            timer.stop();
             timer.reset();
             timerStarted = false;
             return true;
@@ -155,6 +153,7 @@ public class Ingestor extends SubsystemBase {
         if (timer.get() < 3) {
             stage2Conveyor.set(-STAGE_2_SPEED);
         } else {
+            timer.stop();
             timer.reset();
             timerStarted = false;
             return true;
@@ -181,7 +180,7 @@ public class Ingestor extends SubsystemBase {
     }
 
     public int getStage2Proximity() {
-        return stage2ColorSensor.getProx();
+        return ColorSensor.getProx();
     }
 
     public WPI_TalonSRX getIngestorWheels() {

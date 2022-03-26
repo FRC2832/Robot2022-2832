@@ -29,8 +29,8 @@ public class SwerveModule {
     // private static final double kWheelRadius = 0.0508;
     // private static final int kEncoderResolution = 4096;
 
-    private static final double kModuleMaxAngularVelocity = 2 * Drivetrain.kMaxAngularSpeed;
-    private static final double kModuleMaxAngularAcceleration = 4 * Math.PI; // radians per second squared
+    //private static final double kModuleMaxAngularVelocity = 2 * Drivetrain.kMaxAngularSpeed;
+    //private static final double kModuleMaxAngularAcceleration = 4 * Math.PI; // radians per second squared
 
     private final WPI_TalonFX driveMotor;
     private final CANSparkMax turningMotor;

@@ -21,8 +21,7 @@ public class Shooter extends SubsystemBase {
     private TalonSRX hoodMotor;
     private boolean isHomed; // report if hood has been homed
     private boolean lastHomed;
-    private double hoodSensorOffset;
-    private Pi pi;
+    //private double hoodSensorOffset;
     private double distance;
     private double targetHoodAngle;
     private double targetRpm;
@@ -33,7 +32,6 @@ public class Shooter extends SubsystemBase {
     final int MAX_ANGLE_COUNTS = 400;
     final int MIN_ANGLE = 20;
     final int MAX_ANGLE = 70;
-    private ColorSensor colorSensor;
     private String currentCargoColor;
     private Ingestor ingestor;
 
@@ -43,11 +41,9 @@ public class Shooter extends SubsystemBase {
     // Turn robot to goal
     // Turret Angle?
 
-    public Shooter(Pi pi, XboxController driveController, XboxController operatorController, ColorSensor colorSensor, Ingestor ingestor) {
-        this.pi = pi;
+    public Shooter(XboxController driveController, XboxController operatorController, ColorSensor colorSensor, Ingestor ingestor) {
         this.driveController = driveController;
         this.operatorController = operatorController;
-        this.colorSensor = colorSensor;
         this.ingestor = ingestor;
         currentCargoColor = "none";
         isHomed = false;
@@ -83,8 +79,7 @@ public class Shooter extends SubsystemBase {
 
     @Override
     public void periodic() {
-        colorSensor.runColorSensor();
-        currentCargoColor = colorSensor.getColorSensor().toString();
+        currentCargoColor = ColorSensor.getCargoColor();
 
         //System.out.println("currentCargoColor: " + currentCargoColor);
 
@@ -101,7 +96,7 @@ public class Shooter extends SubsystemBase {
         }
         // if detected color != alliance color 
         else if(!(currentCargoColor.equalsIgnoreCase(allianceString))){
-            CommandScheduler.getInstance().schedule(new DribbleShoot(this, ingestor, colorSensor, pi));
+            CommandScheduler.getInstance().schedule(new DribbleShoot(this, ingestor));
         }
         else{
             // call Autoshoot (TODO)
@@ -202,7 +197,7 @@ public class Shooter extends SubsystemBase {
 
     public void calcShot() {
         // first, calculate distance to target
-        double centerY = pi.getTargetCenterY();
+        double centerY = Pi.getTargetCenterY();
         distance = Pi.LinearInterp(ShooterConstants.VISION_DIST_TABLE, centerY);
 
         targetHoodAngle = Pi.LinearInterp(ShooterConstants.DIST_HOOD_TABLE, distance);

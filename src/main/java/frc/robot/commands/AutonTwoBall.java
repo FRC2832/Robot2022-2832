@@ -2,9 +2,7 @@ package frc.robot.commands;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Drivetrain;
@@ -16,7 +14,7 @@ public class AutonTwoBall extends CommandBase {
     private Shooter shooter;
     private Ingestor ingestor;
     private Timer timer;
-    private boolean sentToShooter;
+    //private boolean sentToShooter;
     private double startAngle;
     private double startEncoderCount;
     private AutoShoot autoShoot;

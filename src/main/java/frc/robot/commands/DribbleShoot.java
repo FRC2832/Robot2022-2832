@@ -1,33 +1,28 @@
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.ColorSensor;
 import frc.robot.Ingestor;
-import frc.robot.Pi;
 import frc.robot.Shooter;
 
 public class DribbleShoot extends CommandBase {
     private Shooter shooter;
     private Ingestor ingestor;
-    private ColorSensor colorSensor;
-    private Pi pi;
-    
-    public DribbleShoot(Shooter shooter, Ingestor ingestor, ColorSensor colorSensor, Pi pi) {
+    //private Pi pi;
+
+    public DribbleShoot(Shooter shooter, Ingestor ingestor) {
         this.shooter = shooter;
         this.ingestor = ingestor;
-        this.colorSensor = colorSensor;
-        this.pi = pi;
+        //this.pi = pi;
         addRequirements(shooter);
         SmartDashboard.putNumber("Target RPM", 1000); // 1000 = dribble rpm
     }
 
     @Override
     public void execute() {
-        //String detectedColor = colorSensor.getColor();
-        //String allianceColor = pi.getAllianceColor().getString("default");
+        // String detectedColor = colorSensor.getColor();
+        // String allianceColor = pi.getAllianceColor().getString("default");
 
         double rpm = 1000.0;
         shooter.setShooterRpm(rpm);
@@ -44,7 +39,7 @@ public class DribbleShoot extends CommandBase {
     @Override
     public boolean isFinished() {
         // wehn color is unknown return true (maybe wait one more second?)
-        if((colorSensor.getColorSensor().toString()).equals("Unknown")){
+        if (ColorSensor.getCargoColor().equals("Unknown")) {
             return true;
         }
         return false;

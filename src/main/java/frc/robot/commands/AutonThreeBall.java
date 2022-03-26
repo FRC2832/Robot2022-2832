@@ -38,10 +38,6 @@ public class AutonThreeBall extends CommandBase {
         // drive.currentStep++;
     }
 
-    private void stop() {
-        drive.drive(0, 0, 0, true);
-    }
-
     @Override
     public void execute() {
         // TODO decrease time parameter to speed up the robot
