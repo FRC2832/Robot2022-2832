@@ -15,6 +15,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.math.controller.PIDController;
@@ -54,6 +55,7 @@ public class SwerveModule {
     private double turnVoltCommand;
     private double driveVoltCommand;
     private SwerveConstants constants;
+    private double oldTurnAngle = 0.0;
 
     // Using FlywheelSim as a stand-in for a simple motor
     private FlywheelSim m_turnMotorSim;
@@ -180,10 +182,16 @@ public class SwerveModule {
         final double driveFeedforward = driveFeedForward.calculate(state.speedMetersPerSecond);
 
         // Calculate the turning motor output from the turning PID controller.
+        // if(oldTurnAngle == 0) {
+        //     oldTurnAngle = Math.toRadians(getAbsoluteAngle());
+        // }
+        // double newTurnAngle = (1 - 0.4) * oldTurnAngle + 0.4 * Math.toRadians(getAbsoluteAngle());
         final double turnOutput = turningPIDController.calculate(Math.toRadians(getAbsoluteAngle()),
                 state.angle.getRadians());
+        // oldTurnAngle = Math.toRadians(getAbsoluteAngle());
 
         turnVoltCommand = -turnOutput;
+        DataLogManager.log(constants.Name + " Turn volt command: " + turnVoltCommand);
         driveVoltCommand = driveOutput + driveFeedforward;
 
         driveMotor.setVoltage(driveVoltCommand);
@@ -228,6 +236,7 @@ public class SwerveModule {
         SmartDashboard.putNumber(constants.Name + "/absEncoderZeroed", getAbsoluteAngle());
         SmartDashboard.putNumber(constants.Name + "/absEncoderRaw", absEncoder.getAbsolutePosition());
         SmartDashboard.putNumber(constants.Name + "/turnEncoderRaw", turningEncoder.getPosition());
+        SmartDashboard.putNumber(constants.Name + "/turnVoltCommand", turnVoltCommand);
     }
 
     public void setBrakeMode(boolean brake) {
