@@ -3,9 +3,11 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Shooter;
+import edu.wpi.first.wpilibj.XboxController;
 
 public class DashboardShoot extends CommandBase {
     private Shooter shooter;
+    private XboxController driverController = new XboxController(0);
 
     public DashboardShoot(Shooter shooter) {
         this.shooter = shooter;
@@ -15,7 +17,9 @@ public class DashboardShoot extends CommandBase {
     
     @Override
     public void execute() {
-        double rpm = SmartDashboard.getNumber("Target RPM", 2000);
-        shooter.setShooterRpm(rpm);
+        if(driverController.getYButton()){
+            double rpm = SmartDashboard.getNumber("Target RPM", 2000);
+            shooter.setShooterRpm(rpm);
+        }
     }
 }

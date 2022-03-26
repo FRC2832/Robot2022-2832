@@ -32,9 +32,13 @@ public class RunClimber extends CommandBase {
                 // ingestor.liftIngestor();
                 climber.arm1Up();
                 break;
+            case 90:
+                climber.arm2Up();
+            case 270:
+                climber.arm2Down();
             default: // Nothing pressed. Move neither arm.
                 climber.arm1Hold();
-                // climber.arm2Hold();
+                climber.arm2Hold();
                 break;
         }
     }
