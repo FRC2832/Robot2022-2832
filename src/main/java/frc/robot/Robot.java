@@ -80,6 +80,8 @@ public class Robot extends TimedRobot {
         GitVersion vers = GitVersion.loadVersion();
         vers.printVersions();
 
+        pi.sendAlliance();
+
         ShooterConstants.LoadConstants();
         shooter = new Shooter(pi, driverController, operatorController, colorSensor, ingestor);
 
@@ -135,10 +137,12 @@ public class Robot extends TimedRobot {
         driverController.setRumble(RumbleType.kRightRumble, 0.0);
         Shooter.setCoast(false);
         swerve.setBrakeMode(false);
+        pi.sendAlliance();
     }
 
     @Override
     public void autonomousInit() {
+        pi.sendAlliance();
         AutonTwoBall.resetAutonShoot();
         CommandScheduler.getInstance().cancelAll();
         m_selectedAuton = m_chooser.getSelected();
@@ -162,6 +166,7 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopInit() {
         CommandScheduler.getInstance().cancelAll();
+        pi.sendAlliance();
         if (!ranAuton) {
             // CommandScheduler.getInstance().schedule(new HomeHood(shooter));
         }

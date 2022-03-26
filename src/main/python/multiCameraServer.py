@@ -63,7 +63,7 @@ class CargoPipeline:
         self.find_contours_output = None
 
         self.__filter_contours_contours = self.find_contours_output
-        self.__filter_contours_min_area = 7000.0
+        self.__filter_contours_min_area = 1000.0
         self.__filter_contours_min_perimeter = 0.0
         self.__filter_contours_min_width = 0.0
         self.__filter_contours_max_width = 1000.0
@@ -633,27 +633,27 @@ class findCargo (threading.Thread):
     def run(self):
         red_pipeline = {
             'rgb_red': [218.50282485875704, 255.0], 
-            'rgb_green': [0.0, 255.0], 
+            'rgb_green': [0.0, 195.9090909090909], 
             'rgb_blue': [0.0, 255.0], 
             'hsv_hue': [0.0, 14.266576622971181], 
-            'hsv_sat': [54.60411331951388, 255.0], 
-            'hsv_value': [152.56244157216597, 255.0], 
-            'hsl_hue': [141.8942811852213, 180.0], 
+            'hsv_sat': [32.99394382798845, 255.0], 
+            'hsv_value': [234.20085965126202, 255.0], 
+            'hsl_hue': [150.36885745640777, 180.0], 
             'hsl_sat': [36.04286062675284, 255.0], 
-            'hsl_lum': [66.82569198878186, 255.0]
-        }
-        blue_pipeline = {
-            'rgb_red': [0.0, 184.54545454545456], 
-            'rgb_green': [0.0, 255.0], 
-            'rgb_blue': [177.68361581920905, 255.0], 
-            'hsv_hue': [86.4406779661017, 121.75320763901397], 
-            'hsv_sat': [42.598463601999754, 255.0], 
-            'hsv_value': [0.0, 255.0], 
-            'hsl_hue': [79.18241677844163, 138.28877005347593], 
-            'hsl_sat': [88.86771938381499, 255.0], 
             'hsl_lum': [0.0, 255.0]
         }
-        table = NetworkTables.getTable('datatable')
+        blue_pipeline = {
+            'rgb_red': [0.0, 150.45454545454547], 
+            'rgb_green': [0.0, 255.0], 
+            'rgb_blue': [199.29378531073448, 255.0], 
+            'hsv_hue': [84.74576271186442, 115.33609533954873], 
+            'hsv_sat': [129.03914156810146, 255.0], 
+            'hsv_value': [0.0, 255.0], 
+            'hsl_hue': [84.26716254115348, 135.0802139037433], 
+            'hsl_sat': [115.28014876234604, 255.0], 
+            'hsl_lum': [0.0, 255.0]
+        }
+        table = NetworkTables.getTable('vision')
         cargo_proc = CargoPipeline(blue_pipeline)
         img = np.zeros(shape=(240, 320, 3), dtype=np.uint8) 
         lastAlliance = 'blue'
@@ -668,6 +668,7 @@ class findCargo (threading.Thread):
                     cargo_proc = CargoPipeline(blue_pipeline)
                 lastAlliance = alliance
 
+            print('alliance:', alliance)
             #run the pipeline
             if self.cvSink is not None:
                 ret, img = self.cvSink.grabFrame(img)
