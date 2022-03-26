@@ -11,8 +11,8 @@ public class Climber extends SubsystemBase {
     private final double CLIMBER_DOWN_SPEED = 0.4;
 
     public Climber() {
-        rung1 = new WPI_TalonFX(33);
-        rung23 = new WPI_TalonFX(22);
+        rung1 = new WPI_TalonFX(CanIDConstants.rung12Winch);
+        rung23 = new WPI_TalonFX(CanIDConstants.rung34Winch);
         rung1.setNeutralMode(NeutralMode.Brake);
         rung23.setNeutralMode(NeutralMode.Brake);
     }
