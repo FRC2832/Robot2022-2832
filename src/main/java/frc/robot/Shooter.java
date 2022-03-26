@@ -51,10 +51,10 @@ public class Shooter extends SubsystemBase {
         this.ingestor = ingestor;
         currentCargoColor = "none";
         isHomed = false;
-        hoodMotor = new TalonSRX(26);
+        hoodMotor = new TalonSRX(CanIDConstants.hoodMotor);
         hoodMotor.setNeutralMode(NeutralMode.Brake);
 
-        shooterFx = new TalonFX(Configuration.GetShooterId());
+        shooterFx = new TalonFX(CanIDConstants.shooterDrive);
         shooterFx.setNeutralMode(NeutralMode.Coast);
         shooterFx.setInverted(false);
         // hoodMotor.setNeutralMode(NeutralMode.Brake);

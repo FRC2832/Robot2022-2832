@@ -90,7 +90,7 @@ public class Drivetrain extends SubsystemBase {
             visionTable = inst.getTable("/vision");
         }
 
-        TalonSRX motor = new TalonSRX(27);
+        TalonSRX motor = new TalonSRX(CanIDConstants.intakeWheels);
         pigeon = new PigeonIMU(motor);
 
         // set defaults for all swerve moules
@@ -122,23 +122,15 @@ public class Drivetrain extends SubsystemBase {
         }
         // per corner constants
         constants[FL].Name = "SwerveDrive_FL";
-        constants[FL].TalonFXId = 32;
-        constants[FL].SparkId = 30;
         constants[FL].Location = new Translation2d(0.261, 0.261);
 
         constants[FR].Name = "SwerveDrive_FR";
-        constants[FR].TalonFXId = 28;
-        constants[FR].SparkId = 29;
         constants[FR].Location = new Translation2d(0.261, -0.261);
 
         constants[RL].Name = "SwerveDrive_RL";
-        constants[RL].TalonFXId = 38;
-        constants[RL].SparkId = 39;
         constants[RL].Location = new Translation2d(-0.261, 0.261);
 
         constants[RR].Name = "SwerveDrive_RR";
-        constants[RR].TalonFXId = 21;
-        constants[RR].SparkId = 20;
         constants[RR].Location = new Translation2d(-0.261, -0.261);
 
         // create the swerve modules
