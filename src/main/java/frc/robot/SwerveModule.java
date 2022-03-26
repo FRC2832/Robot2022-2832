@@ -191,12 +191,19 @@ public class SwerveModule {
         // oldTurnAngle = Math.toRadians(getAbsoluteAngle());
 
         turnVoltCommand = -turnOutput;
-        DataLogManager.log(constants.Name + " Turn volt command: " + turnVoltCommand);
+        //DataLogManager.log(constants.Name + " Turn volt command: " + turnVoltCommand);
         driveVoltCommand = driveOutput + driveFeedforward;
 
+        if (driveVoltCommand <= 0.01) {
+            turnVoltCommand = 0;
+        }
+        
+        //DataLogManager.log(constants.Name + " Drive volt command: " + driveVoltCommand);
+        
         driveMotor.setVoltage(driveVoltCommand);
         turningMotor.setVoltage(turnVoltCommand);
 
+        
         /*
          * TODO: use hardware control of motor control instead of SW
          * //set the motor to 10 revolutions. We should divide the encoder to degrees
@@ -237,6 +244,7 @@ public class SwerveModule {
         SmartDashboard.putNumber(constants.Name + "/absEncoderRaw", absEncoder.getAbsolutePosition());
         SmartDashboard.putNumber(constants.Name + "/turnEncoderRaw", turningEncoder.getPosition());
         SmartDashboard.putNumber(constants.Name + "/turnVoltCommand", turnVoltCommand);
+        SmartDashboard.putNumber(constants.Name + "/driveVoltCommand", driveVoltCommand);
     }
 
     public void setBrakeMode(boolean brake) {
