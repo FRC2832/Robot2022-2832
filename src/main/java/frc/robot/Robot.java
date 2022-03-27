@@ -19,13 +19,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.AutoDrive;
 import frc.robot.commands.AutoShoot;
-import frc.robot.commands.AutonOption0;
-import frc.robot.commands.AutonOption1;
-import frc.robot.commands.AutonOption2;
-import frc.robot.commands.AutonOption3;
-import frc.robot.commands.AutonOption4;
-import frc.robot.commands.AutonOption5;
-import frc.robot.commands.AutonTwoBall;
+//import frc.robot.commands.AutonTwoBall;
 import frc.robot.commands.DriveStick;
 import frc.robot.commands.DriveStickSlew;
 import frc.robot.commands.ManualShoot;
@@ -47,12 +41,12 @@ public class Robot extends TimedRobot {
     //private TurtleMode turtleMode;
 
     private boolean lastEnabled = false;
-    private AutonOption5 autonOption5;
+    /*private AutonOption5 autonOption5;
     private AutonOption4 autonOption4;
     private AutonOption3 autonOption3;
     private AutonOption2 autonOption2;
     private AutonOption1 autonOption1;
-    private AutonOption0 autonOption0;
+    private AutonOption0 autonOption0;*/
     /*
      * private Command auton5;
      * private Command auton4;
@@ -60,21 +54,21 @@ public class Robot extends TimedRobot {
      * private Command auton2;
      * private Command auton1;
      */
-    private static final String auton1 = "Auton 1";
+    /*private static final String auton1 = "Auton 1";
     private static final String auton2 = "Auton 2";
     private static final String auton3 = "Auton 3";
     private static final String auton4 = "Auton 4";
-    private static final String auton5 = "Auton 5";
+    private static final String auton5 = "Auton 5";*/
     Odometry odometry;
     private String m_selectedAuton;
 
-    private static final String option1 = "Option1";
+    /*private static final String option1 = "Option1";
     private static final String option2 = "Option2";
     private static final String option3 = "Option3";
     private static final String option4 = "Option4";
     private static final String option5 = "Option5";
-    private static final String option6 = "Option6";
-    private String m_autoSelected;
+    private static final String option6 = "Option6";*/
+    //private String m_autoSelected;
     private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
     @Override
@@ -87,7 +81,7 @@ public class Robot extends TimedRobot {
         ShooterConstants.LoadConstants();
         shooter = new Shooter(pi, driverController, operatorController, colorSensor, ingestor);
 
-        climber = new Climber();
+        climber = new Climber(ingestor);
 
         //turtleMode = new TurtleMode(swerve, driverController);
 
@@ -143,14 +137,14 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousInit() {
-        AutonTwoBall.resetAutonShoot();
+       // AutonTwoBall.resetAutonShoot();
         CommandScheduler.getInstance().cancelAll();
         m_selectedAuton = m_chooser.getSelected();
         System.out.println("Auton Selected: " + m_selectedAuton);
 
         // CommandScheduler.getInstance().schedule(new HomeHood(shooter));
-        CommandScheduler.getInstance().schedule(new AutonTwoBall(swerve, shooter, ingestor));
-        Pose2d pos = swerve.odometry.getPoseMeters();
+        //CommandScheduler.getInstance().schedule(new AutonTwoBall(swerve, shooter, ingestor));
+        //Pose2d pos = swerve.odometry.getPoseMeters();
         ranAuton = true;
     }
 

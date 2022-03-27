@@ -74,8 +74,8 @@ public class SwerveModule {
      */
     public SwerveModule(SwerveConstants cornerConstants) {
         constants = cornerConstants;
-        driveMotor = new WPI_TalonFX(CanIDConstants.swerveDrives[constants.Id]);
-        turningMotor = new CANSparkMax(CanIDConstants.swerveRots[constants.Id], MotorType.kBrushless);
+        driveMotor = new WPI_TalonFX(CanIDConstants.SWERVE_DRIVES[constants.Id]);
+        turningMotor = new CANSparkMax(CanIDConstants.SWERVE_ROTS[constants.Id], MotorType.kBrushless);
         turningEncoder = turningMotor.getEncoder();
         turningEncoder.setPositionConversionFactor(6.82);
         driveMotor.setNeutralMode(NeutralMode.Brake);
@@ -99,10 +99,10 @@ public class SwerveModule {
          * pidController.setOutputRange(min, max);
          */
 
-        absEncoder = new CANCoder(CanIDConstants.swerveRotSensors[constants.Id]);
+        absEncoder = new CANCoder(CanIDConstants.SWERVE_ROT_SENSORS[constants.Id]);
         absEncoder.setPositionToAbsolute();
         absEncoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180, 0);
-        zeroAngle = CanIDConstants.swerveZeros[constants.Id];
+        zeroAngle = CanIDConstants.SWERVE_ZEROS[constants.Id];
 
         // Limit the PID Controller's input range between -pi and pi and set the input
         // to be continuous.

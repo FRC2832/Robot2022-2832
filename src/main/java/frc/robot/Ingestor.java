@@ -42,11 +42,11 @@ public class Ingestor extends SubsystemBase {
     private static final double INGESTOR_LIFT_SPEED = 0.25;
 
     public Ingestor(ColorSensor colorSensor) {
-        ingestorWheels = new WPI_TalonSRX(CanIDConstants.intakeWheels);
+        ingestorWheels = new WPI_TalonSRX(CanIDConstants.INTAKE_WHEELS);
         // ingestorGate = new WPI_TalonSRX(2);
-        stage1Conveyor = new WPI_TalonSRX(CanIDConstants.stage1);
-        stage2Conveyor = new WPI_TalonSRX(CanIDConstants.stage2);
-        ingestorLift = new CANSparkMax(CanIDConstants.intakeLift, BRUSHLESS);
+        stage1Conveyor = new WPI_TalonSRX(CanIDConstants.STAGE_1);
+        stage2Conveyor = new WPI_TalonSRX(CanIDConstants.STAGE_2);
+        ingestorLift = new CANSparkMax(CanIDConstants.INTAKE_LIFT, BRUSHLESS);
         // driverController = new XboxController(0);
         operatorController = new XboxController(2);
         timer = new Timer();
@@ -98,33 +98,34 @@ public class Ingestor extends SubsystemBase {
         } else if (cargoColor == CargoColor.Red) {
             System.out.println("Cargo is red");
         }*/
+        double ingestorWheelSpeed = 0.0;
+        double stage1ConveyorSpeed = 0.0;
+        double stage2ConveyorSpeed = 0.0;
+        double ingestorLiftSpeed = 0.0;
 
         if (operatorController.getRightTriggerAxis() >= TRIGGER_SENSITIVITY ) { // ingestor in
-            ingestorWheels.set(-INGESTOR_SPEED);
-            stage1Conveyor.set(STAGE_1_SPEED);
+            ingestorWheelSpeed = -INGESTOR_SPEED;
+            stage1ConveyorSpeed = STAGE_1_SPEED;
         } else if (operatorController.getLeftTriggerAxis() >= TRIGGER_SENSITIVITY) { // ingestor out
-            ingestorWheels.set(INGESTOR_SPEED);
-            stage1Conveyor.set(-STAGE_1_SPEED);
-        } else {
-            ingestorWheels.set(0);
-            stage1Conveyor.set(0);
+            ingestorWheelSpeed = INGESTOR_SPEED;
+            stage1ConveyorSpeed = -STAGE_1_SPEED;
         }
 
         if (operatorController.getXButton()) { // push ball to shooter
-            stage2Conveyor.set(STAGE_2_SPEED);
+            stage2ConveyorSpeed = STAGE_2_SPEED;
         } else if (operatorController.getYButton()) { // push ball to stage 1
-            stage2Conveyor.set(-STAGE_2_SPEED);
-        } else {
-            stage2Conveyor.set(0.0);
+            stage2ConveyorSpeed = -STAGE_2_SPEED;
         }
 
         if (operatorController.getBButton()) { // lift ingestor
-            ingestorLift.set(INGESTOR_LIFT_SPEED);
+            ingestorLiftSpeed = INGESTOR_LIFT_SPEED;
         } else if (operatorController.getAButton()) { // lower ingestor
-            ingestorLift.set(-INGESTOR_LIFT_SPEED);
-        } else {
-            ingestorLift.set(0.0);
+            ingestorLiftSpeed = -INGESTOR_LIFT_SPEED;
         }
+        ingestorWheels.set(ingestorWheelSpeed);
+        stage1Conveyor.set(stage1ConveyorSpeed);
+        stage2Conveyor.set(stage2ConveyorSpeed);
+        ingestorLift.set(ingestorLiftSpeed);
     }
 
     public boolean sendCargoToShooter() {

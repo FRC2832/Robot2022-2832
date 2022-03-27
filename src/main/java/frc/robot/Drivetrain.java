@@ -90,7 +90,7 @@ public class Drivetrain extends SubsystemBase {
             visionTable = inst.getTable("/vision");
         }
 
-        TalonSRX motor = new TalonSRX(CanIDConstants.intakeWheels);
+        TalonSRX motor = new TalonSRX(CanIDConstants.INTAKE_WHEELS);
         pigeon = new PigeonIMU(motor);
 
         // set defaults for all swerve moules
@@ -307,8 +307,8 @@ public class Drivetrain extends SubsystemBase {
             driveStickSlew.setLimiters(3.0, 3.0, 3.0);
         }*/
         if(driverController.getRightTriggerAxis() >= 0.5){
-            kMaxSpeed = 0.75;
-            kMaxAngularSpeed = 1.5;
+            kMaxSpeed = 1.4;
+            kMaxAngularSpeed = 1.8;
         }
         else{
             kMaxSpeed = 2.85;
