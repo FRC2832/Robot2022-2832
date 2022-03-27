@@ -12,14 +12,14 @@ public class Climber extends SubsystemBase {
     private final double CLIMBER_UP_SPEED = -0.6;
     private final double CLIMBER_DOWN_SPEED = 0.4;
     private Ingestor ingestor;
-    private ColorSensor colorSensor;
+    //private ColorSensor colorSensor;
 
-    public Climber() {
-        rung1 = new WPI_TalonFX(CanIDConstants.rung12Winch);
-        rung23 = new WPI_TalonFX(CanIDConstants.rung34Winch);
+    public Climber(Ingestor ingestor) {
+        rung1 = new WPI_TalonFX(33);
+        rung23 = new WPI_TalonFX(34);
         rung1.setNeutralMode(NeutralMode.Brake);
         rung23.setNeutralMode(NeutralMode.Brake);
-        colorSensor = new ColorSensor();
+        //colorSensor = new ColorSensor();
         //ingestor = new Ingestor(colorSensor);
         this.ingestor = ingestor;
     }
