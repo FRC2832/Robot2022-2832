@@ -47,10 +47,10 @@ public class Shooter extends SubsystemBase {
         this.ingestor = ingestor;
         currentCargoColor = "none";
         isHomed = false;
-        hoodMotor = new TalonSRX(CanIDConstants.hoodMotor);
+        hoodMotor = new TalonSRX(CanIDConstants.HOOD_MOTOR);
         hoodMotor.setNeutralMode(NeutralMode.Brake);
 
-        shooterFx = new TalonFX(CanIDConstants.shooterDrive);
+        shooterFx = new TalonFX(CanIDConstants.SHOOTER_DRIVE);
         shooterFx.setNeutralMode(NeutralMode.Coast);
         shooterFx.setInverted(false);
         // hoodMotor.setNeutralMode(NeutralMode.Brake);
@@ -120,25 +120,30 @@ public class Shooter extends SubsystemBase {
         //     System.out.println("isHomed = true");
         // }
         lastHomed = hoodBottom();
+        double hoodMotorSpeed = hoodMotor.getMotorOutputPercent();
+        NeutralMode mode;
+
         if (!operatorController.getStartButton()) {
             if (driveController.getLeftBumper()) {
-                hoodMotor.set(ControlMode.PercentOutput, 0.25);
+                hoodMotorSpeed = 0.25;
             } else if (driveController.getRightBumper()) {
                 if (isHomed && hoodMotor.isRevLimitSwitchClosed() > 0) {
-                    hoodMotor.set(ControlMode.PercentOutput, 0.0);
+                    hoodMotorSpeed = 0.0;
                 } else {
-                    hoodMotor.set(ControlMode.PercentOutput, -0.25);
+                    hoodMotorSpeed = -0.25;
                 }
             } else {
-                hoodMotor.set(ControlMode.PercentOutput, 0.0);
+                hoodMotorSpeed = 0.0;
             }
         }
 
-        if(DriverStation.isDisabled()) {
-            hoodMotor.setNeutralMode(NeutralMode.Coast);
+        if (DriverStation.isDisabled()) {
+            mode = NeutralMode.Coast;
         } else {
-            hoodMotor.setNeutralMode(NeutralMode.Brake);
+            mode = NeutralMode.Brake;
         }
+        hoodMotor.set(ControlMode.PercentOutput, hoodMotorSpeed);
+        hoodMotor.setNeutralMode(mode);
     }
 
     public void setShootPct(double percent) {
@@ -169,21 +174,23 @@ public class Shooter extends SubsystemBase {
 
     public void setHoodSpeedPct(double pct) {
         // allow control if homed or only down if not homed
+        double percentage;
         if(hoodBottom()) {
             if(pct > 0.1) {
                 //if driving down, stop at home
-                hoodMotor.set(ControlMode.PercentOutput, 0);
+                percentage = 0.0;
             } else {
                 //slowly drive out to get accurate home
-                hoodMotor.set(ControlMode.PercentOutput, 0.18);
+                percentage = 0.18;
             }
         }
         else if(hoodMotor.getSelectedSensorPosition() > MAX_ANGLE_COUNTS && pct > 0){
-            hoodMotor.set(ControlMode.PercentOutput, 0);
+            percentage = 0.0;
         }
         else {
-            hoodMotor.set(ControlMode.PercentOutput, pct);
+            percentage = pct;
         }
+        hoodMotor.set(ControlMode.PercentOutput, percentage);
     }
 
     public boolean hoodBottom() {

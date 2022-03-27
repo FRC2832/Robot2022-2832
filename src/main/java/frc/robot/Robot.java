@@ -4,7 +4,11 @@
 
 package frc.robot;
 
+import javax.xml.crypto.Data;
+
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
@@ -72,12 +76,13 @@ public class Robot extends TimedRobot {
         Configuration.SetPersistentKeys();
         GitVersion vers = GitVersion.loadVersion();
         vers.printVersions();
+        DataLogManager.start();
 
         ShooterConstants.LoadConstants();
         CommandScheduler.getInstance().registerSubsystem(pi);
         shooter = new Shooter(driverController, operatorController, ingestor);
 
-        climber = new Climber();
+        climber = new Climber(ingestor);
 
         //turtleMode = new TurtleMode(swerve, driverController);
 
@@ -133,7 +138,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousInit() {
-        AutonTwoBall.resetAutonShoot();
+       // AutonTwoBall.resetAutonShoot();
         CommandScheduler.getInstance().cancelAll();
         m_selectedAuton = m_chooser.getSelected();
         System.out.println("Auton Selected: " + m_selectedAuton);
