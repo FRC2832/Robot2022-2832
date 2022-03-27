@@ -15,8 +15,8 @@ public class Climber extends SubsystemBase {
     //private ColorSensor colorSensor;
 
     public Climber(Ingestor ingestor) {
-        rung1 = new WPI_TalonFX(33);
-        rung23 = new WPI_TalonFX(34);
+        rung1 = new WPI_TalonFX(CanIDConstants.rung12Winch);
+        rung23 = new WPI_TalonFX(CanIDConstants.rung34Winch);
         rung1.setNeutralMode(NeutralMode.Brake);
         rung23.setNeutralMode(NeutralMode.Brake);
         //colorSensor = new ColorSensor();
