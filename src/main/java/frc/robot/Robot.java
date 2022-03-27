@@ -83,7 +83,7 @@ public class Robot extends TimedRobot {
         ShooterConstants.LoadConstants();
         shooter = new Shooter(pi, driverController, operatorController, colorSensor, ingestor);
 
-        climber = new Climber();
+        climber = new Climber(ingestor);
 
         //turtleMode = new TurtleMode(swerve, driverController);
 

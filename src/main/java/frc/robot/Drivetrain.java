@@ -307,8 +307,8 @@ public class Drivetrain extends SubsystemBase {
             driveStickSlew.setLimiters(3.0, 3.0, 3.0);
         }*/
         if(driverController.getRightTriggerAxis() >= 0.5){
-            kMaxSpeed = 0.75;
-            kMaxAngularSpeed = 1.5;
+            kMaxSpeed = 1.4;
+            kMaxAngularSpeed = 1.8;
         }
         else{
             kMaxSpeed = 2.85;
