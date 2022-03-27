@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Drivetrain;
@@ -14,12 +15,10 @@ public class DriveStick extends CommandBase {
         addRequirements(drive);
     }
 
-    @Override
     public void initialize() {
 
     }
 
-    @Override
     public void execute() {
         // Get the x speed. We are inverting this because Xbox controllers return
         // negative values when we push forward.

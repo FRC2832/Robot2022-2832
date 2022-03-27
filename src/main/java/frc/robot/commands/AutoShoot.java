@@ -1,15 +1,10 @@
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.ColorSensor;
-import frc.robot.Drivetrain;
-import frc.robot.Ingestor;
-import frc.robot.Pi;
-import frc.robot.Shooter;
-import frc.robot.ColorSensor.CargoColor;
+import frc.robot.*;
 
 public class AutoShoot extends CommandBase {
     private Drivetrain drive;
@@ -29,7 +24,8 @@ public class AutoShoot extends CommandBase {
         cargoSentToShooter = false;
         //autonShootFinished = false;
 
-        addRequirements(drive, shooter);
+        addRequirements(drive);
+        addRequirements(shooter);
     }
 
     @Override
@@ -97,10 +93,6 @@ public class AutoShoot extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        //System.out.println("Current ALLIANCE color: " + DriverStation.getAlliance() + "\nCurrent AUTO SHOOT color sensor value: " + ColorSensor.getCargoColor());
-        if (ColorSensor.getCargoColor() != CargoColor.Unknown && !ColorSensor.getCargoColor().toString().equalsIgnoreCase(Shooter.getAllianceString())) {
-            return true;
-        }
         System.out.println("AutoShoot is finished");
         return cargoSentToShooter;
     }

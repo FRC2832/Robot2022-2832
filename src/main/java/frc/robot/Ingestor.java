@@ -36,17 +36,15 @@ public class Ingestor extends SubsystemBase {
     // Targetted motor speeds
     private static final double INGESTOR_SPEED = 0.75; // 1000.0;
     private static final double STAGE_1_SPEED = 0.75;// 1000.0;
-    private static final double STAGE_2_SPEED = 0.85; // 1000.0; 
+    private static final double STAGE_2_SPEED = 0.85; // 1000.0;
     private static final double INGESTOR_LIFT_SPEED = 0.25;
-    private static final double FIRST_CARGO_STEP_TIME = 0.5;// TODO: Test if rpm is affected, originally 1.0, .75 works and is faster;
-    private static final double SECOND_CARGO_STEP_TIME = 2.5;
 
     public Ingestor(ColorSensor colorSensor) {
-        ingestorWheels = new WPI_TalonSRX(CanIDConstants.INTAKE_WHEELS);
+        ingestorWheels = new WPI_TalonSRX(CanIDConstants.intakeWheels);
         // ingestorGate = new WPI_TalonSRX(2);
-        stage1Conveyor = new WPI_TalonSRX(CanIDConstants.STAGE_1);
-        stage2Conveyor = new WPI_TalonSRX(CanIDConstants.STAGE_2);
-        ingestorLift = new CANSparkMax(CanIDConstants.INTAKE_LIFT, BRUSHLESS);
+        stage1Conveyor = new WPI_TalonSRX(CanIDConstants.stage1);
+        stage2Conveyor = new WPI_TalonSRX(CanIDConstants.stage2);
+        ingestorLift = new CANSparkMax(CanIDConstants.intakeLift, BRUSHLESS);
         // driverController = new XboxController(0);
         operatorController = new XboxController(2);
         timer = new Timer();
@@ -132,9 +130,9 @@ public class Ingestor extends SubsystemBase {
             timer.start();
             timerStarted = true;
         }
-        if (timer.get() < FIRST_CARGO_STEP_TIME) {
+        if (timer.get() < 1) {
             stage2Conveyor.set(-STAGE_2_SPEED);
-        } else if (timer.get() < SECOND_CARGO_STEP_TIME) {
+        } else if (timer.get() < 2.5) {
             stage2Conveyor.set(-STAGE_2_SPEED);
             stage1Conveyor.set(STAGE_1_SPEED);
         } else {

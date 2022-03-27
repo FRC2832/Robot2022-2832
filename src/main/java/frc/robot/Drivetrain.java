@@ -90,7 +90,7 @@ public class Drivetrain extends SubsystemBase {
             visionTable = inst.getTable("/vision");
         }
 
-        TalonSRX motor = new TalonSRX(CanIDConstants.INTAKE_WHEELS);
+        TalonSRX motor = new TalonSRX(CanIDConstants.intakeWheels);
         pigeon = new PigeonIMU(motor);
 
         // set defaults for all swerve moules
@@ -237,8 +237,9 @@ public class Drivetrain extends SubsystemBase {
             double[] ypr_deg = new double[3];
             pigeon.getYawPitchRoll(ypr_deg);
             return ypr_deg[0];
+        } else {
+            return gyroBase.getAngle();
         }
-        return gyroBase.getAngle();
     }
 
     public SwerveModule[] getModules() {
@@ -292,8 +293,9 @@ public class Drivetrain extends SubsystemBase {
 
         if (absVal > deadband) {
             return Math.signum(value) * (deadband + ((.52) * absVal * absVal)); // TODO: change to 1 - x(deadband)
+        } else {
+            return 0;
         }
-        return 0;
     }
 
     public void runTurtleMode(XboxController controller){
@@ -304,10 +306,11 @@ public class Drivetrain extends SubsystemBase {
         else{
             driveStickSlew.setLimiters(3.0, 3.0, 3.0);
         }*/
-        if (driverController.getRightTriggerAxis() >= 0.5){
+        if(driverController.getRightTriggerAxis() >= 0.5){
             kMaxSpeed = 0.75;
             kMaxAngularSpeed = 1.5;
-        } else {
+        }
+        else{
             kMaxSpeed = 2.85;
             kMaxAngularSpeed = 2 * Math.PI;
         }
@@ -413,7 +416,7 @@ public class Drivetrain extends SubsystemBase {
     }
     
     public void setBrakeMode(boolean brake) {
-        for (SwerveModule module:modules) {
+        for(SwerveModule module:modules) {
             module.setBrakeMode(brake);
         }
     }

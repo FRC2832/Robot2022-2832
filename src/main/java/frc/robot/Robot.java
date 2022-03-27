@@ -11,14 +11,11 @@ import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.ColorSensor.CargoColor;
 import frc.robot.commands.AutoDrive;
 import frc.robot.commands.AutoShoot;
 import frc.robot.commands.AutonTwoBall;
-import frc.robot.commands.DribbleShoot;
 import frc.robot.commands.DriveStick;
 import frc.robot.commands.DriveStickSlew;
 import frc.robot.commands.ManualShoot;
@@ -37,21 +34,15 @@ public class Robot extends TimedRobot {
     private Shooter shooter;
     private Climber climber;
     private boolean ranAuton = false;
-    private JoystickButton selectButton;
-    private JoystickButton startButton;
-    private JoystickButton rightBumper;
-    private JoystickButton leftBumper;
-    // private TurtleMode turtleMode;
+    //private TurtleMode turtleMode;
 
     private boolean lastEnabled = false;
-    /*
-     * private AutonOption5 autonOption5;
-     * private AutonOption4 autonOption4;
-     * private AutonOption3 autonOption3;
-     * private AutonOption2 autonOption2;
-     * private AutonOption1 autonOption1;
-     * private AutonOption0 autonOption0;
-     */
+    /*private AutonOption5 autonOption5;
+    private AutonOption4 autonOption4;
+    private AutonOption3 autonOption3;
+    private AutonOption2 autonOption2;
+    private AutonOption1 autonOption1;
+    private AutonOption0 autonOption0;*/
     /*
      * private Command auton5;
      * private Command auton4;
@@ -59,25 +50,21 @@ public class Robot extends TimedRobot {
      * private Command auton2;
      * private Command auton1;
      */
-    /*
-     * private static final String auton1 = "Auton 1";
-     * private static final String auton2 = "Auton 2";
-     * private static final String auton3 = "Auton 3";
-     * private static final String auton4 = "Auton 4";
-     * private static final String auton5 = "Auton 5";
-     */
+    /* private static final String auton1 = "Auton 1";
+    private static final String auton2 = "Auton 2";
+    private static final String auton3 = "Auton 3";
+    private static final String auton4 = "Auton 4";
+    private static final String auton5 = "Auton 5"; */
     Odometry odometry;
     private String m_selectedAuton;
 
-    /*
-     * private static final String option1 = "Option1";
-     * private static final String option2 = "Option2";
-     * private static final String option3 = "Option3";
-     * private static final String option4 = "Option4";
-     * private static final String option5 = "Option5";
-     * private static final String option6 = "Option6";
-     */
-    // private String m_autoSelected;
+    /* private static final String option1 = "Option1";
+    private static final String option2 = "Option2";
+    private static final String option3 = "Option3";
+    private static final String option4 = "Option4";
+    private static final String option5 = "Option5";
+    private static final String option6 = "Option6"; */
+    //private String m_autoSelected;
     private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
     @Override
@@ -92,25 +79,24 @@ public class Robot extends TimedRobot {
 
         climber = new Climber();
 
-        // turtleMode = new TurtleMode(swerve, driverController);
+        //turtleMode = new TurtleMode(swerve, driverController);
 
         CommandScheduler.getInstance().registerSubsystem(swerve, colorSensor);
         swerve.setDefaultCommand(new DriveStickSlew(swerve, driverController));
         shooter.setDefaultCommand(new ShooterOff(shooter));
         climber.setDefaultCommand(new RunClimber(climber, ingestor, operatorController));
-        // swerve.setDefaultCommand(new TurtleMode(swerve, driverController));
+        //swerve.setDefaultCommand(new TurtleMode(swerve, driverController));
 
-        selectButton = new JoystickButton(operatorController, 7);
-        //Command shootCommand;
+        JoystickButton selectButton = new JoystickButton(operatorController, 7); 
         selectButton.whileActiveContinuous(new ManualShoot(shooter, ingestor));
 
-        startButton = new JoystickButton(operatorController, 8);
+        JoystickButton startButton = new JoystickButton(operatorController, 8); 
         startButton.whileActiveContinuous(new SafeZoneShoot(shooter, ingestor, false));
 
-        rightBumper = new JoystickButton(operatorController, 6);
+        JoystickButton rightBumper = new JoystickButton(operatorController, 6);
         rightBumper.whileActiveContinuous(new AutoShoot(swerve, shooter, ingestor, operatorController, driverController));
 
-        leftBumper = new JoystickButton(operatorController, 5);
+        JoystickButton leftBumper = new JoystickButton(operatorController, 5);
         leftBumper.whileActiveContinuous(new SafeZoneShoot(shooter, ingestor, true));
 
         // this.setNetworkTablesFlushEnabled(true); //turn off 20ms Dashboard update
@@ -137,21 +123,16 @@ public class Robot extends TimedRobot {
 
     @Override
     public void disabledInit() {
-        CommandScheduler.getInstance().cancelAll();
         ranAuton = false;
         swerve.resetRobot();
         driverController.setRumble(RumbleType.kLeftRumble, 0.0);
         driverController.setRumble(RumbleType.kRightRumble, 0.0);
         Shooter.setCoast(false);
         swerve.setBrakeMode(false);
-        pi.sendAlliance();
-        shooter.updateAllianceColor();
     }
 
     @Override
     public void autonomousInit() {
-        pi.sendAlliance();
-        shooter.updateAllianceColor();
         AutonTwoBall.resetAutonShoot();
         CommandScheduler.getInstance().cancelAll();
         m_selectedAuton = m_chooser.getSelected();
@@ -159,7 +140,7 @@ public class Robot extends TimedRobot {
 
         // CommandScheduler.getInstance().schedule(new HomeHood(shooter));
         CommandScheduler.getInstance().schedule(new AutonTwoBall(swerve, shooter, ingestor));
-        // Pose2d pos = swerve.odometry.getPoseMeters();
+        //Pose2d pos = swerve.odometry.getPoseMeters();
         ranAuton = true;
     }
 
@@ -175,8 +156,6 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopInit() {
         CommandScheduler.getInstance().cancelAll();
-        shooter.updateAllianceColor();
-        pi.sendAlliance();
         if (!ranAuton) {
             // CommandScheduler.getInstance().schedule(new HomeHood(shooter));
         }
@@ -186,27 +165,6 @@ public class Robot extends TimedRobot {
     public void teleopPeriodic() {
         ingestor.runIngestor();
         swerve.runTurtleMode(driverController);
-        Command selectShootCommand;
-        Command startShootCommand;
-        Command rightBumperShootCommand;
-        Command leftBumperShootCommand;
-        if (ColorSensor.getCargoColor().toString().equalsIgnoreCase(Shooter.getAllianceString()) || ColorSensor.getCargoColor() == CargoColor.Unknown) {
-            selectShootCommand = new ManualShoot(shooter, ingestor);
-            startShootCommand = new SafeZoneShoot(shooter, ingestor, false);
-            rightBumperShootCommand = new AutoShoot(swerve, shooter, ingestor, operatorController, driverController);
-            leftBumperShootCommand = new SafeZoneShoot(shooter, ingestor, true);
-            
-        } else {
-            selectShootCommand = new DribbleShoot(shooter, ingestor);
-            startShootCommand = new DribbleShoot(shooter, ingestor);
-            rightBumperShootCommand = new DribbleShoot(shooter, ingestor);
-            leftBumperShootCommand = new DribbleShoot(shooter, ingestor);
-        }
-        selectButton.whileActiveContinuous(selectShootCommand);
-        startButton.whileActiveContinuous(startShootCommand);
-        rightBumper.whileActiveContinuous(rightBumperShootCommand);
-        leftBumper.whileActiveContinuous(leftBumperShootCommand);
-
     }
 
     @Override
@@ -217,8 +175,8 @@ public class Robot extends TimedRobot {
         // SmartDashboard.putNumber("XPosition", odometry.getXPosition());
         // SmartDashboard.putNumber("YPosition", odometry.getYPosition());
 
-        // pi.processCargo();
-        // pi.processTargets();
+        //pi.processCargo();
+        //pi.processTargets();
         // automatically turn on/off recording
         if (lastEnabled != isEnabled()) {
             // we know the enabled status changed
