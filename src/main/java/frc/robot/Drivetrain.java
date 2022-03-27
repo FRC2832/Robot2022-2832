@@ -90,7 +90,7 @@ public class Drivetrain extends SubsystemBase {
             visionTable = inst.getTable("/vision");
         }
 
-        TalonSRX motor = new TalonSRX(27);
+        TalonSRX motor = new TalonSRX(CanIDConstants.intakeWheels);
         pigeon = new PigeonIMU(motor);
 
         // set defaults for all swerve moules

@@ -7,6 +7,8 @@ public class SwerveConstants {
     public String Name;
     public Translation2d Location;
     public byte Id;
+    public byte TalonFXId;
+    public byte SparkId;
     
     public DCMotor TurnMotor;
     public double  TurnMotorGearRatio;
