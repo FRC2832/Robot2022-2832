@@ -2,9 +2,8 @@ package frc.robot;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Ingestor;
-import frc.robot.ColorSensor;
 
 public class Climber extends SubsystemBase {
     private WPI_TalonFX rung1;
@@ -15,8 +14,8 @@ public class Climber extends SubsystemBase {
     //private ColorSensor colorSensor;
 
     public Climber(Ingestor ingestor) {
-        rung1 = new WPI_TalonFX(CanIDConstants.rung12Winch);
-        rung23 = new WPI_TalonFX(CanIDConstants.rung34Winch);
+        rung1 = new WPI_TalonFX(CanIDConstants.RUNG_1_2_WINCH);
+        rung23 = new WPI_TalonFX(CanIDConstants.RUNG_3_4_WINCH);
         rung1.setNeutralMode(NeutralMode.Brake);
         rung23.setNeutralMode(NeutralMode.Brake);
         //colorSensor = new ColorSensor();

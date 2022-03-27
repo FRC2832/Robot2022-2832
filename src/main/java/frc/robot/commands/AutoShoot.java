@@ -1,11 +1,13 @@
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.*;
+import frc.robot.Drivetrain;
+import frc.robot.Ingestor;
+import frc.robot.Pi;
+import frc.robot.Shooter;
 
 public class AutoShoot extends CommandBase {
     private Drivetrain drive;

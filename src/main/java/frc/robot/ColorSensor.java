@@ -1,12 +1,11 @@
 package frc.robot;
 
-import edu.wpi.first.wpilibj.I2C;
-import edu.wpi.first.wpilibj.util.Color;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
-import com.revrobotics.ColorSensorV3;
 import com.revrobotics.ColorMatch;
 import com.revrobotics.ColorMatchResult;
+import com.revrobotics.ColorSensorV3;
+
+import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.util.Color;
 
 public class ColorSensor {
     private ColorSensorV3 colorSensor;
