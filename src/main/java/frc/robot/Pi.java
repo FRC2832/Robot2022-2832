@@ -28,6 +28,7 @@ public class Pi {
     private final double CAM_X_RES = 640;
     private final double CAM_Y_RES = 480;
     public final double TARGET_CENTER_X = 320;
+    public final double CARGO_CENTER_X = 320; // TODO: update by pointing robot straight at cargo and put the resulting x value here
     private static boolean targetMoveRight;
     private static boolean targetMoveLeft;
     private static boolean cargoMoveRight;
@@ -75,10 +76,10 @@ public class Pi {
         double cargoX = (double) cargoCenterXArray[0];
         cargoCenterXOutput = cargoX;
         cargoCenterYOutput = (double) cargoCenterYArray[0];
-        if (cargoX < (CAM_X_RES / 2) - (CAM_X_RES * 0.05)) {
+        if (cargoX < CARGO_CENTER_X - (CAM_X_RES * 0.05)) {
             cargoMoveRight = false;
             cargoMoveLeft = true;
-        } else if (cargoX > (CAM_X_RES / 2) + (CAM_X_RES * 0.05)) {
+        } else if (cargoX > CARGO_CENTER_X + (CAM_X_RES * 0.05)) {
             cargoMoveLeft = false;
             cargoMoveRight = true;
         } else {
