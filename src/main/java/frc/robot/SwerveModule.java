@@ -194,7 +194,7 @@ public class SwerveModule {
         //DataLogManager.log(constants.Name + " Turn volt command: " + turnVoltCommand);
         driveVoltCommand = driveOutput + driveFeedforward;
 
-        if (driveVoltCommand <= 0.01) {
+        if (Math.abs(driveVoltCommand) <= 0.01) {
             turnVoltCommand = 0;
         }
         
