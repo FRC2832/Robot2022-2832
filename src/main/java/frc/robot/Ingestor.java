@@ -3,6 +3,8 @@ package frc.robot;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkMaxAlternateEncoder;
 
 import edu.wpi.first.wpilibj.Counter;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -22,6 +24,8 @@ public class Ingestor extends SubsystemBase {
     private WPI_TalonSRX stage1Conveyor;
     private WPI_TalonSRX stage2Conveyor;
     private CANSparkMax ingestorLift;
+    private RelativeEncoder altEncoder;
+    private RelativeEncoder motorEncoder;
     private final CANSparkMax.MotorType BRUSHLESS = CANSparkMax.MotorType.valueOf("kBrushless");
     // private XboxController driverController;
     private XboxController operatorController;
@@ -47,6 +51,8 @@ public class Ingestor extends SubsystemBase {
         stage1Conveyor = new WPI_TalonSRX(CanIDConstants.STAGE_1);
         stage2Conveyor = new WPI_TalonSRX(CanIDConstants.STAGE_2);
         ingestorLift = new CANSparkMax(CanIDConstants.INTAKE_LIFT, BRUSHLESS);
+        altEncoder = ingestorLift.getAlternateEncoder(SparkMaxAlternateEncoder.Type.kQuadrature, 8192);
+        motorEncoder = ingestorLift.getEncoder();
         // driverController = new XboxController(0);
         operatorController = new XboxController(2);
         timer = new Timer();
@@ -61,6 +67,12 @@ public class Ingestor extends SubsystemBase {
     }
 
     public void runIngestor() {
+
+        SmartDashboard.putNumber("Ingestor motor applied output", ingestorLift.getAppliedOutput());
+        SmartDashboard.putNumber("alt encoder velocity", altEncoder.getVelocity());
+        SmartDashboard.putNumber("alt encoder position", altEncoder.getPosition());
+        SmartDashboard.putNumber("motor encoder position", motorEncoder.getPosition());
+
         //System.out.println("counter - " + counter.get());
         // prox sensor checking
         if (counter.get() > 0) {
