@@ -64,7 +64,7 @@ public class Pi {
     public void processCargo() {
         Number[] cargoCenterXArray = cargoCenterX.getNumberArray(new Number[0]);
         Number[] cargoCenterYArray = cargoCenterY.getNumberArray(new Number[0]);
-        if (cargoCenterXArray.length == 0) {
+        if (cargoCenterXArray.length == 0 || cargoCenterYArray.length == 0) {
             cargoMoveRight = false;
             cargoMoveLeft = false;
             cargoCenterXOutput = -1;

@@ -3,8 +3,10 @@ package frc.robot;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxAlternateEncoder;
+import com.revrobotics.SparkMaxPIDController;
 
 import edu.wpi.first.wpilibj.Counter;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -26,6 +28,8 @@ public class Ingestor extends SubsystemBase {
     private CANSparkMax ingestorLift;
     private RelativeEncoder altEncoder;
     private RelativeEncoder motorEncoder;
+    private SparkMaxPIDController liftPidController;
+    private double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput;
     private final CANSparkMax.MotorType BRUSHLESS = CANSparkMax.MotorType.valueOf("kBrushless");
     // private XboxController driverController;
     private XboxController operatorController;
@@ -64,6 +68,36 @@ public class Ingestor extends SubsystemBase {
         totalBalls = 0;
         ballAtColorSensor = false;
 
+        liftPidController = ingestorLift.getPIDController();
+        liftPidController.setFeedbackDevice(altEncoder);
+
+        // PID coefficients
+        kP = 0;
+        kI = 0;
+        kD = 0; 
+        kIz = 0; 
+        kFF = 0; 
+        kMaxOutput = 1; 
+        kMinOutput = -1;
+
+        // set PID coefficients
+        liftPidController.setP(kP);
+        liftPidController.setI(kI);
+        liftPidController.setD(kD);
+        liftPidController.setIZone(kIz);
+        liftPidController.setFF(kFF);
+        liftPidController.setOutputRange(kMinOutput, kMaxOutput);
+
+        // display PID coefficients on SmartDashboard
+        SmartDashboard.putNumber("P Gain", kP);
+        SmartDashboard.putNumber("I Gain", kI);
+        SmartDashboard.putNumber("D Gain", kD);
+        SmartDashboard.putNumber("I Zone", kIz);
+        SmartDashboard.putNumber("Feed Forward", kFF);
+        SmartDashboard.putNumber("Max Output", kMaxOutput);
+        SmartDashboard.putNumber("Min Output", kMinOutput);
+        SmartDashboard.putNumber("Set Rotations", 0);
+
     }
 
     public void runIngestor() {
@@ -72,6 +106,32 @@ public class Ingestor extends SubsystemBase {
         SmartDashboard.putNumber("alt encoder velocity", altEncoder.getVelocity());
         SmartDashboard.putNumber("alt encoder position", altEncoder.getPosition());
         SmartDashboard.putNumber("motor encoder position", motorEncoder.getPosition());
+
+        // read PID coefficients from SmartDashboard
+        double p = SmartDashboard.getNumber("P Gain", 0);
+        double i = SmartDashboard.getNumber("I Gain", 0);
+        double d = SmartDashboard.getNumber("D Gain", 0);
+        double iz = SmartDashboard.getNumber("I Zone", 0);
+        double ff = SmartDashboard.getNumber("Feed Forward", 0);
+        double max = SmartDashboard.getNumber("Max Output", 0);
+        double min = SmartDashboard.getNumber("Min Output", 0);
+        double rotations = SmartDashboard.getNumber("Set Rotations", 0);
+
+        // if PID coefficients on SmartDashboard have changed, write new values to controller
+        if((p != kP)) { liftPidController.setP(p); kP = p; }
+        if((i != kI)) { liftPidController.setI(i); kI = i; }
+        if((d != kD)) { liftPidController.setD(d); kD = d; }
+        if((iz != kIz)) { liftPidController.setIZone(iz); kIz = iz; }
+        if((ff != kFF)) { liftPidController.setFF(ff); kFF = ff; }
+        if((max != kMaxOutput) || (min != kMinOutput)) { 
+        liftPidController.setOutputRange(min, max); 
+        kMinOutput = min; kMaxOutput = max; 
+        }
+
+        // liftPidController.setReference(rotations, ControlType.kPosition);
+        
+        // SmartDashboard.putNumber("SetPoint", rotations);
+        // SmartDashboard.putNumber("ProcessVariable", altEncoder.getPosition());
 
         //System.out.println("counter - " + counter.get());
         // prox sensor checking
@@ -130,14 +190,20 @@ public class Ingestor extends SubsystemBase {
         }
 
         if (operatorController.getBButton()) { // lift ingestor
-            ingestorLiftSpeed = INGESTOR_LIFT_SPEED;
+            // ingestorLiftSpeed = INGESTOR_LIFT_SPEED;
+            rotations = 0.075;
         } else if (operatorController.getAButton()) { // lower ingestor
-            ingestorLiftSpeed = -INGESTOR_LIFT_SPEED;
+            // ingestorLiftSpeed = -INGESTOR_LIFT_SPEED;
+            rotations = 0.075;
         }
         ingestorWheels.set(ingestorWheelSpeed);
         stage1Conveyor.set(stage1ConveyorSpeed);
         stage2Conveyor.set(stage2ConveyorSpeed);
-        ingestorLift.set(ingestorLiftSpeed);
+        // ingestorLift.set(ingestorLiftSpeed);
+        liftPidController.setReference(rotations, ControlType.kPosition);
+
+        SmartDashboard.putNumber("SetPoint", rotations);
+        SmartDashboard.putNumber("ProcessVariable", altEncoder.getPosition());
     }
 
     public boolean sendCargoToShooter() {
