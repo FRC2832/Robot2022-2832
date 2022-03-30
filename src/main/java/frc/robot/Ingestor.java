@@ -233,6 +233,10 @@ public class Ingestor extends SubsystemBase {
         ingestorWheels.set(ControlMode.PercentOutput, -INGESTOR_SPEED);
     }
 
+    public void runStage2Up() {
+        stage2Conveyor.set(-STAGE_2_SPEED);
+    }
+
     public boolean getStage1Proximity() {
         return stage1ProxSensor.get();
     }

@@ -116,6 +116,7 @@ public class AutonTwoBall extends CommandBase {
                 break;
             case 4: // shoot 2 balls with hood angle set at 2.5 knobs (aka, manual shot)
                 drive.drive(0.0, 0.0, 0.0, false);
+                ingestor.liftIngestor();
                 // double speed = 2300.0;
                 // // TODO: Might be able to schedule AutoLShoot later.
                 // // TODO add in hood angle code when working
@@ -133,6 +134,15 @@ public class AutonTwoBall extends CommandBase {
                 if (autoShoot.isFinished()) {
                     drive.currentStep++;
                 }
+                break;
+            case 5: // constantly ingesting and shooting in case a ball rolls into us
+                drive.drive(0.0, 0.0, 0.0, false);
+                ingestor.lowerIngestor();
+                System.out.println("case 5");
+                shooter.calcShot();
+                shooter.setHoodAngle(shooter.getTargetHoodAngle());
+                shooter.setShooterRpm(shooter.getTargetRpm());
+                ingestor.runStage2Up();
                 break;
             // 8.586, 7.107836, 90 for first ball
             /*
@@ -162,7 +172,7 @@ public class AutonTwoBall extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return drive.currentStep == 5; // change this if any setPosition steps are added in execute()
+        return drive.currentStep == 6; // change this if any setPosition steps are added in execute()
     }
 
     @Override
