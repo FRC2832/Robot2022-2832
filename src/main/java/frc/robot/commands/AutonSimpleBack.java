@@ -49,7 +49,7 @@ public class AutonSimpleBack extends CommandBase {
         switch (drive.currentStep) { // drive.currentStep = 2;
             case 0: // prep for auton. TODO: Lower hood?
                 drive.drive(0.0, 0.0, 0.0, false);
-                ingestor.lowerIngestor(0.0);
+                ingestor.liftIngestor();
                 ingestor.threeBallAutonIngest();
                 shooter.setShooterRpm(1000.0);
                 if (timer.get() >= 0.5) {
@@ -61,7 +61,7 @@ public class AutonSimpleBack extends CommandBase {
                     // manual shot angle?
                 // negative x value for drive is forward, positive x val is backwards because motors are currently inverted
                 drive.drive(Drivetrain.kMaxSpeed / 4, 0, 0.0, false);
-                ingestor.lowerIngestor(0.0);
+                ingestor.liftIngestor();
                 ingestor.threeBallAutonIngest();
                 shooter.setShooterRpm(1000.0);
                 if (timer.get() >= 3.0) {// || ingestor.getStage1Proximity()){
@@ -80,7 +80,7 @@ public class AutonSimpleBack extends CommandBase {
                 double speed = 2300.0;
                 // TODO: Might be able to schedule AutoLShoot later.
                 // TODO add in hood angle code when working
-                ingestor.lowerIngestor(0.0);
+                ingestor.liftIngestor();
                 shooter.setShooterRpm(speed);
                 if (speed - 50 < shooter.getShooterVelocity() && shooter.getShooterVelocity() < speed + 50) {
                     ingestor.sendCargoToShooter();
@@ -94,7 +94,7 @@ public class AutonSimpleBack extends CommandBase {
                 break;
             default:
                 drive.drive(0.0, 0.0, 0.0, false);
-                ingestor.lowerIngestor(0.0);
+                ingestor.liftIngestor();
                 ingestor.getStage1Conveyor().set(ControlMode.PercentOutput, 0.0);
                 ingestor.getStage2Conveyor().set(ControlMode.PercentOutput, 0.0);
                 ingestor.getIngestorWheels().set(ControlMode.PercentOutput, 0.0);
@@ -119,7 +119,7 @@ public class AutonSimpleBack extends CommandBase {
                 double speed = 2300.0;
                 // TODO: Might be able to schedule AutoLShoot later.
                 // TODO add in hood angle code when working
-                ingestor.lowerIngestor(0.0);
+                ingestor.liftIngestor();
                 shooter.setShooterRpm(speed);
                 if (speed - 50 < shooter.getShooterVelocity() && shooter.getShooterVelocity() < speed + 50) {
                     ingestor.sendCargoToShooter();
@@ -148,7 +148,7 @@ public class AutonSimpleBack extends CommandBase {
         drive.drive(0, 0, 0, false);
         shooter.setShooterRpm(1000.0);
         Shooter.setCoast(true);
-        ingestor.lowerIngestor(0);
+        ingestor.liftIngestor();
         ingestor.getStage1Conveyor().set(ControlMode.PercentOutput, 0);
         ingestor.getStage2Conveyor().set(ControlMode.PercentOutput, 0);
         ingestor.getIngestorWheels().set(ControlMode.PercentOutput, 0);
