@@ -23,11 +23,13 @@ import frc.robot.commands.AutonTwoBall;
 //import frc.robot.commands.AutonTwoBall;
 import frc.robot.commands.DriveStick;
 import frc.robot.commands.DriveStickSlew;
+import frc.robot.commands.LowerHubShoot;
 import frc.robot.commands.ManualShoot;
 import frc.robot.commands.ResetOrientation;
 import frc.robot.commands.RunClimber;
 import frc.robot.commands.SafeZoneShoot;
 import frc.robot.commands.ShooterOff;
+import frc.robot.commands.UpperHubShoot;
 
 public class Robot extends TimedRobot {
     private final XboxController driverController = new XboxController(0);
@@ -77,7 +79,7 @@ public class Robot extends TimedRobot {
         Configuration.SetPersistentKeys();
         GitVersion vers = GitVersion.loadVersion();
         vers.printVersions();
-        DataLogManager.start();
+        // DataLogManager.start();
 
         ShooterConstants.LoadConstants();
         shooter = new Shooter(pi, driverController, operatorController, colorSensor, ingestor);
@@ -103,6 +105,12 @@ public class Robot extends TimedRobot {
 
         JoystickButton leftBumper = new JoystickButton(operatorController, 5);
         leftBumper.whileActiveContinuous(new SafeZoneShoot(shooter, ingestor, true));
+
+        JoystickButton aButton = new JoystickButton(driverController, 1);
+        aButton.whileActiveContinuous(new UpperHubShoot(shooter, ingestor));
+
+        JoystickButton bButton = new JoystickButton(driverController, 2);
+        bButton.whileActiveContinuous(new LowerHubShoot(shooter, ingestor));
 
         // this.setNetworkTablesFlushEnabled(true); //turn off 20ms Dashboard update
         // rate

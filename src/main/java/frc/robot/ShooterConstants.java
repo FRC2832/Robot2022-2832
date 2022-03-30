@@ -33,10 +33,10 @@ public class ShooterConstants {
         DIST_RPM_TABLE.add(new Pair<Double, Double>(72d, 2350d));
         DIST_RPM_TABLE.add(new Pair<Double, Double>(84d, 2400d));
         DIST_RPM_TABLE.add(new Pair<Double, Double>(96d, 2450d));
-        DIST_RPM_TABLE.add(new Pair<Double, Double>(108d, 2550d));
-        DIST_RPM_TABLE.add(new Pair<Double, Double>(120d, 2650d));
-        DIST_RPM_TABLE.add(new Pair<Double, Double>(132d, 2750d));
-        DIST_RPM_TABLE.add(new Pair<Double, Double>(144d, 2800d));
+        DIST_RPM_TABLE.add(new Pair<Double, Double>(108d, 2525d));
+        DIST_RPM_TABLE.add(new Pair<Double, Double>(120d, 2600d));
+        DIST_RPM_TABLE.add(new Pair<Double, Double>(132d, 2675d));
+        DIST_RPM_TABLE.add(new Pair<Double, Double>(144d, 2750d));
         DIST_RPM_TABLE.add(new Pair<Double, Double>(156d, 2800d));
         DIST_RPM_TABLE.add(new Pair<Double, Double>(168d, 2850d));
         DIST_RPM_TABLE.add(new Pair<Double, Double>(180d, 3000d));
@@ -52,11 +52,11 @@ public class ShooterConstants {
         // formula for measured angle conversion to angle in this table: 88 - measured value + 20
         DIST_HOOD_TABLE.add(new Pair<Double, Double>(60d, 31d)); // hood 2.5
         DIST_HOOD_TABLE.add(new Pair<Double, Double>(72d, 31d)); // hood 2.5
-        DIST_HOOD_TABLE.add(new Pair<Double, Double>(84d, 31d)); // hood 2.5
-        DIST_HOOD_TABLE.add(new Pair<Double, Double>(96d, 42d)); // hood 3.5
-        DIST_HOOD_TABLE.add(new Pair<Double, Double>(108d, 42d)); // hood 3.5   
-        DIST_HOOD_TABLE.add(new Pair<Double, Double>(120d, 53d)); // hood 4.5
-        DIST_HOOD_TABLE.add(new Pair<Double, Double>(132d, 58d)); // hood 5
+        DIST_HOOD_TABLE.add(new Pair<Double, Double>(84d, 33d)); // hood 2.75
+        DIST_HOOD_TABLE.add(new Pair<Double, Double>(96d, 40d)); // hood 3.25
+        DIST_HOOD_TABLE.add(new Pair<Double, Double>(108d, 45d)); // hood 3.75
+        DIST_HOOD_TABLE.add(new Pair<Double, Double>(120d, 50d)); // hood 4.25
+        DIST_HOOD_TABLE.add(new Pair<Double, Double>(132d, 53d)); // hood 4.5
         DIST_HOOD_TABLE.add(new Pair<Double, Double>(144d, 53d)); // hood 4.5
         DIST_HOOD_TABLE.add(new Pair<Double, Double>(156d, 53d)); // hood 4.5
         DIST_HOOD_TABLE.add(new Pair<Double, Double>(168d, 53d)); // hood 4.5 
