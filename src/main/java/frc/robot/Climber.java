@@ -36,7 +36,7 @@ public class Climber extends SubsystemBase {
     }
     
     public void arm2Up() {
-        ingestor.lowerIngestor(0.5);
+        ingestor.lowerIngestor();
         rung23.set(-CLIMBER_UP_SPEED);
     }
 

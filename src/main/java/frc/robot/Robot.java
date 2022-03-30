@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.AutoDrive;
 import frc.robot.commands.AutoShoot;
+import frc.robot.commands.AutonTwoBall;
 //import frc.robot.commands.AutonTwoBall;
 import frc.robot.commands.DriveStick;
 import frc.robot.commands.DriveStickSlew;
@@ -143,7 +144,7 @@ public class Robot extends TimedRobot {
         System.out.println("Auton Selected: " + m_selectedAuton);
 
         // CommandScheduler.getInstance().schedule(new HomeHood(shooter));
-        //CommandScheduler.getInstance().schedule(new AutonTwoBall(swerve, shooter, ingestor));
+        CommandScheduler.getInstance().schedule(new AutonTwoBall(swerve, shooter, ingestor));
         //Pose2d pos = swerve.odometry.getPoseMeters();
         ranAuton = true;
     }

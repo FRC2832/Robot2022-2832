@@ -3,6 +3,10 @@ package frc.robot;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMax.ControlType;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkMaxAlternateEncoder;
+import com.revrobotics.SparkMaxPIDController;
 
 import edu.wpi.first.wpilibj.Counter;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -22,6 +26,9 @@ public class Ingestor extends SubsystemBase {
     private WPI_TalonSRX stage1Conveyor;
     private WPI_TalonSRX stage2Conveyor;
     private CANSparkMax ingestorLift;
+    private RelativeEncoder altEncoder;
+    private SparkMaxPIDController liftPidController;
+    private double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput;
     private final CANSparkMax.MotorType BRUSHLESS = CANSparkMax.MotorType.valueOf("kBrushless");
     // private XboxController driverController;
     private XboxController operatorController;
@@ -33,6 +40,7 @@ public class Ingestor extends SubsystemBase {
     private int totalBalls;
     private ColorSensor stage2ColorSensor;
     private boolean ballAtColorSensor;
+    private double liftRotations;
     // private SmartDashboard smartDashboard;
 
     // Targetted motor speeds
@@ -47,6 +55,7 @@ public class Ingestor extends SubsystemBase {
         stage1Conveyor = new WPI_TalonSRX(CanIDConstants.STAGE_1);
         stage2Conveyor = new WPI_TalonSRX(CanIDConstants.STAGE_2);
         ingestorLift = new CANSparkMax(CanIDConstants.INTAKE_LIFT, BRUSHLESS);
+        altEncoder = ingestorLift.getAlternateEncoder(SparkMaxAlternateEncoder.Type.kQuadrature, 8192);
         // driverController = new XboxController(0);
         operatorController = new XboxController(2);
         timer = new Timer();
@@ -58,9 +67,44 @@ public class Ingestor extends SubsystemBase {
         totalBalls = 0;
         ballAtColorSensor = false;
 
+        liftPidController = ingestorLift.getPIDController();
+        liftPidController.setFeedbackDevice(altEncoder);
+
+        // PID coefficients
+        kP = 2.5;
+        kI = 0;
+        kD = 0; 
+        kIz = 0; 
+        kFF = 0; 
+        kMaxOutput = 1; 
+        kMinOutput = -1;
+
+        // set PID coefficients
+        liftPidController.setP(kP);
+        liftPidController.setI(kI);
+        liftPidController.setD(kD);
+        liftPidController.setIZone(kIz);
+        liftPidController.setFF(kFF);
+        liftPidController.setOutputRange(kMinOutput, kMaxOutput);
+
+        // display PID coefficients on SmartDashboard
+        SmartDashboard.putNumber("P Gain", kP);
+        SmartDashboard.putNumber("I Gain", kI);
+        SmartDashboard.putNumber("D Gain", kD);
+        SmartDashboard.putNumber("I Zone", kIz);
+        SmartDashboard.putNumber("Feed Forward", kFF);
+        SmartDashboard.putNumber("Max Output", kMaxOutput);
+        SmartDashboard.putNumber("Min Output", kMinOutput);
+        SmartDashboard.putNumber("Set Rotations", 0);
+
     }
 
     public void runIngestor() {
+
+        SmartDashboard.putNumber("Ingestor motor applied output", ingestorLift.getAppliedOutput());
+        SmartDashboard.putNumber("alt encoder velocity", altEncoder.getVelocity());
+        SmartDashboard.putNumber("alt encoder position", altEncoder.getPosition());
+
         //System.out.println("counter - " + counter.get());
         // prox sensor checking
         if (counter.get() > 0) {
@@ -103,12 +147,16 @@ public class Ingestor extends SubsystemBase {
         double stage2ConveyorSpeed = 0.0;
         double ingestorLiftSpeed = 0.0;
 
-        if (operatorController.getRightTriggerAxis() >= TRIGGER_SENSITIVITY ) { // ingestor in
+        if (operatorController.getRightTriggerAxis() >= TRIGGER_SENSITIVITY ) { // ingestor down and in
             ingestorWheelSpeed = -INGESTOR_SPEED;
             stage1ConveyorSpeed = STAGE_1_SPEED;
-        } else if (operatorController.getLeftTriggerAxis() >= TRIGGER_SENSITIVITY) { // ingestor out
+            lowerIngestor();
+        } else if (operatorController.getLeftTriggerAxis() >= TRIGGER_SENSITIVITY) { // ingestor down and out
             ingestorWheelSpeed = INGESTOR_SPEED;
             stage1ConveyorSpeed = -STAGE_1_SPEED;
+            lowerIngestor();
+        } else { // ingestor up
+            liftIngestor();
         }
 
         if (operatorController.getXButton()) { // push ball to shooter
@@ -117,15 +165,22 @@ public class Ingestor extends SubsystemBase {
             stage2ConveyorSpeed = -STAGE_2_SPEED;
         }
 
-        if (operatorController.getBButton()) { // lift ingestor
-            ingestorLiftSpeed = INGESTOR_LIFT_SPEED;
-        } else if (operatorController.getAButton()) { // lower ingestor
-            ingestorLiftSpeed = -INGESTOR_LIFT_SPEED;
-        }
+        // if (operatorController.getBButton()) { // lift ingestor
+        //     // ingestorLiftSpeed = INGESTOR_LIFT_SPEED;
+        //     rotations = 0;
+        // } else if (operatorController.getAButton()) { // lower ingestor
+        //     // ingestorLiftSpeed = -INGESTOR_LIFT_SPEED;
+        //     rotations = -0.15;
+        // }
+
         ingestorWheels.set(ingestorWheelSpeed);
         stage1Conveyor.set(stage1ConveyorSpeed);
         stage2Conveyor.set(stage2ConveyorSpeed);
-        ingestorLift.set(ingestorLiftSpeed);
+        // ingestorLift.set(ingestorLiftSpeed);
+        // liftPidController.setReference(liftRotations, ControlType.kPosition);
+
+        SmartDashboard.putNumber("SetPoint", liftRotations);
+        SmartDashboard.putNumber("ProcessVariable", altEncoder.getPosition());
     }
 
     public boolean sendCargoToShooter() {
@@ -164,12 +219,13 @@ public class Ingestor extends SubsystemBase {
     }
 
     public void liftIngestor() {
-        ingestorLift.set(INGESTOR_LIFT_SPEED);
-        // TODO: stop when ingestor is all the way up
+        liftRotations = 0.0;
+        liftPidController.setReference(liftRotations, ControlType.kPosition);
     }
 
-    public void lowerIngestor(double multiplier) {
-        ingestorLift.set(-INGESTOR_LIFT_SPEED * multiplier);
+    public void lowerIngestor() {
+        liftRotations = -0.165;
+        liftPidController.setReference(liftRotations, ControlType.kPosition);
     }
 
     public void threeBallAutonIngest() {
