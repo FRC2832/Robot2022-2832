@@ -57,7 +57,7 @@ public class AutonTwoBall extends CommandBase {
         switch (drive.currentStep) { // drive.currentStep = 2;
             case 0: // prep for auton. Lower ingestor at 1.5 times normal speed TODO: Lower hood?
                 drive.drive(0.0, 0.0, 0.0, false);
-                ingestor.lowerIngestor(1.5);
+                ingestor.lowerIngestor();
                 ingestor.threeBallAutonIngest();
                 shooter.setShooterRpm(1000.0);
                 if (timer.get() >= 0.5) {
@@ -69,7 +69,7 @@ public class AutonTwoBall extends CommandBase {
                     // manual shot angle?
                 // negative x value for drive because motors are currently inverted
                 drive.drive(-Drivetrain.kMaxSpeed / 4, 0, 0.0, false);
-                ingestor.lowerIngestor(0.0);
+                ingestor.lowerIngestor();
                 ingestor.threeBallAutonIngest();
                 shooter.setShooterRpm(1000.0);
                 distance = Math.abs(drive.getModules()[0].getDistance() - startEncoderCount);
@@ -89,7 +89,7 @@ public class AutonTwoBall extends CommandBase {
                 break;
             case 2: // back off so there's room to turn around.
                 drive.drive(Drivetrain.kMaxSpeed / 4, 0.0, 0.0, false);
-                ingestor.lowerIngestor(0.0);
+                ingestor.lowerIngestor();
                 ingestor.threeBallAutonIngest();
                 shooter.setShooterRpm(1000.0);
                 distance = Math.abs(drive.getModules()[0].getDistance() - startEncoderCount);
@@ -171,7 +171,7 @@ public class AutonTwoBall extends CommandBase {
         drive.drive(0, 0, 0, false);
         shooter.setShooterRpm(1000.0);
         Shooter.setCoast(true);
-        ingestor.lowerIngestor(0);
+        ingestor.liftIngestor();
         ingestor.getStage1Conveyor().set(ControlMode.PercentOutput, 0);
         ingestor.getStage2Conveyor().set(ControlMode.PercentOutput, 0);
         ingestor.getIngestorWheels().set(ControlMode.PercentOutput, 0);
