@@ -68,7 +68,7 @@ public class AutonTwoBall extends CommandBase {
             case 1: // drive forward with ingestor lowered and ready to ingest. TODO: Raise hood to
                     // manual shot angle?
                 // negative x value for drive because motors are currently inverted
-                drive.drive(-Drivetrain.kMaxSpeed / 4, 0, 0.0, false);
+                drive.drive(-Drivetrain.kMaxSpeed / 3, 0, 0.0, false);
                 ingestor.lowerIngestor();
                 ingestor.threeBallAutonIngest();
                 shooter.setShooterRpm(1000.0);
@@ -88,7 +88,7 @@ public class AutonTwoBall extends CommandBase {
                  */
                 break;
             case 2: // back off so there's room to turn around.
-                drive.drive(Drivetrain.kMaxSpeed / 4, 0.0, 0.0, false);
+                drive.drive(Drivetrain.kMaxSpeed / 3, 0.0, 0.0, false);
                 ingestor.lowerIngestor();
                 ingestor.threeBallAutonIngest();
                 shooter.setShooterRpm(1000.0);

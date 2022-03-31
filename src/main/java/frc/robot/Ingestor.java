@@ -40,8 +40,8 @@ public class Ingestor extends SubsystemBase {
     private DigitalInput stage1ProxSensor;
     private Counter counter;
     private int totalBalls;
-    private ColorSensor stage2ColorSensor;
-    private boolean ballAtColorSensor;
+    //private ColorSensor stage2ColorSensor;
+    //private boolean ballAtColorSensor;
     private double liftRotations;
     // private SmartDashboard smartDashboard;
 
@@ -147,7 +147,7 @@ public class Ingestor extends SubsystemBase {
         double ingestorWheelSpeed = 0.0;
         double stage1ConveyorSpeed = 0.0;
         double stage2ConveyorSpeed = 0.0;
-        double ingestorLiftSpeed = 0.0;
+        //double ingestorLiftSpeed = 0.0;
 
         if (operatorController.getRightTriggerAxis() >= TRIGGER_SENSITIVITY ) { // ingestor down and in
             ingestorWheelSpeed = -INGESTOR_SPEED;
