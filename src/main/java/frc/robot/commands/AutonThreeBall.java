@@ -45,7 +45,7 @@ public class AutonThreeBall extends CommandBase {
         switch (drive.currentStep) { // drive.currentStep = 2;
             case 0: // prep for auton. Lower ingestor at 1.5 times normal speed TODO: Lower hood?
                 drive.drive(0.0, 0.0, 0.0, false);
-                ingestor.lowerIngestor(1.5);
+                ingestor.lowerIngestor();
                 ingestor.threeBallAutonIngest();
                 shooter.setShooterRpm(1000.0);
                 if (timer.get() >= 0.5) {
@@ -56,7 +56,7 @@ public class AutonThreeBall extends CommandBase {
             case 1: // drive forward with ingestor lowered and ready to ingest. TODO: Raise hood to manual shot angle?
                 // negative x value for drive because motors are currently inverted
                 drive.drive(-Drivetrain.kMaxSpeed / 4, 0, 0.0, false);
-                ingestor.lowerIngestor(0.0);
+                ingestor.lowerIngestor();
                 ingestor.threeBallAutonIngest();
                 shooter.setShooterRpm(1000.0);
                 if (timer.get() >= 3.0) {// || ingestor.getStage1Proximity()){
@@ -72,7 +72,7 @@ public class AutonThreeBall extends CommandBase {
                 break;
             case 2: // back off so there's room to turn around.
                 drive.drive(Drivetrain.kMaxSpeed / 4, 0.0, 0.0, false);
-                ingestor.lowerIngestor(0.0);
+                ingestor.lowerIngestor();
                 ingestor.threeBallAutonIngest();
                 shooter.setShooterRpm(1000.0);
                 if (timer.get() >= 1.0) {
@@ -98,7 +98,7 @@ public class AutonThreeBall extends CommandBase {
                 double speed = 2300.0;
                 // TODO: Might be able to schedule AutoLShoot later.
                 // TODO add in hood angle code when working
-                ingestor.lowerIngestor(0.0);
+                ingestor.liftIngestor();
                 shooter.setShooterRpm(speed);
                 if (speed - 50 < shooter.getShooterVelocity() && shooter.getShooterVelocity() < speed + 50) {
                     ingestor.sendCargoToShooter();
@@ -114,7 +114,7 @@ public class AutonThreeBall extends CommandBase {
             case 5:
                 drive.drive(0.0, 0.0, -Math.PI, false); // Turn to cargo 3.
                 ingestor.threeBallAutonIngest();
-                ingestor.lowerIngestor(1.5);
+                ingestor.lowerIngestor();
                 shooter.setShooterRpm(1000);
                 if (timer.get() >= 1.0 / 3.0) {
                     drive.currentStep++;
@@ -124,7 +124,7 @@ public class AutonThreeBall extends CommandBase {
             
             case 6:
                 drive.drive(-Drivetrain.kMaxSpeed / 4, 0, 0.0, false); // Move towards cargo 3
-                ingestor.lowerIngestor(0.0);
+                ingestor.lowerIngestor();
                 ingestor.threeBallAutonIngest();
                 shooter.setShooterRpm(1000.0);
                 if (timer.get() >= 4.5) {// || ingestor.getStage1Proximity()){
@@ -150,7 +150,7 @@ public class AutonThreeBall extends CommandBase {
             */
             default:
                 drive.drive(0.0, 0.0, 0.0, false);
-                ingestor.lowerIngestor(0.0);
+                ingestor.liftIngestor();
                 ingestor.getStage1Conveyor().set(ControlMode.PercentOutput, 0.0);
                 ingestor.getStage2Conveyor().set(ControlMode.PercentOutput, 0.0);
                 ingestor.getIngestorWheels().set(ControlMode.PercentOutput, 0.0);
@@ -193,7 +193,7 @@ public class AutonThreeBall extends CommandBase {
         drive.drive(0, 0, 0, false);
         shooter.setShooterRpm(1000.0);
         Shooter.setCoast(true);
-        ingestor.lowerIngestor(0);
+        ingestor.liftIngestor();
         ingestor.getStage1Conveyor().set(ControlMode.PercentOutput, 0);
         ingestor.getStage2Conveyor().set(ControlMode.PercentOutput, 0);
         ingestor.getIngestorWheels().set(ControlMode.PercentOutput, 0);
