@@ -13,7 +13,7 @@ public class UpperHubShoot extends CommandBase {
     public UpperHubShoot(Shooter shooter, Ingestor ingestor) {
         this.shooter = shooter;
         this.ingestor = ingestor;
-        speed = 2100;
+        speed = 2150;
         addRequirements(shooter);
         SmartDashboard.putNumber("Target RPM", speed); 
     }

@@ -79,7 +79,7 @@ public class Robot extends TimedRobot {
         Configuration.SetPersistentKeys();
         GitVersion vers = GitVersion.loadVersion();
         vers.printVersions();
-        // DataLogManager.start();
+        DataLogManager.start();
 
         ShooterConstants.LoadConstants();
         shooter = new Shooter(pi, driverController, operatorController, colorSensor, ingestor);
@@ -169,6 +169,7 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopInit() {
         CommandScheduler.getInstance().cancelAll();
+        AutonTwoBall.resetAutonShoot();
         if (!ranAuton) {
             // CommandScheduler.getInstance().schedule(new HomeHood(shooter));
         }
