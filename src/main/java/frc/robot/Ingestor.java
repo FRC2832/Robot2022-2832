@@ -33,8 +33,11 @@ public class Ingestor extends SubsystemBase {
     // private XboxController driverController;
     private XboxController operatorController;
     private static final double TRIGGER_SENSITIVITY = 0.5;
-    private Timer timer;
-    private boolean timerStarted = false;
+    private Timer sendTimer;
+    private Timer stageTimer;
+    private boolean sendTimerStarted = false;
+    private boolean stageTimerStarted = false;
+    private boolean triggerPressed = false;
     private DigitalInput stage1ProxSensor;
     private Counter counter;
     private int totalBalls;
@@ -58,7 +61,8 @@ public class Ingestor extends SubsystemBase {
         altEncoder = ingestorLift.getAlternateEncoder(SparkMaxAlternateEncoder.Type.kQuadrature, 8192);
         // driverController = new XboxController(0);
         operatorController = new XboxController(2);
-        timer = new Timer();
+        sendTimer = new Timer();
+        stageTimer = new Timer();
         // Port port = Port.kOnboard; // TODO: Need to verify this.
         this.stage2ColorSensor = colorSensor;
         // stage1ProxSensor = new DigitalInput(0);
@@ -88,22 +92,22 @@ public class Ingestor extends SubsystemBase {
         liftPidController.setOutputRange(kMinOutput, kMaxOutput);
 
         // display PID coefficients on SmartDashboard
-        SmartDashboard.putNumber("P Gain", kP);
-        SmartDashboard.putNumber("I Gain", kI);
-        SmartDashboard.putNumber("D Gain", kD);
-        SmartDashboard.putNumber("I Zone", kIz);
-        SmartDashboard.putNumber("Feed Forward", kFF);
-        SmartDashboard.putNumber("Max Output", kMaxOutput);
-        SmartDashboard.putNumber("Min Output", kMinOutput);
-        SmartDashboard.putNumber("Set Rotations", 0);
+        // SmartDashboard.putNumber("P Gain", kP);
+        // SmartDashboard.putNumber("I Gain", kI);
+        // SmartDashboard.putNumber("D Gain", kD);
+        // SmartDashboard.putNumber("I Zone", kIz);
+        // SmartDashboard.putNumber("Feed Forward", kFF);
+        // SmartDashboard.putNumber("Max Output", kMaxOutput);
+        // SmartDashboard.putNumber("Min Output", kMinOutput);
+        // SmartDashboard.putNumber("Set Rotations", 0);
 
     }
 
     public void runIngestor() {
 
-        SmartDashboard.putNumber("Ingestor motor applied output", ingestorLift.getAppliedOutput());
-        SmartDashboard.putNumber("alt encoder velocity", altEncoder.getVelocity());
-        SmartDashboard.putNumber("alt encoder position", altEncoder.getPosition());
+        // SmartDashboard.putNumber("Ingestor motor applied output", ingestorLift.getAppliedOutput());
+        // SmartDashboard.putNumber("alt encoder velocity", altEncoder.getVelocity());
+        // SmartDashboard.putNumber("alt encoder position", altEncoder.getPosition());
 
         //System.out.println("counter - " + counter.get());
         // prox sensor checking
@@ -151,12 +155,25 @@ public class Ingestor extends SubsystemBase {
             ingestorWheelSpeed = -INGESTOR_SPEED;
             stage1ConveyorSpeed = STAGE_1_SPEED;
             lowerIngestor();
+            stageTimer.reset();
+            triggerPressed = true;
         } else if (operatorController.getLeftTriggerAxis() >= TRIGGER_SENSITIVITY) { // ingestor down and out
             ingestorWheelSpeed = INGESTOR_SPEED;
             stage1ConveyorSpeed = -STAGE_1_SPEED;
             lowerIngestor();
-        } else { // ingestor up
+            stageTimer.reset();
+            triggerPressed = true;
+        } else { // ingestor up, run stage 1 for two more seconds
             liftIngestor();
+            if(!stageTimerStarted) {
+                stageTimer.start();
+                stageTimerStarted = true;
+            }
+            if(stageTimer.get() < 2 && triggerPressed) { // triggerPressed is so stage 1 doesn't run at enabling
+                stage1ConveyorSpeed = STAGE_1_SPEED;
+            } else {
+                stage1ConveyorSpeed = 0.0;
+            }
         }
 
         if (operatorController.getXButton()) { // push ball to shooter
@@ -179,24 +196,24 @@ public class Ingestor extends SubsystemBase {
         // ingestorLift.set(ingestorLiftSpeed);
         // liftPidController.setReference(liftRotations, ControlType.kPosition);
 
-        SmartDashboard.putNumber("SetPoint", liftRotations);
-        SmartDashboard.putNumber("ProcessVariable", altEncoder.getPosition());
+        // SmartDashboard.putNumber("SetPoint", liftRotations);
+        // SmartDashboard.putNumber("ProcessVariable", altEncoder.getPosition());
     }
 
     public boolean sendCargoToShooter() {
         // TODO: replace timer with prox/color sensor
-        if (!timerStarted) {
-            timer.start();
-            timerStarted = true;
+        if (!sendTimerStarted) {
+            sendTimer.start();
+            sendTimerStarted = true;
         }
-        if (timer.get() < 0.5) {
+        if (sendTimer.get() < 0.5) {
             stage2Conveyor.set(-STAGE_2_SPEED);
-        } else if (timer.get() < 2.5) {
+        } else if (sendTimer.get() < 2.5) {
             stage2Conveyor.set(-STAGE_2_SPEED);
             stage1Conveyor.set(STAGE_1_SPEED);
         } else {
-            timer.reset();
-            timerStarted = false;
+            sendTimer.reset();
+            sendTimerStarted = false;
             return true;
         }
         return false;
@@ -204,15 +221,15 @@ public class Ingestor extends SubsystemBase {
 
     public boolean sendOneCargoToShooter() {
         // TODO: replace timer with prox/color sensor
-        if (!timerStarted) {
-            timer.start();
-            timerStarted = true;
+        if (!sendTimerStarted) {
+            sendTimer.start();
+            sendTimerStarted = true;
         }
-        if (timer.get() < 3) {
+        if (sendTimer.get() < 3) {
             stage2Conveyor.set(-STAGE_2_SPEED);
         } else {
-            timer.reset();
-            timerStarted = false;
+            sendTimer.reset();
+            sendTimerStarted = false;
             return true;
         }
         return false;

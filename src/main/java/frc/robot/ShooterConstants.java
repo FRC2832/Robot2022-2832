@@ -30,18 +30,18 @@ public class ShooterConstants {
         //table is input: distance in in, output: rpm
         // from auto shots sheet in 2022 shooter speed table
         DIST_RPM_TABLE.add(new Pair<Double, Double>(60d, 2200d));
-        DIST_RPM_TABLE.add(new Pair<Double, Double>(72d, 2350d));
+        DIST_RPM_TABLE.add(new Pair<Double, Double>(72d, 2325d));
         DIST_RPM_TABLE.add(new Pair<Double, Double>(84d, 2400d));
         DIST_RPM_TABLE.add(new Pair<Double, Double>(96d, 2450d));
         DIST_RPM_TABLE.add(new Pair<Double, Double>(108d, 2525d));
         DIST_RPM_TABLE.add(new Pair<Double, Double>(120d, 2600d));
-        DIST_RPM_TABLE.add(new Pair<Double, Double>(132d, 2675d));
-        DIST_RPM_TABLE.add(new Pair<Double, Double>(144d, 2750d));
-        DIST_RPM_TABLE.add(new Pair<Double, Double>(156d, 2800d));
-        DIST_RPM_TABLE.add(new Pair<Double, Double>(168d, 2850d));
-        DIST_RPM_TABLE.add(new Pair<Double, Double>(180d, 3000d));
-        DIST_RPM_TABLE.add(new Pair<Double, Double>(192d, 3050d));
-        DIST_RPM_TABLE.add(new Pair<Double, Double>(204d, 3100d));
+        DIST_RPM_TABLE.add(new Pair<Double, Double>(132d, 2650d));
+        DIST_RPM_TABLE.add(new Pair<Double, Double>(144d, 2700d));
+        DIST_RPM_TABLE.add(new Pair<Double, Double>(156d, 2775d));
+        DIST_RPM_TABLE.add(new Pair<Double, Double>(168d, 2825d));
+        DIST_RPM_TABLE.add(new Pair<Double, Double>(180d, 2925d));
+        DIST_RPM_TABLE.add(new Pair<Double, Double>(192d, 3025d));
+        DIST_RPM_TABLE.add(new Pair<Double, Double>(204d, 3075d));
         DIST_RPM_TABLE.add(new Pair<Double, Double>(216d, 3100d));
         DIST_RPM_TABLE.add(new Pair<Double, Double>(228d, 3250d));
         
@@ -54,15 +54,15 @@ public class ShooterConstants {
         DIST_HOOD_TABLE.add(new Pair<Double, Double>(72d, 31d)); // hood 2.5
         DIST_HOOD_TABLE.add(new Pair<Double, Double>(84d, 33d)); // hood 2.75
         DIST_HOOD_TABLE.add(new Pair<Double, Double>(96d, 40d)); // hood 3.25
-        DIST_HOOD_TABLE.add(new Pair<Double, Double>(108d, 45d)); // hood 3.75
+        DIST_HOOD_TABLE.add(new Pair<Double, Double>(108d, 44d)); // hood 3.75
         DIST_HOOD_TABLE.add(new Pair<Double, Double>(120d, 50d)); // hood 4.25
-        DIST_HOOD_TABLE.add(new Pair<Double, Double>(132d, 53d)); // hood 4.5
-        DIST_HOOD_TABLE.add(new Pair<Double, Double>(144d, 53d)); // hood 4.5
+        DIST_HOOD_TABLE.add(new Pair<Double, Double>(132d, 51d)); // hood 4.5
+        DIST_HOOD_TABLE.add(new Pair<Double, Double>(144d, 52.5d)); // hood 4.5
         DIST_HOOD_TABLE.add(new Pair<Double, Double>(156d, 53d)); // hood 4.5
         DIST_HOOD_TABLE.add(new Pair<Double, Double>(168d, 53d)); // hood 4.5 
-        DIST_HOOD_TABLE.add(new Pair<Double, Double>(180d, 58d)); // hood 5
-        DIST_HOOD_TABLE.add(new Pair<Double, Double>(192d, 58d)); // hood 5
-        DIST_HOOD_TABLE.add(new Pair<Double, Double>(204d, 58d)); // hood 5 
+        DIST_HOOD_TABLE.add(new Pair<Double, Double>(180d, 56d)); // hood 5
+        DIST_HOOD_TABLE.add(new Pair<Double, Double>(192d, 57d)); // hood 5
+        DIST_HOOD_TABLE.add(new Pair<Double, Double>(204d, 57d)); // hood 5 
         DIST_HOOD_TABLE.add(new Pair<Double, Double>(216d, 63d)); // hood 5.5
         DIST_HOOD_TABLE.add(new Pair<Double, Double>(228d, 63d)); // hood 5.5
 
