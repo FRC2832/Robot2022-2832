@@ -8,8 +8,9 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class Pi {
+public class Pi extends SubsystemBase {
     private NetworkTableInstance netTableInstance;
     private NetworkTable table;
     private NetworkTableEntry cargoCenterX;
@@ -25,9 +26,9 @@ public class Pi {
     private Number[] targetWidthArray;
     private Number[] targetHeightArray;
     private Number[] targetAreaArray;
-    private final double CAM_X_RES = 640;
+    private final double CAM_X_RES = 640.0;
     //private final double CAM_Y_RES = 480;
-    public final double TARGET_CENTER_X = 320;
+    public final double TARGET_CENTER_X = 320.0;
     private static boolean targetMoveRight;
     private static boolean targetMoveLeft;
     private static boolean cargoMoveRight;
@@ -37,7 +38,7 @@ public class Pi {
     private static double cargoCenterXOutput;
     private static double cargoCenterYOutput;
 
-    public Pi() {
+    public Pi () {
         netTableInstance = NetworkTableInstance.getDefault();
         table = netTableInstance.getTable("vision");
         cargoCenterX = table.getEntry("cargoX");
@@ -54,11 +55,13 @@ public class Pi {
     // sends alliance color to the python code so it knows what color cargo to look for
     public void sendAlliance() {
         Alliance alliance = DriverStation.getAlliance();
-        if(alliance == Alliance.Red) {
-            allianceColor.setString("red");
+        String color;
+        if (alliance == Alliance.Red) {
+            color = "red";
         } else {
-            allianceColor.setString("blue");
+            color = "blue";
         }
+        allianceColor.setString(color);
     }
 
     public void processCargo() {
@@ -161,6 +164,12 @@ public class Pi {
             targetWidthArray[j + 1] = keyW;
             targetAreaArray[j + 1] = keyA;
         }
+    }
+
+    @Override
+    public void periodic() {
+        processCargo();
+        processTargets();
     }
 
     public static double LinearInterp(ArrayList<Pair<Double,Double>> list, double input) {
