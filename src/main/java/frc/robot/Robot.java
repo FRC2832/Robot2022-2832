@@ -80,6 +80,7 @@ public class Robot extends TimedRobot {
         GitVersion vers = GitVersion.loadVersion();
         vers.printVersions();
         DataLogManager.start();
+        // Snapshot.start("http://10.28.32.22:1181/stream.mjpg");
 
         ShooterConstants.LoadConstants();
         shooter = new Shooter(pi, driverController, operatorController, colorSensor, ingestor);

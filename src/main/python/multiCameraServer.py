@@ -259,8 +259,8 @@ class TargetPipeline:
         """
 
         self.__hsv_threshold_hue = [40.46762589928056, 86.31399317406144]
-        self.__hsv_threshold_saturation = [142.17625899280574, 255.0]
-        self.__hsv_threshold_value = [61.915467625899275, 255.0]
+        self.__hsv_threshold_saturation = [149.05575539568343, 255.0]
+        self.__hsv_threshold_value = [48.156474820143885, 255.0]
 
         self.hsv_threshold_output = None
 
@@ -621,7 +621,7 @@ class findTarget (threading.Thread):
             else:
                 ret = None
             if ret:
-                # cv2.rectangle(img,(0,0),(190,80),(0,0,0),-1) # draws a black box over the webcam reflection
+                cv2.rectangle(img,(0,400),(640,480),(0,0,0),-1) # draws a black box over the webcam reflection
                 target_proc.process(img)
                 extra_target_processing(target_proc)
 
