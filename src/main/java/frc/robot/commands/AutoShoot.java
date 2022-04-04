@@ -16,16 +16,17 @@ public class AutoShoot extends CommandBase {
     private XboxController driverController;
     private Ingestor ingestor;
     private boolean cargoSentToShooter;
-    //private boolean autonShootFinished;
+    // private boolean autonShootFinished;
 
-    public AutoShoot(Drivetrain drive, Shooter shooter, Ingestor ingestor, XboxController operatorController, XboxController driverController) {
+    public AutoShoot(Drivetrain drive, Shooter shooter, Ingestor ingestor, XboxController operatorController,
+            XboxController driverController) {
         this.drive = drive;
         this.shooter = shooter;
         this.operatorController = operatorController;
         this.driverController = driverController;
         this.ingestor = ingestor;
         cargoSentToShooter = false;
-        //autonShootFinished = false;
+        // autonShootFinished = false;
 
         addRequirements(drive);
         addRequirements(shooter);
@@ -50,7 +51,7 @@ public class AutoShoot extends CommandBase {
 
         // check if PI saw target
         if (Pi.getTargetCenterX() > 0) {
-            if(operatorController != null && driverController != null) {
+            if (operatorController != null && driverController != null) {
                 operatorController.setRumble(RumbleType.kLeftRumble, 0.0);
                 operatorController.setRumble(RumbleType.kRightRumble, 0.0);
                 driverController.setRumble(RumbleType.kLeftRumble, 0.0);
@@ -69,7 +70,7 @@ public class AutoShoot extends CommandBase {
             }
         } else {
             // pi is not seeing hub
-            if(operatorController != null && driverController != null) {
+            if (operatorController != null && driverController != null) {
                 operatorController.setRumble(RumbleType.kLeftRumble, 1.0);
                 operatorController.setRumble(RumbleType.kRightRumble, 1.0);
                 driverController.setRumble(RumbleType.kLeftRumble, 1.0);
@@ -87,7 +88,8 @@ public class AutoShoot extends CommandBase {
 
         if (error.length() == 0) {
             // error = "SHOOT!!!";
-            if(ingestor.sendCargoToShooter()) { //sends cargo to shooter and returns true once it finishes sending cargo
+            if (ingestor.sendCargoToShooter()) { // sends cargo to shooter and returns true once it finishes sending
+                                                 // cargo
                 cargoSentToShooter = true;
             }
         }
@@ -102,7 +104,7 @@ public class AutoShoot extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-        if(operatorController != null && driverController != null) {
+        if (operatorController != null && driverController != null) {
             operatorController.setRumble(RumbleType.kLeftRumble, 0.0);
             operatorController.setRumble(RumbleType.kRightRumble, 0.0);
             driverController.setRumble(RumbleType.kLeftRumble, 0.0);

@@ -53,7 +53,8 @@ public class AutonThreeBall extends CommandBase {
                     timer.reset();
                 }
                 break;
-            case 1: // drive forward with ingestor lowered and ready to ingest. TODO: Raise hood to manual shot angle?
+            case 1: // drive forward with ingestor lowered and ready to ingest. TODO: Raise hood to
+                    // manual shot angle?
                 // negative x value for drive because motors are currently inverted
                 drive.drive(-Drivetrain.kMaxSpeed / 4, 0, 0.0, false);
                 ingestor.lowerIngestor();
@@ -85,13 +86,14 @@ public class AutonThreeBall extends CommandBase {
                 ingestor.threeBallAutonIngest();
                 ingestor.liftIngestor();
                 shooter.setShooterRpm(1000.0);
-                double angleDifference = Math.abs(drive.getPose().getRotation().getDegrees() - startRotation.getDegrees());
+                double angleDifference = Math
+                        .abs(drive.getPose().getRotation().getDegrees() - startRotation.getDegrees());
                 if (angleDifference >= 180.0) {
                     drive.currentStep++;
                     timer.reset();
-                } else {
+                } /* else {
                     System.out.println("Current angle difference: " + angleDifference + " degrees");
-                }
+                }*/
                 break;
             case 4: // shoot 2 balls with hood angle set at 2.5 knobs (aka, manual shot)
                 drive.drive(0.0, 0.0, 0.0, false);
@@ -111,43 +113,46 @@ public class AutonThreeBall extends CommandBase {
                 }
                 break;
             /*
-            case 5:
-                drive.drive(0.0, 0.0, -Math.PI, false); // Turn to cargo 3.
-                ingestor.threeBallAutonIngest();
-                ingestor.lowerIngestor();
-                shooter.setShooterRpm(1000);
-                if (timer.get() >= 1.0 / 3.0) {
-                    drive.currentStep++;
-                    timer.reset();
-                }
-                break;
-            
-            case 6:
-                drive.drive(-Drivetrain.kMaxSpeed / 4, 0, 0.0, false); // Move towards cargo 3
-                ingestor.lowerIngestor();
-                ingestor.threeBallAutonIngest();
-                shooter.setShooterRpm(1000.0);
-                if (timer.get() >= 4.5) {// || ingestor.getStage1Proximity()){
-                    drive.currentStep++;
-                    timer.reset();
-                }
-                /*
-                break;
-            case 7:
-                drive.drive(0.0, 0.0, Math.PI, false);
-                ingestor.threeBallAutonIngest();
-                ingestor.liftIngestor();
-                shooter.setShooterRpm(1000.0);
-                double angleDifference = Math.abs(drive.getRotation().getDegrees() - startRotation.getDegrees());
-                if (angleDifference >= 180.0) {
-                    drive.currentStep++;
-                    timer.reset();
-                } else {
-                    System.out.println("Current angle difference: " + angleDifference + " degrees");
-                }
-                break;
-                
-            */
+             * case 5:
+             * drive.drive(0.0, 0.0, -Math.PI, false); // Turn to cargo 3.
+             * ingestor.threeBallAutonIngest();
+             * ingestor.lowerIngestor();
+             * shooter.setShooterRpm(1000);
+             * if (timer.get() >= 1.0 / 3.0) {
+             * drive.currentStep++;
+             * timer.reset();
+             * }
+             * break;
+             * 
+             * case 6:
+             * drive.drive(-Drivetrain.kMaxSpeed / 4, 0, 0.0, false); // Move towards cargo
+             * 3
+             * ingestor.lowerIngestor();
+             * ingestor.threeBallAutonIngest();
+             * shooter.setShooterRpm(1000.0);
+             * if (timer.get() >= 4.5) {// || ingestor.getStage1Proximity()){
+             * drive.currentStep++;
+             * timer.reset();
+             * }
+             * /*
+             * break;
+             * case 7:
+             * drive.drive(0.0, 0.0, Math.PI, false);
+             * ingestor.threeBallAutonIngest();
+             * ingestor.liftIngestor();
+             * shooter.setShooterRpm(1000.0);
+             * double angleDifference = Math.abs(drive.getRotation().getDegrees() -
+             * startRotation.getDegrees());
+             * if (angleDifference >= 180.0) {
+             * drive.currentStep++;
+             * timer.reset();
+             * } else {
+             * System.out.println("Current angle difference: " + angleDifference +
+             * " degrees");
+             * }
+             * break;
+             * 
+             */
             default:
                 drive.drive(0.0, 0.0, 0.0, false);
                 ingestor.liftIngestor();

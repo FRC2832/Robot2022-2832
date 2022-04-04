@@ -23,12 +23,12 @@ public class SafeZoneShoot extends CommandBase {
     @Override
     public void execute() {
         shooter.setShooterRpm(speed);
-        
-        if(changeHood) {
+
+        if (changeHood) {
             shooter.setHoodAngle(53); // knob 4.5
         }
-
-        if (speed - 50 < shooter.getShooterVelocity() && shooter.getShooterVelocity() < speed + 50) {
+        double shooterVel = shooter.getShooterVelocity();
+        if (speed - 50 < shooterVel && shooterVel < speed + 50) {
             ingestor.sendCargoToShooter();
         }
     }

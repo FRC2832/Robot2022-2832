@@ -9,40 +9,43 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Drivetrain;
+import frc.robot.SwerveModule;
 
 public class DriveCharacter extends CommandBase {
     private Drivetrain drive;
     private TimedRobot robot;
 
-    NetworkTableEntry autoSpeedEntry = NetworkTableInstance.getDefault().getEntry("/robot/autospeed");
-    NetworkTableEntry telemetryEntry = NetworkTableInstance.getDefault().getEntry("/robot/telemetry");
-    NetworkTableEntry rotateEntry = NetworkTableInstance.getDefault().getEntry("/robot/rotate");
-    double[] numberArray = new double[10];
-    ArrayList<Double> entries = new ArrayList<Double>();
-    int counter = 0;
-    double startTime = 0;
-    double priorAutospeed = 0;
-    String data = "";
-    boolean running = false;
-    
+    private NetworkTableEntry autoSpeedEntry = NetworkTableInstance.getDefault().getEntry("/robot/autospeed");
+    private NetworkTableEntry telemetryEntry = NetworkTableInstance.getDefault().getEntry("/robot/telemetry");
+    private NetworkTableEntry rotateEntry = NetworkTableInstance.getDefault().getEntry("/robot/rotate");
+    private double[] numberArray = new double[10];
+    private ArrayList<Double> entries = new ArrayList<Double>();
+    private int counter = 0;
+    private double startTime = 0;
+    private double priorAutospeed = 0;
+    private String data = "";
+    private boolean isRunning = false;
+
     public DriveCharacter(TimedRobot robot, Drivetrain drive) {
         this.drive = drive;
         this.robot = robot;
         addRequirements(drive);
     }
 
+    @Override
     public void initialize() {
         startTime = Timer.getFPGATimestamp();
         counter = 0;
-        running = true;
+        isRunning = true;
         robot.addPeriodic(this::runCommand, 0.005);
     }
 
+    @Override
     public void end(boolean interrupted) {
-        running = false;
+        isRunning = false;
         double elapsedTime = Timer.getFPGATimestamp() - startTime;
         System.out.println("Robot disabled");
-        var modules = drive.getModules();
+        SwerveModule[] modules = drive.getModules();
         modules[Drivetrain.FL].setDrive(0);
         modules[Drivetrain.RL].setDrive(0);
         modules[Drivetrain.FR].setDrive(0);
@@ -59,8 +62,9 @@ public class DriveCharacter extends CommandBase {
     }
 
     public void runCommand() {
-        if(!running) return;
-        var modules = drive.getModules();
+        if (!isRunning)
+            return;
+        SwerveModule[] modules = drive.getModules();
 
         // Retrieve values to send back before telling the motors to do something
         double now = Timer.getFPGATimestamp();
@@ -86,7 +90,8 @@ public class DriveCharacter extends CommandBase {
         modules[Drivetrain.RL].setDrive((rotateEntry.getBoolean(false) ? -1 : 1) * autospeed);
         modules[Drivetrain.FR].setDrive(autospeed);
         modules[Drivetrain.RR].setDrive(autospeed);
-        //drive.tankDrive((rotateEntry.getBoolean(false) ? -1 : 1) * autospeed, autospeed, false);
+        // drive.tankDrive((rotateEntry.getBoolean(false) ? -1 : 1) * autospeed,
+        // autospeed, false);
 
         numberArray[0] = now;
         numberArray[1] = battery;

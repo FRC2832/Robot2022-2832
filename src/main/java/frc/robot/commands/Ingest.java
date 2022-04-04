@@ -4,7 +4,6 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Ingestor;
 
-
 public class Ingest extends CommandBase {
     private Timer timer;
     private Ingestor ingestor;
@@ -12,7 +11,7 @@ public class Ingest extends CommandBase {
     private static final double INGESTOR_SPEED = 0.75; // 1000.0;
     private static final double STAGE_1_SPEED = 0.75;// 1000.0;
     private static final double STAGE_2_SPEED = 0.75; // 1000.0;
-    //private static final double INGESTOR_LIFT_SPEED = 0.25;
+    // private static final double INGESTOR_LIFT_SPEED = 0.25;
 
     public Ingest(Ingestor ingestor) {
 
@@ -21,7 +20,8 @@ public class Ingest extends CommandBase {
 
     }
 
-    public void initialize(){
+    @Override
+    public void initialize() {
         timer.start();
     }
 
@@ -34,7 +34,7 @@ public class Ingest extends CommandBase {
     }
 
     @Override
-    public boolean isFinished(){
+    public boolean isFinished() {
         return (timer.get() > 5 || ingestor.getStage1Proximity());
     }
 

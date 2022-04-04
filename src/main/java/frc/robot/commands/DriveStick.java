@@ -14,10 +14,12 @@ public class DriveStick extends CommandBase {
         addRequirements(drive);
     }
 
+    @Override
     public void initialize() {
 
     }
 
+    @Override
     public void execute() {
         // Get the x speed. We are inverting this because Xbox controllers return
         // negative values when we push forward.

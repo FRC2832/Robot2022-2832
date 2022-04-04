@@ -29,8 +29,10 @@ public class SwerveModule {
     // private static final double kWheelRadius = 0.0508;
     // private static final int kEncoderResolution = 4096;
 
-    //private static final double kModuleMaxAngularVelocity = 2 * Drivetrain.kMaxAngularSpeed;
-    //private static final double kModuleMaxAngularAcceleration = 4 * Math.PI; // radians per second squared
+    // private static final double kModuleMaxAngularVelocity = 2 *
+    // Drivetrain.kMaxAngularSpeed;
+    // private static final double kModuleMaxAngularAcceleration = 4 * Math.PI; //
+    // radians per second squared
 
     private final WPI_TalonFX driveMotor;
     private final CANSparkMax turningMotor;
@@ -119,7 +121,7 @@ public class SwerveModule {
                     constants.DriveMotor,
                     constants.DriveMotorGearRatio);
 
-            var enc = new Encoder(encoderIndex, encoderIndex + 1);
+            Encoder enc = new Encoder(encoderIndex, encoderIndex + 1);
             enc.setDistancePerPulse(0.001);
             driveEncoderSim = new EncoderSim(enc);
 
@@ -142,25 +144,22 @@ public class SwerveModule {
     public double getVelocity() {
         if (Robot.isReal()) {
             return driveMotor.getSelectedSensorVelocity() / DriveScaleFactor;
-        } else {
-            return driveEncoderSim.getRate();
         }
+        return driveEncoderSim.getRate();
     }
 
     public double getDistance() {
         if (Robot.isReal()) {
             return driveMotor.getSelectedSensorPosition() / DriveScaleFactor;
-        } else {
-            return driveEncoderSim.getDistance();
         }
+        return driveEncoderSim.getDistance();
     }
 
     public double getAbsoluteAngle() {
         if (Robot.isReal()) {
             return -absEncoder.getAbsolutePosition() + zeroAngle;
-        } else {
-            return turnEncoderSim.getDistance();
         }
+        return turnEncoderSim.getDistance();
     }
 
     public Rotation2d getRotation() {
@@ -181,27 +180,29 @@ public class SwerveModule {
 
         // Calculate the turning motor output from the turning PID controller.
         // if(oldTurnAngle == 0) {
-        //     oldTurnAngle = Math.toRadians(getAbsoluteAngle());
+        // oldTurnAngle = Math.toRadians(getAbsoluteAngle());
         // }
-        // double newTurnAngle = (1 - 0.4) * oldTurnAngle + 0.4 * Math.toRadians(getAbsoluteAngle());
+        // double newTurnAngle = (1 - 0.4) * oldTurnAngle + 0.4 *
+        // Math.toRadians(getAbsoluteAngle());
         final double turnOutput = turningPIDController.calculate(Math.toRadians(getAbsoluteAngle()),
                 state.angle.getRadians());
         // oldTurnAngle = Math.toRadians(getAbsoluteAngle());
 
         turnVoltCommand = -turnOutput;
-        //DataLogManager.log(constants.Name + " Turn volt command: " + turnVoltCommand);
+        // DataLogManager.log(constants.Name + " Turn volt command: " +
+        // turnVoltCommand);
         driveVoltCommand = driveOutput + driveFeedforward;
 
         if (Math.abs(driveVoltCommand) <= 0.01) {
             turnVoltCommand = 0;
         }
-        
-        //DataLogManager.log(constants.Name + " Drive volt command: " + driveVoltCommand);
-        
+
+        // DataLogManager.log(constants.Name + " Drive volt command: " +
+        // driveVoltCommand);
+
         driveMotor.setVoltage(driveVoltCommand);
         turningMotor.setVoltage(turnVoltCommand);
 
-        
         /*
          * TODO: use hardware control of motor control instead of SW
          * //set the motor to 10 revolutions. We should divide the encoder to degrees
@@ -225,7 +226,7 @@ public class SwerveModule {
         m_driveMotorSim.update(rate);
 
         // Calculate distance traveled using RPM * dt
-        var dist = turnEncoderSim.getDistance();
+        double dist = turnEncoderSim.getDistance();
         dist -= Math.toDegrees(m_turnMotorSim.getAngularVelocityRadPerSec() * rate);
         turnEncoderSim.setDistance(dist);
 
@@ -246,12 +247,13 @@ public class SwerveModule {
     }
 
     public void setBrakeMode(boolean brake) {
-        if(brake) {
-            driveMotor.setNeutralMode(NeutralMode.Brake);
-            turningMotor.setIdleMode(IdleMode.kBrake);
-        } else {
-            driveMotor.setNeutralMode(NeutralMode.Coast);
-            turningMotor.setIdleMode(IdleMode.kCoast);
+        NeutralMode neutralMode = NeutralMode.Coast;
+        IdleMode idleMode = IdleMode.kCoast;
+        if (brake) {
+            neutralMode = NeutralMode.Brake;
+            idleMode = IdleMode.kBrake;
         }
+        driveMotor.setNeutralMode(neutralMode);
+        turningMotor.setIdleMode(idleMode);
     }
 }

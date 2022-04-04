@@ -27,7 +27,7 @@ public class ManualShoot extends CommandBase {
         if (speed - 50 < shooter.getShooterVelocity() && shooter.getShooterVelocity() < speed + 50) {
             ingestor.sendCargoToShooter();
         }
-    }    
+    }
 
     @Override
     public void end(boolean interrupted) {

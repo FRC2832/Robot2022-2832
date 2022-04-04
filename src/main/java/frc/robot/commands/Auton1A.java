@@ -19,14 +19,14 @@ public class Auton1A extends CommandBase {
     }
 
     // back up, wait for delay, shoot
+    @Override
     public void execute() {
         double driveTime = 3;
-        if(timer.get() < driveTime) {
+        if (timer.get() < driveTime) {
             drive.drive(-1.0, 0.0, 0.0, false);
-        }
-        else {
+        } else {
             drive.drive(0.0, 0.0, 0.0, false);
-            if(timer.get() > delay + driveTime) {
+            if (timer.get() > delay + driveTime) {
                 drive.drive(0.0, 0.0, 0.0, false);
                 System.out.println("Shooting"); // TODO: actually shoot
             }

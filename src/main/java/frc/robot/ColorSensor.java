@@ -12,9 +12,9 @@ public class ColorSensor extends SubsystemBase {
     private static ColorSensorV3 colorSensor;
     private Color color;
     private ColorMatch colorMatcher = new ColorMatch();
-    private final Color BLUE_TARGET = new Color(0.171, 0.421, 0.406);
-    private final Color RED_TARGET = new Color(0.499, 0.362, 0.138);
-    private final Color UNKNOWN_TARGET = new Color(0.269, 0.481, 0.249);
+    private static final Color BLUE_TARGET = new Color(0.171, 0.421, 0.406);
+    private static final Color RED_TARGET = new Color(0.499, 0.362, 0.138);
+    private static final Color UNKNOWN_TARGET = new Color(0.269, 0.481, 0.249);
     private static CargoColor cargoColor;
     // private DigitalInput proxSensor;
 
@@ -41,8 +41,8 @@ public class ColorSensor extends SubsystemBase {
         return colorSensor.getProximity();
     }
 
-    public static String getCargoColor() {
-        return cargoColor.toString();
+    public static CargoColor getCargoColor() {
+        return cargoColor;
     }
 
     /*

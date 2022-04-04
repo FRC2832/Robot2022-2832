@@ -10,7 +10,7 @@ public class HomeHood extends CommandBase {
         this.shooter = shooter;
         addRequirements(shooter);
     }
-    
+
     @Override
     public void execute() {
         shooter.setHoodSpeedPct(-0.25);

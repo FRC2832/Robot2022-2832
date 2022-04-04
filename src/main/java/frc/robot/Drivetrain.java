@@ -9,10 +9,6 @@ import java.util.ArrayList;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.sensors.PigeonIMU;
 
-import edu.wpi.first.wpilibj.ADXRS450_Gyro;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -21,12 +17,16 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.wpilibj.simulation.ADXRS450_GyroSim;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.ADXRS450_Gyro;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.simulation.ADXRS450_GyroSim;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 /** Represents a swerve drive style drivetrain. */
@@ -39,10 +39,10 @@ public class Drivetrain extends SubsystemBase {
     public static double kMaxSpeed = 2.85; // per Thirfty Bot, max speed with Falcon 500 is 15.9ft/s, or 4.85 m/s
     public static double kMaxAngularSpeed = 2 * Math.PI; // 1 rotation per second
 
-    private XboxController driverController = new XboxController(0);
+    private XboxController driverController;
 
-    private final SwerveModule[] modules = new SwerveModule[4];
-    private final SwerveConstants[] constants = new SwerveConstants[4];
+    private final SwerveModule[] MODULES = new SwerveModule[4];
+    private final SwerveConstants[] CONSTANTS = new SwerveConstants[4];
     private Pose2d[] modulePoses = new Pose2d[4];
     private Translation2d[] redBalls;
     private Translation2d[] blueBalls;
@@ -59,7 +59,8 @@ public class Drivetrain extends SubsystemBase {
 
     private Field2d field = new Field2d();
 
-    public Drivetrain() {
+    public Drivetrain(XboxController driverController) {
+        this.driverController = driverController;
         if (Robot.isSimulation()) {
             gyroBase = new ADXRS450_Gyro();
             gyroSim = new ADXRS450_GyroSim(gyroBase);
@@ -94,52 +95,52 @@ public class Drivetrain extends SubsystemBase {
         pigeon = new PigeonIMU(motor);
 
         // set defaults for all swerve moules
-        for (int i = 0; i < constants.length; i++) {
-            constants[i] = new SwerveConstants();
-            constants[i].Id = (byte) i;
-            constants[i].TurnMotor = DCMotor.getNeo550(1);
-            constants[i].TurnMotorGearRatio = (12 / 1) * (64 / 12); // 12:1 on the motor, 5.33 in the swerve
-            constants[i].DriveMotor = DCMotor.getFalcon500(1);
-            constants[i].DriveMotorGearRatio = 5.25; // 12t to 21t gear stage, 15t to 45t bevel gear stage
+        for (int i = 0; i < CONSTANTS.length; i++) {
+            CONSTANTS[i] = new SwerveConstants();
+            CONSTANTS[i].Id = (byte) i;
+            CONSTANTS[i].TurnMotor = DCMotor.getNeo550(1);
+            CONSTANTS[i].TurnMotorGearRatio = (12 / 1) * (64 / 12); // 12:1 on the motor, 5.33 in the swerve
+            CONSTANTS[i].DriveMotor = DCMotor.getFalcon500(1);
+            CONSTANTS[i].DriveMotorGearRatio = 5.25; // 12t to 21t gear stage, 15t to 45t bevel gear stage
 
-            constants[i].TurnMotorP = 0;
-            constants[i].TurnMotorI = 0;
-            constants[i].TurnMotorD = 0;
+            CONSTANTS[i].TurnMotorP = 0;
+            CONSTANTS[i].TurnMotorI = 0;
+            CONSTANTS[i].TurnMotorD = 0;
 
-            constants[i].DriveMotorP = 0;
-            constants[i].DriveMotorI = 0;
-            constants[i].DriveMotorD = 0;
-            constants[i].DriveMotorFF = 0;
-            constants[i].DriveMotorIZone = 0;
+            CONSTANTS[i].DriveMotorP = 0;
+            CONSTANTS[i].DriveMotorI = 0;
+            CONSTANTS[i].DriveMotorD = 0;
+            CONSTANTS[i].DriveMotorFF = 0;
+            CONSTANTS[i].DriveMotorIZone = 0;
 
             // TODO: These are example values only - DO NOT USE THESE FOR YOUR OWN ROBOT!
             // this should be once for the drivetrain
-            constants[i].DriveMotorKv = 2.474; // kvVoltSecondsPerMeter (default = 12/kMaxSpeed)
-            constants[i].DriveMotorKa = 0.0917; // kaVoltSecondsSquaredPerMeter
+            CONSTANTS[i].DriveMotorKv = 2.474; // kvVoltSecondsPerMeter (default = 12/kMaxSpeed)
+            CONSTANTS[i].DriveMotorKa = 0.0917; // kaVoltSecondsSquaredPerMeter
             // this should be done per turning motor
-            constants[i].TurnMotorKv = 0.6095; // VoltSecondsPerRadian (default = 12/19.686 (188RPM = 19.686Rad/S))
-            constants[i].TurnMotorKa = 0.0348; // VoltSecondsSquaredPerRadian = 0.0348
+            CONSTANTS[i].TurnMotorKv = 0.6095; // VoltSecondsPerRadian (default = 12/19.686 (188RPM = 19.686Rad/S))
+            CONSTANTS[i].TurnMotorKa = 0.0348; // VoltSecondsSquaredPerRadian = 0.0348
         }
         // per corner constants
-        constants[FL].Name = "SwerveDrive_FL";
-        constants[FL].Location = new Translation2d(0.261, 0.261);
+        CONSTANTS[FL].Name = "SwerveDrive_FL";
+        CONSTANTS[FL].Location = new Translation2d(0.261, 0.261);
 
-        constants[FR].Name = "SwerveDrive_FR";
-        constants[FR].Location = new Translation2d(0.261, -0.261);
+        CONSTANTS[FR].Name = "SwerveDrive_FR";
+        CONSTANTS[FR].Location = new Translation2d(0.261, -0.261);
 
-        constants[RL].Name = "SwerveDrive_RL";
-        constants[RL].Location = new Translation2d(-0.261, 0.261);
+        CONSTANTS[RL].Name = "SwerveDrive_RL";
+        CONSTANTS[RL].Location = new Translation2d(-0.261, 0.261);
 
-        constants[RR].Name = "SwerveDrive_RR";
-        constants[RR].Location = new Translation2d(-0.261, -0.261);
+        CONSTANTS[RR].Name = "SwerveDrive_RR";
+        CONSTANTS[RR].Location = new Translation2d(-0.261, -0.261);
 
         // create the swerve modules
-        for (int i = 0; i < modules.length; i++) {
-            modules[i] = new SwerveModule(constants[i]);
+        for (int i = 0; i < MODULES.length; i++) {
+            MODULES[i] = new SwerveModule(CONSTANTS[i]);
         }
         kinematics = new SwerveDriveKinematics(
-                constants[FL].Location, constants[FR].Location,
-                constants[RL].Location, constants[RR].Location);
+                CONSTANTS[FL].Location, CONSTANTS[FR].Location,
+                CONSTANTS[RL].Location, CONSTANTS[RR].Location);
         odometry = new SwerveDriveOdometry(kinematics, getHeading());
 
         // set the robot to x=0.5m, y=4m, rot=0*
@@ -181,8 +182,8 @@ public class Drivetrain extends SubsystemBase {
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, kMaxSpeed);
 
         // command each swerve module
-        for (int i = 0; i < modules.length; i++) {
-            modules[i].setDesiredState(swerveModuleStates[i]);
+        for (int i = 0; i < MODULES.length; i++) {
+            MODULES[i].setDesiredState(swerveModuleStates[i]);
         }
 
         // report our commands to the dashboard
@@ -195,19 +196,19 @@ public class Drivetrain extends SubsystemBase {
     /** Updates the field relative position of the robot. */
     public void updateOdometry() {
         // update our estimation where we are on the field
-        odometry.update(getHeading(), modules[FL].getState(),
-                modules[FR].getState(), modules[RL].getState(), modules[RR].getState());
+        odometry.update(getHeading(), MODULES[FL].getState(),
+                MODULES[FR].getState(), MODULES[RL].getState(), MODULES[RR].getState());
         Pose2d pose = getPose();
 
         // Update the poses for the swerveModules. Note that the order of rotating the
         // position and then adding the translation matters
-        for (int i = 0; i < modules.length; i++) {
-            Translation2d modulePositionFromChassis = constants[i].Location.rotateBy(getHeading())
+        for (int i = 0; i < MODULES.length; i++) {
+            Translation2d modulePositionFromChassis = CONSTANTS[i].Location.rotateBy(getHeading())
                     .plus(pose.getTranslation());
 
             // Module's heading is it's angle relative to the chassis heading
             modulePoses[i] = new Pose2d(modulePositionFromChassis,
-                    modules[i].getState().angle.plus(pose.getRotation()));
+                    MODULES[i].getState().angle.plus(pose.getRotation()));
         }
 
         // plot it on the simulated field
@@ -237,13 +238,12 @@ public class Drivetrain extends SubsystemBase {
             double[] ypr_deg = new double[3];
             pigeon.getYawPitchRoll(ypr_deg);
             return ypr_deg[0];
-        } else {
-            return gyroBase.getAngle();
         }
+        return gyroBase.getAngle();
     }
 
     public SwerveModule[] getModules() {
-        return modules;
+        return MODULES;
     }
 
     int loops = 0;
@@ -255,8 +255,8 @@ public class Drivetrain extends SubsystemBase {
         SmartDashboard.putNumber("SwerveDrive/gyroHeading", getHeading().getDegrees());
         loops++;
         if (loops % 5 == 0) {
-            for (int i = 0; i < modules.length; i++) {
-                modules[i].putSmartDashboard();
+            for (int i = 0; i < MODULES.length; i++) {
+                MODULES[i].putSmartDashboard();
             }
             loops = 0;
         }
@@ -275,9 +275,9 @@ public class Drivetrain extends SubsystemBase {
         SwerveModuleState[] states = new SwerveModuleState[4];
 
         // run the simulation to get the module's velocity/angle
-        for (int i = 0; i < modules.length; i++) {
-            modules[i].simulationPeriodic(rate);
-            states[i] = modules[i].getState();
+        for (int i = 0; i < MODULES.length; i++) {
+            MODULES[i].simulationPeriodic(rate);
+            states[i] = MODULES[i].getState();
         }
 
         // calculate the robot's speed and angle (we only care about angle here)
@@ -293,28 +293,29 @@ public class Drivetrain extends SubsystemBase {
 
         if (absVal > deadband) {
             return Math.signum(value) * (deadband + ((.52) * absVal * absVal)); // TODO: change to 1 - x(deadband)
-        } else {
-            return 0;
         }
+        return 0;
     }
 
-    public void runTurtleMode(XboxController controller){
+    public void runTurtleMode(XboxController controller) {
         driverController = controller;
-        /*if(driverController.getRightTriggerAxis() >= TRIGGER_SENSITIVITY){
-            driveStickSlew.setLimiters(1.5, 1.5, 1.5);
-        }
-        else{
-            driveStickSlew.setLimiters(3.0, 3.0, 3.0);
-        }*/
-        if(driverController.getRightTriggerAxis() >= 0.5){
+        /*
+         * if(driverController.getRightTriggerAxis() >= TRIGGER_SENSITIVITY){
+         * driveStickSlew.setLimiters(1.5, 1.5, 1.5);
+         * }
+         * else{
+         * driveStickSlew.setLimiters(3.0, 3.0, 3.0);
+         * }
+         */
+        if (driverController.getRightTriggerAxis() >= 0.5) {
             kMaxSpeed = 1.4;
             kMaxAngularSpeed = 1.8;
-        }
-        else{
+        } else {
             kMaxSpeed = 2.85;
             kMaxAngularSpeed = 2 * Math.PI;
         }
     }
+
     public void updateSimulationVision(Pose2d robot) {
         Translation2d[] balls;
         final double MAX_SIGHT_DIST = 1.219; // 48"
@@ -414,11 +415,10 @@ public class Drivetrain extends SubsystemBase {
         }
 
     }
-    
+
     public void setBrakeMode(boolean brake) {
-        for(SwerveModule module:modules) {
+        for (SwerveModule module : MODULES) {
             module.setBrakeMode(brake);
         }
     }
-
 }

@@ -9,6 +9,7 @@ public class AutonOption1 extends CommandBase {
     private Drivetrain drive;
     private Timer timer;
     private double delay = 0.0;
+    private static final double DRIVE_TIME = 1.5;
 
     public AutonOption1(Drivetrain drive) {
         this.drive = drive;
@@ -18,14 +19,14 @@ public class AutonOption1 extends CommandBase {
         addRequirements(drive);
     }
 
+    @Override
     public void execute() {
-        double driveTime = 1.5;
-        if(timer.get() < driveTime) {
+        double timerVal = timer.get();
+        if (timerVal < DRIVE_TIME) {
             drive.drive(-1.0, 0.0, 0.0, false);
-        }
-        else {
+        } else {
             drive.drive(0.0, 0.0, 0.0, false);
-            if(timer.get() > delay + driveTime) {
+            if (timerVal > delay + DRIVE_TIME) {
                 drive.drive(0.0, 0.0, 0.0, false);
                 System.out.println("Shooting"); // TODO: actually shoot
             }

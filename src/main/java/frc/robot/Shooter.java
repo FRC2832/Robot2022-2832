@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.ColorSensor.CargoColor;
 import frc.robot.commands.DribbleShoot;
 
 public class Shooter extends SubsystemBase {
@@ -21,18 +22,18 @@ public class Shooter extends SubsystemBase {
     private TalonSRX hoodMotor;
     private boolean isHomed; // report if hood has been homed
     private boolean lastHomed;
-    //private double hoodSensorOffset;
+    // private double hoodSensorOffset;
     private double distance;
     private double targetHoodAngle;
     private double targetRpm;
     private XboxController driveController;
     private XboxController operatorController;
     private static boolean coastMotor = false;
-    final int HOOD_SENSOR_ACTIVE = 700;
-    final int MAX_ANGLE_COUNTS = 400;
-    final int MIN_ANGLE = 20;
-    final int MAX_ANGLE = 70;
-    private String currentCargoColor;
+    private final int HOOD_SENSOR_ACTIVE = 700;
+    private final int MAX_ANGLE_COUNTS = 400;
+    private final int MIN_ANGLE = 20;
+    private final int MAX_ANGLE = 70;
+    private CargoColor currentCargoColor;
     private Ingestor ingestor;
 
     // TODO: write home hood method
@@ -45,7 +46,7 @@ public class Shooter extends SubsystemBase {
         this.driveController = driveController;
         this.operatorController = operatorController;
         this.ingestor = ingestor;
-        currentCargoColor = "none";
+        currentCargoColor = CargoColor.Unknown;
         isHomed = false;
         hoodMotor = new TalonSRX(CanIDConstants.HOOD_MOTOR);
         hoodMotor.setNeutralMode(NeutralMode.Brake);
@@ -81,24 +82,21 @@ public class Shooter extends SubsystemBase {
     public void periodic() {
         currentCargoColor = ColorSensor.getCargoColor();
 
-        //System.out.println("currentCargoColor: " + currentCargoColor);
+        // System.out.println("currentCargoColor: " + currentCargoColor);
 
-        String allianceString;
+        CargoColor allianceColor;
         Alliance alliance = DriverStation.getAlliance();
-        if(alliance == Alliance.Red) {
-            allianceString = "Red";
+        if (alliance == Alliance.Red) {
+            allianceColor = CargoColor.Red;
         } else {
-            allianceString = "Blue";
+            allianceColor = CargoColor.Blue;
         }
 
-        if(currentCargoColor.equals("Unknown")){
+        if (currentCargoColor == CargoColor.Unknown) {
             // no ball detected, so don't shoot
-        }
-        // if detected color != alliance color 
-        else if(!(currentCargoColor.equalsIgnoreCase(allianceString))){
+        } else if (currentCargoColor != allianceColor) {
             CommandScheduler.getInstance().schedule(new DribbleShoot(this, ingestor));
-        }
-        else{
+        } else {
             // call Autoshoot (TODO)
             // print "AUTOSHOOTING!!!"
         }
@@ -109,15 +107,15 @@ public class Shooter extends SubsystemBase {
         SmartDashboard.putNumber("Calc RPM", getTargetRpm());
         SmartDashboard.putNumber("Calc Hood Angle", getTargetHoodAngle());
         // if the limit switch is pressed, reset the hood angle position
-        //when we exit the home position, save the zero position
-        if (lastHomed == true && !hoodBottom()){
+        // when we exit the home position, save the zero position
+        if (lastHomed && !hoodBottom()) {
             hoodMotor.setSelectedSensorPosition(0);
             isHomed = true;
         }
         // if (hoodMotor.isRevLimitSwitchClosed() > 0) {
-        //     hoodMotor.setSelectedSensorPosition(0);
-        //     isHomed = true;
-        //     System.out.println("isHomed = true");
+        // hoodMotor.setSelectedSensorPosition(0);
+        // isHomed = true;
+        // System.out.println("isHomed = true");
         // }
         lastHomed = hoodBottom();
         double hoodMotorSpeed = hoodMotor.getMotorOutputPercent();
@@ -169,25 +167,23 @@ public class Shooter extends SubsystemBase {
 
     public double getHoodAngle() {
         double sensor = hoodMotor.getSelectedSensorPosition();
-        return (sensor/MAX_ANGLE_COUNTS)*(MAX_ANGLE-MIN_ANGLE) + MIN_ANGLE;
+        return (sensor / MAX_ANGLE_COUNTS) * (MAX_ANGLE - MIN_ANGLE) + MIN_ANGLE;
     }
 
     public void setHoodSpeedPct(double pct) {
         // allow control if homed or only down if not homed
         double percentage;
-        if(hoodBottom()) {
-            if(pct > 0.1) {
-                //if driving down, stop at home
+        if (hoodBottom()) {
+            if (pct > 0.1) {
+                // if driving down, stop at home
                 percentage = 0.0;
             } else {
-                //slowly drive out to get accurate home
+                // slowly drive out to get accurate home
                 percentage = 0.18;
             }
-        }
-        else if(hoodMotor.getSelectedSensorPosition() > MAX_ANGLE_COUNTS && pct > 0){
+        } else if (hoodMotor.getSelectedSensorPosition() > MAX_ANGLE_COUNTS && pct > 0) {
             percentage = 0.0;
-        }
-        else {
+        } else {
             percentage = pct;
         }
         hoodMotor.set(ControlMode.PercentOutput, percentage);
@@ -198,7 +194,7 @@ public class Shooter extends SubsystemBase {
     }
 
     public void setHoodAngle(double position) {
-        double value = (position-MIN_ANGLE) * MAX_ANGLE_COUNTS/ (MAX_ANGLE-MIN_ANGLE);
+        double value = (position - MIN_ANGLE) * MAX_ANGLE_COUNTS / (MAX_ANGLE - MIN_ANGLE);
         hoodMotor.set(ControlMode.Position, value);
     }
 
@@ -231,7 +227,7 @@ public class Shooter extends SubsystemBase {
         return coastMotor;
     }
 
-    public String getCurrentCargoColor(){
+    public CargoColor getCurrentCargoColor() {
         return currentCargoColor;
     }
 }

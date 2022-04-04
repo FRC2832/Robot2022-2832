@@ -8,18 +8,18 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class Climber extends SubsystemBase {
     private WPI_TalonFX rung1;
     private WPI_TalonFX rung23;
-    private final double CLIMBER_UP_SPEED = -0.6;
-    private final double CLIMBER_DOWN_SPEED = 0.4;
+    private static final double CLIMBER_UP_SPEED = -0.6;
+    private static final double CLIMBER_DOWN_SPEED = 0.4;
     private Ingestor ingestor;
-    //private ColorSensor colorSensor;
+    // private ColorSensor colorSensor;
 
     public Climber(Ingestor ingestor) {
         rung1 = new WPI_TalonFX(CanIDConstants.RUNG_1_2_WINCH);
         rung23 = new WPI_TalonFX(CanIDConstants.RUNG_3_4_WINCH);
         rung1.setNeutralMode(NeutralMode.Brake);
         rung23.setNeutralMode(NeutralMode.Brake);
-        //colorSensor = new ColorSensor();
-        //ingestor = new Ingestor(colorSensor);
+        // colorSensor = new ColorSensor();
+        // ingestor = new Ingestor(colorSensor);
         this.ingestor = ingestor;
     }
 
@@ -34,7 +34,7 @@ public class Climber extends SubsystemBase {
     public void arm1Hold() {
         rung1.set(0);
     }
-    
+
     public void arm2Up() {
         ingestor.lowerIngestor();
         rung23.set(-CLIMBER_UP_SPEED);

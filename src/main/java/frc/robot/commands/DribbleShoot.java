@@ -5,16 +5,17 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.ColorSensor;
 import frc.robot.Ingestor;
 import frc.robot.Shooter;
+import frc.robot.ColorSensor.CargoColor;
 
 public class DribbleShoot extends CommandBase {
     private Shooter shooter;
     private Ingestor ingestor;
-    //private Pi pi;
+    // private Pi pi;
 
     public DribbleShoot(Shooter shooter, Ingestor ingestor) {
         this.shooter = shooter;
         this.ingestor = ingestor;
-        //this.pi = pi;
+        // this.pi = pi;
         addRequirements(shooter);
         SmartDashboard.putNumber("Target RPM", 1000); // 1000 = dribble rpm
     }
@@ -39,10 +40,7 @@ public class DribbleShoot extends CommandBase {
     @Override
     public boolean isFinished() {
         // wehn color is unknown return true (maybe wait one more second?)
-        if (ColorSensor.getCargoColor().equals("Unknown")) {
-            return true;
-        }
-        return false;
+        return ColorSensor.getCargoColor() == CargoColor.Unknown;
     }
 
     @Override

@@ -27,7 +27,7 @@ public class Pi extends SubsystemBase {
     private Number[] targetHeightArray;
     private Number[] targetAreaArray;
     private final double CAM_X_RES = 640.0;
-    //private final double CAM_Y_RES = 480;
+    // private final double CAM_Y_RES = 480;
     public final double TARGET_CENTER_X = 320.0;
     private static boolean targetMoveRight;
     private static boolean targetMoveLeft;
@@ -38,7 +38,7 @@ public class Pi extends SubsystemBase {
     private static double cargoCenterXOutput;
     private static double cargoCenterYOutput;
 
-    public Pi () {
+    public Pi() {
         netTableInstance = NetworkTableInstance.getDefault();
         table = netTableInstance.getTable("vision");
         cargoCenterX = table.getEntry("cargoX");
@@ -52,7 +52,8 @@ public class Pi extends SubsystemBase {
         targetCenterYOutput = -1;
     }
 
-    // sends alliance color to the python code so it knows what color cargo to look for
+    // sends alliance color to the python code so it knows what color cargo to look
+    // for
     public void sendAlliance() {
         Alliance alliance = DriverStation.getAlliance();
         String color;
@@ -74,7 +75,8 @@ public class Pi extends SubsystemBase {
             cargoCenterYOutput = -1;
             return;
         }
-        // currently just taking the first cargo but considering taking the cargo with the largest y value becuase it should be closest to the robot
+        // currently just taking the first cargo but considering taking the cargo with
+        // the largest y value becuase it should be closest to the robot
         double cargoX = (double) cargoCenterXArray[0];
         cargoCenterXOutput = cargoX;
         cargoCenterYOutput = (double) cargoCenterYArray[0];
@@ -97,7 +99,7 @@ public class Pi extends SubsystemBase {
         targetHeightArray = targetHeight.getNumberArray(new Number[0]);
         targetAreaArray = targetArea.getNumberArray(new Number[0]);
         int size = targetCenterXArray.length;
-        //check if vision saw a target
+        // check if vision saw a target
         if (size == 0) {
             targetMoveRight = false;
             targetMoveLeft = false;
@@ -105,25 +107,20 @@ public class Pi extends SubsystemBase {
             targetCenterXOutput = -1;
             return;
         }
-        //consistency check
-        if(  size == targetCenterYArray.length
-          && size == targetWidthArray.length
-          && size == targetHeightArray.length
-          && size == targetAreaArray.length
-          )
-        {
-           sortTargets();
-        }
-        else {
-            //unknown order, skip this loop
+        // consistency check
+        if (size == targetCenterYArray.length
+                && size == targetWidthArray.length
+                && size == targetHeightArray.length
+                && size == targetAreaArray.length) {
+            sortTargets();
+        } else {
+            // unknown order, skip this loop
             return;
         }
 
         // pick a target just right of center so the cargo hopefully doesn't bounce out
         int index = 0;
-        if (size <= 1) {
-            index = 0; 
-        } else {
+        if (size >= 1) {
             index = (int) Math.ceil((double) size / 2);
         }
         double targetX = (double) targetCenterXArray[index];
@@ -140,7 +137,7 @@ public class Pi extends SubsystemBase {
             targetMoveLeft = false;
         }
     }
-    
+
     public void sortTargets() {
         int size = targetCenterXArray.length;
         for (int i = 1; i < size; ++i) {
@@ -172,27 +169,27 @@ public class Pi extends SubsystemBase {
         processTargets();
     }
 
-    public static double LinearInterp(ArrayList<Pair<Double,Double>> list, double input) {
-        //if input is smaller than the table, return the first element
-        if(input < list.get(0).getFirst()) {
+    public static double LinearInterp(ArrayList<Pair<Double, Double>> list, double input) {
+        // if input is smaller than the table, return the first element
+        if (input < list.get(0).getFirst()) {
             return list.get(0).getSecond();
         }
-        //if input is larger than the table, return the last element
-        if(input > list.get(list.size()-1).getFirst()) {
-            return list.get(list.size()-1).getSecond();
+        // if input is larger than the table, return the last element
+        if (input > list.get(list.size() - 1).getFirst()) {
+            return list.get(list.size() - 1).getSecond();
         }
-        //otherwise the value is in the table
-        for(int i=0; i<list.size()-1; i++) {
+        // otherwise the value is in the table
+        for (int i = 0; i < list.size() - 1; i++) {
             double x0 = list.get(i).getFirst();
-            double x1 = list.get(i+1).getFirst();
+            double x1 = list.get(i + 1).getFirst();
             if ((x0 <= input) && (input <= x1)) {
-                //see https://en.wikipedia.org/wiki/Linear_interpolation
+                // see https://en.wikipedia.org/wiki/Linear_interpolation
                 double y0 = list.get(i).getSecond();
-                double y1 = list.get(i+1).getSecond();
-                return (y0*(x1-input) + y1*(input-x0))/(x1-x0);
+                double y1 = list.get(i + 1).getSecond();
+                return (y0 * (x1 - input) + y1 * (input - x0)) / (x1 - x0);
             }
         }
-        //should never happen...
+        // should never happen...
         return Double.NaN;
     }
 

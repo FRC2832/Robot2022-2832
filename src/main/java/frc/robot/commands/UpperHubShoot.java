@@ -15,19 +15,20 @@ public class UpperHubShoot extends CommandBase {
         this.ingestor = ingestor;
         speed = 2150;
         addRequirements(shooter);
-        SmartDashboard.putNumber("Target RPM", speed); 
+        SmartDashboard.putNumber("Target RPM", speed);
     }
 
     @Override
     public void execute() {
         shooter.setShooterRpm(speed);
-        shooter.setHoodAngle(18); //hood 1
+        shooter.setHoodAngle(18); // hood 1
+        double shooterVel = shooter.getShooterVelocity();
 
         // if target rpm is within range (+- 50)
-        if (speed - 50 < shooter.getShooterVelocity() && shooter.getShooterVelocity() < speed + 50) {
+        if (speed - 50 < shooterVel && shooterVel < speed + 50) {
             ingestor.sendCargoToShooter();
         }
-    }    
+    }
 
     @Override
     public void end(boolean interrupted) {

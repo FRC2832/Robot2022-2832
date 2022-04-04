@@ -8,23 +8,26 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Drivetrain;
 import frc.robot.Ingestor;
 import frc.robot.Shooter;
+import frc.robot.SwerveConstants;
+import frc.robot.SwerveModule;
 
 public class AutonTwoBall extends CommandBase {
     private Drivetrain drive;
     private Shooter shooter;
     private Ingestor ingestor;
     private Timer timer;
-    //private boolean sentToShooter;
+    // private boolean sentToShooter;
     private double startAngle;
     private double startEncoderCount;
     private AutoShoot autoShoot;
+    private SwerveModule frontLeft;
     private static boolean scheduled;
-
 
     public AutonTwoBall(Drivetrain drive, Shooter shooter, Ingestor ingestor) {
         this.drive = drive;
         this.shooter = shooter;
         this.ingestor = ingestor;
+        frontLeft = drive.getModules()[0];
         autoShoot = new AutoShoot(drive, shooter, ingestor, null, null);
         scheduled = false;
 
@@ -41,11 +44,12 @@ public class AutonTwoBall extends CommandBase {
         timer.reset();
         timer.start();
         startAngle = drive.getAngle() % 360;
-        startEncoderCount = drive.getModules()[0].getDistance();
-        //System.out.println("Start X, Y: " + startPose.getX() + ", " + startPose.getY());
-        System.out.println("Start encoder distance value: " + startEncoderCount);
-        System.out.println("Start angle: " + startAngle + " degrees");
-        
+        startEncoderCount = frontLeft.getDistance();
+        // System.out.println("Start X, Y: " + startPose.getX() + ", " +
+        // startPose.getY());
+        //System.out.println("Start encoder distance value: " + startEncoderCount);
+        //System.out.println("Start angle: " + startAngle + " degrees");
+
         // drive.currentStep++;
     }
 
@@ -72,14 +76,14 @@ public class AutonTwoBall extends CommandBase {
                 ingestor.lowerIngestor();
                 ingestor.threeBallAutonIngest();
                 shooter.setShooterRpm(1000.0);
-                distance = Math.abs(drive.getModules()[0].getDistance() - startEncoderCount);
-                if (distance >= 1.5) {//timer.get() >= 3.0) {// || ingestor.getStage1Proximity()){
+                distance = Math.abs(frontLeft.getDistance() - startEncoderCount);
+                if (distance >= 1.5) {// timer.get() >= 3.0) {// || ingestor.getStage1Proximity()){
                     drive.currentStep++;
                     timer.reset();
-                    startEncoderCount = drive.getModules()[0].getDistance();
-                } else {
-                    System.out.println("Current distance (step 2): " + distance);
-                }
+                    startEncoderCount = frontLeft.getDistance();
+                } /*else {
+                    //System.out.println("Current distance (step 2): " + distance);
+                }*/
                 /*
                  * if (timer.get() >= 3.0) {
                  * drive.currentStep++;
@@ -92,14 +96,14 @@ public class AutonTwoBall extends CommandBase {
                 ingestor.lowerIngestor();
                 ingestor.threeBallAutonIngest();
                 shooter.setShooterRpm(1000.0);
-                distance = Math.abs(drive.getModules()[0].getDistance() - startEncoderCount);
+                distance = Math.abs(frontLeft.getDistance() - startEncoderCount);
                 if (distance >= 0.5) {
                     drive.currentStep++;
                     timer.reset();
-                    //nextStepStartPose = drive.getPose();
-                } else {
+                    // nextStepStartPose = drive.getPose();
+                } /*else {
                     System.out.println("Current distance (step 3): " + distance);
-                }
+                }*/
                 break;
             case 3: // turn to hub. TODO: Maybe add vision?
                 drive.drive(0.0, 0.0, Math.PI, false);
@@ -110,9 +114,9 @@ public class AutonTwoBall extends CommandBase {
                 if (angleDifference >= 180.0) {
                     drive.currentStep++;
                     timer.reset();
-                } else {
+                } /*else {
                     System.out.println("Current angle difference: " + angleDifference + " degrees");
-                }
+                }*/
                 break;
             case 4: // shoot 2 balls with hood angle set at 2.5 knobs (aka, manual shot)
                 drive.drive(0.0, 0.0, 0.0, false);
@@ -121,10 +125,11 @@ public class AutonTwoBall extends CommandBase {
                 // // TODO add in hood angle code when working
                 // ingestor.lowerIngestor(0.0);
                 // shooter.setShooterRpm(speed);
-                // if (speed - 50 < shooter.getShooterVelocity() && shooter.getShooterVelocity() < speed + 50) {
-                //     ingestor.sendCargoToShooter();
-                //     sentToShooter = true;
-                //     timer.reset();
+                // if (speed - 50 < shooter.getShooterVelocity() && shooter.getShooterVelocity()
+                // < speed + 50) {
+                // ingestor.sendCargoToShooter();
+                // sentToShooter = true;
+                // timer.reset();
                 // }
                 if (!scheduled) {
                     CommandScheduler.getInstance().schedule(autoShoot);

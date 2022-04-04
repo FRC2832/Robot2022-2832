@@ -14,6 +14,7 @@ public class AutoDrive extends CommandBase {
         addRequirements(drive);
     }
 
+    @Override
     public void execute() {
         // ask the drivetrain to run
         drive.drive(xSpeed, ySpeed, 0, true);

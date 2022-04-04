@@ -14,13 +14,14 @@ public class ResetOrientation extends CommandBase {
         addRequirements(drive);
     }
 
+    @Override
     public void execute() {
         drive.resetRobot();
     }
 
     @Override
-    public boolean isFinished() { 
-        //always return true so it only runs 1 loop.
+    public boolean isFinished() {
+        // always return true so it only runs 1 loop.
         return true;
     }
 }

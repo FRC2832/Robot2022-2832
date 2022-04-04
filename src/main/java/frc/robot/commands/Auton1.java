@@ -16,11 +16,12 @@ public class Auton1 extends CommandBase {
     }
 
     // shoots preloaded ball and backs off tarmac
+    @Override
     public void execute() {
-        if(timer.get() < 3) {
+        if (timer.get() < 3) {
             System.out.println("Shooting");
             drive.drive(0.0, 0.0, 0.0, false);
-        } else if(timer.get() >= 3 && timer.get() < 5) {
+        } else if (timer.get() >= 3 && timer.get() < 5) {
             drive.drive(-1.0, 0.0, 0.0, false);
         } else {
             drive.drive(0.0, 0.0, 0.0, false);

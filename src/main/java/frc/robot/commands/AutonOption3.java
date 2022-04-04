@@ -22,19 +22,20 @@ public class AutonOption3 extends CommandBase {
         drive.drive(0, 0, 0, true);
     }
 
+    @Override
     public void execute() {
-
+        double timerVal = timer.get();
         // timer.start();
-        if (timer.get() < (2 + delay)) {
+        if (timerVal < (2 + delay)) {
             System.out.println("Moving Back");
             drive.drive(-1, 0, 0, false);
-        } else if (timer.get() > 2 + delay && timer.get() < 3 + delay) {
+        } else if (timerVal > 2 + delay && timerVal < 3 + delay) {
             System.out.println("Stopping");
             stop();
         }
         // Pick up ball
         // shoot times two
-        else if (timer.get() > 3 + delay && timer.get() < 6 + delay) {
+        else if (timerVal > 3 + delay && timerVal < 6 + delay) {
             System.out.println("Moving Left");
             drive.drive(0, 1, 0, false);
         } else {

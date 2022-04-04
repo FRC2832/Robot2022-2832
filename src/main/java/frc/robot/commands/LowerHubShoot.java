@@ -15,7 +15,7 @@ public class LowerHubShoot extends CommandBase {
         this.ingestor = ingestor;
         speed = 1000;
         addRequirements(shooter);
-        SmartDashboard.putNumber("Target RPM", speed); 
+        SmartDashboard.putNumber("Target RPM", speed);
     }
 
     @Override
@@ -27,7 +27,7 @@ public class LowerHubShoot extends CommandBase {
         if (speed - 50 < shooter.getShooterVelocity() && shooter.getShooterVelocity() < speed + 50) {
             ingestor.sendCargoToShooter();
         }
-    }    
+    }
 
     @Override
     public void end(boolean interrupted) {

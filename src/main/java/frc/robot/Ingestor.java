@@ -10,6 +10,7 @@ import com.revrobotics.SparkMaxPIDController;
 
 import edu.wpi.first.wpilibj.Counter;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 // import com.revrobotics.CANSparkMaxLowLevel;
 // import com.revrobotics.CANSparkMaxLowLevel.MotorType;
@@ -40,8 +41,8 @@ public class Ingestor extends SubsystemBase {
     private DigitalInput stage1ProxSensor;
     private Counter counter;
     private int totalBalls;
-    //private ColorSensor stage2ColorSensor;
-    //private boolean ballAtColorSensor;
+    // private ColorSensor stage2ColorSensor;
+    // private boolean ballAtColorSensor;
     private double liftRotations;
     // private SmartDashboard smartDashboard;
 
@@ -67,7 +68,7 @@ public class Ingestor extends SubsystemBase {
         stage1ProxSensor = new DigitalInput(0);
         counter = new Counter(stage1ProxSensor);
         totalBalls = 0;
-        //ballAtColorSensor = false;
+        // ballAtColorSensor = false;
 
         liftPidController = ingestorLift.getPIDController();
         liftPidController.setFeedbackDevice(altEncoder);
@@ -75,10 +76,10 @@ public class Ingestor extends SubsystemBase {
         // PID coefficients
         kP = 2.5;
         kI = 0;
-        kD = 0; 
-        kIz = 0; 
-        kFF = 0; 
-        kMaxOutput = 1; 
+        kD = 0;
+        kIz = 0;
+        kFF = 0;
+        kMaxOutput = 1;
         kMinOutput = -1;
 
         // set PID coefficients
@@ -101,18 +102,20 @@ public class Ingestor extends SubsystemBase {
 
     }
 
+
     public void runIngestor() {
 
-        // SmartDashboard.putNumber("Ingestor motor applied output", ingestorLift.getAppliedOutput());
+        // SmartDashboard.putNumber("Ingestor motor applied output",
+        // ingestorLift.getAppliedOutput());
         // SmartDashboard.putNumber("alt encoder velocity", altEncoder.getVelocity());
         // SmartDashboard.putNumber("alt encoder position", altEncoder.getPosition());
 
-        //System.out.println("counter - " + counter.get());
+        // System.out.println("counter - " + counter.get());
         // prox sensor checking
         if (counter.get() > 0) {
-            //System.out.println("Ball ingested!");
+            // System.out.println("Ball ingested!");
             totalBalls++;
-            //System.out.println("Total Balls 1:" + totalBalls);
+            // System.out.println("Total Balls 1:" + totalBalls);
             SmartDashboard.putNumber("Total Balls", totalBalls);
             if (counter.get() >= 2) {
                 totalBalls = 0;
@@ -121,35 +124,41 @@ public class Ingestor extends SubsystemBase {
         }
 
         // color sensor conditions
-        /*if (ColorSensor.getProx() > 1000) {
-            //System.out.println("getProximity() > 1000");
-            //ballAtColorSensor = true;
-            //System.out.println("Total Balls 2:" + totalBalls);
-            SmartDashboard.putNumber("Total Balls", totalBalls);
-        } else {
-            //System.out.println("getProximity() <= 1000");
-            //ballAtColorSensor = false;
-            //System.out.println("Total Balls 3:" + totalBalls);
-            SmartDashboard.putNumber("Total Balls", totalBalls);
-        }*/
-        /* if(!stage1ProxSensor.get() && !ballAtColorSensor){
-            totalBalls--;
-            System.out.println("Total Balls " + totalBalls);
-            SmartDashboard.putNumber("Total Balls", totalBalls);
-        } */
+        /*
+         * if (ColorSensor.getProx() > 1000) {
+         * //System.out.println("getProximity() > 1000");
+         * //ballAtColorSensor = true;
+         * //System.out.println("Total Balls 2:" + totalBalls);
+         * SmartDashboard.putNumber("Total Balls", totalBalls);
+         * } else {
+         * //System.out.println("getProximity() <= 1000");
+         * //ballAtColorSensor = false;
+         * //System.out.println("Total Balls 3:" + totalBalls);
+         * SmartDashboard.putNumber("Total Balls", totalBalls);
+         * }
+         */
+        /*
+         * if(!stage1ProxSensor.get() && !ballAtColorSensor){
+         * totalBalls--;
+         * System.out.println("Total Balls " + totalBalls);
+         * SmartDashboard.putNumber("Total Balls", totalBalls);
+         * }
+         */
 
-        //String cargoColor = ColorSensor.getCargoColor();
-        /*if (cargoColor == CargoColor.Blue) {
-            System.out.println("Cargo is blue");
-        } else if (cargoColor == CargoColor.Red) {
-            System.out.println("Cargo is red");
-        }*/
+        // String cargoColor = ColorSensor.getCargoColor();
+        /*
+         * if (cargoColor == CargoColor.Blue) {
+         * System.out.println("Cargo is blue");
+         * } else if (cargoColor == CargoColor.Red) {
+         * System.out.println("Cargo is red");
+         * }
+         */
         double ingestorWheelSpeed = 0.0;
         double stage1ConveyorSpeed = 0.0;
         double stage2ConveyorSpeed = 0.0;
-        //double ingestorLiftSpeed = 0.0;
+        // double ingestorLiftSpeed = 0.0;
 
-        if (operatorController.getRightTriggerAxis() >= TRIGGER_SENSITIVITY ) { // ingestor down and in
+        if (operatorController.getRightTriggerAxis() >= TRIGGER_SENSITIVITY) { // ingestor down and in
             ingestorWheelSpeed = -INGESTOR_SPEED;
             stage1ConveyorSpeed = STAGE_1_SPEED;
             lowerIngestor();
@@ -163,11 +172,11 @@ public class Ingestor extends SubsystemBase {
             triggerPressed = true;
         } else { // ingestor up, run stage 1 for two more seconds
             liftIngestor();
-            if(!stageTimerStarted) {
+            if (!stageTimerStarted) {
                 stageTimer.start();
                 stageTimerStarted = true;
             }
-            if(stageTimer.get() < 2 && triggerPressed) { // triggerPressed is so stage 1 doesn't run at enabling
+            if (stageTimer.get() < 2 && triggerPressed) { // triggerPressed is so stage 1 doesn't run at enabling
                 stage1ConveyorSpeed = STAGE_1_SPEED;
             } else {
                 stage1ConveyorSpeed = 0.0;
@@ -181,11 +190,11 @@ public class Ingestor extends SubsystemBase {
         }
 
         // if (operatorController.getBButton()) { // lift ingestor
-        //     // ingestorLiftSpeed = INGESTOR_LIFT_SPEED;
-        //     rotations = 0;
+        // // ingestorLiftSpeed = INGESTOR_LIFT_SPEED;
+        // rotations = 0;
         // } else if (operatorController.getAButton()) { // lower ingestor
-        //     // ingestorLiftSpeed = -INGESTOR_LIFT_SPEED;
-        //     rotations = -0.15;
+        // // ingestorLiftSpeed = -INGESTOR_LIFT_SPEED;
+        // rotations = -0.15;
         // }
 
         ingestorWheels.set(ingestorWheelSpeed);
@@ -204,9 +213,10 @@ public class Ingestor extends SubsystemBase {
             sendTimer.start();
             sendTimerStarted = true;
         }
-        if (sendTimer.get() < 0.5) {
+        double sendTimerVal = sendTimer.get();
+        if (sendTimerVal < 0.5) {
             stage2Conveyor.set(-STAGE_2_SPEED);
-        } else if (sendTimer.get() < 2.5) {
+        } else if (sendTimerVal < 2.5) {
             stage2Conveyor.set(-STAGE_2_SPEED);
             stage1Conveyor.set(STAGE_1_SPEED);
         } else {
