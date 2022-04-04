@@ -8,7 +8,6 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Drivetrain;
 import frc.robot.Ingestor;
 import frc.robot.Shooter;
-import frc.robot.SwerveConstants;
 import frc.robot.SwerveModule;
 
 public class AutonTwoBall extends CommandBase {

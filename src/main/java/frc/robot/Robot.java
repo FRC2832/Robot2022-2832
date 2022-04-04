@@ -5,6 +5,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
@@ -12,10 +13,12 @@ import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.AutoDrive;
 import frc.robot.commands.AutoShoot;
+import frc.robot.commands.AutonThreeBall;
 import frc.robot.commands.AutonTwoBall;
 //import frc.robot.commands.AutonTwoBall;
 import frc.robot.commands.DriveStick;
@@ -102,6 +105,7 @@ public class Robot extends TimedRobot {
         SmartDashboard.putData("Drive Forward 0.5mps", new AutoDrive(swerve, 0.5, 0));
         SmartDashboard.putData("Drive FR 0.5mps", new AutoDrive(swerve, 0.5, 0.5));
         SmartDashboard.putData("Reset Orientation", new ResetOrientation(swerve));
+        SmartDashboard.putBoolean("Two/Three Ball Auton", false);
 
         /*
          * m_chooser.setDefaultOption("Auton1", auton1);
@@ -133,7 +137,14 @@ public class Robot extends TimedRobot {
         //System.out.println("Auton Selected: " + m_selectedAuton);
 
         // CommandScheduler.getInstance().schedule(new HomeHood(shooter));
-        CommandScheduler.getInstance().schedule(new AutonTwoBall(swerve, shooter, INGESTOR));
+        Command autonCom;
+        if (SmartDashboard.getBoolean("Two/Three Ball Auton", false)) {
+            autonCom = new AutonTwoBall(swerve, shooter, INGESTOR);
+        } else {
+            autonCom = new AutonThreeBall(swerve, shooter, INGESTOR);
+        }
+
+        CommandScheduler.getInstance().schedule(autonCom);
         //Pose2d pos = swerve.odometry.getPoseMeters();
         ranAuton = true;
     }
