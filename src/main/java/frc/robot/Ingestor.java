@@ -4,6 +4,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.ControlType;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxAlternateEncoder;
 import com.revrobotics.SparkMaxPIDController;
@@ -73,7 +74,7 @@ public class Ingestor extends SubsystemBase {
         liftPidController.setFeedbackDevice(altEncoder);
 
         // PID coefficients
-        kP = 2.5;
+        kP = 2;
         kI = 0;
         kD = 0; 
         kIz = 0; 
@@ -103,9 +104,9 @@ public class Ingestor extends SubsystemBase {
 
     public void runIngestor() {
 
-        // SmartDashboard.putNumber("Ingestor motor applied output", ingestorLift.getAppliedOutput());
-        // SmartDashboard.putNumber("alt encoder velocity", altEncoder.getVelocity());
-        // SmartDashboard.putNumber("alt encoder position", altEncoder.getPosition());
+        SmartDashboard.putNumber("Ingestor motor applied output", ingestorLift.getAppliedOutput());
+        SmartDashboard.putNumber("alt encoder velocity", altEncoder.getVelocity());
+        SmartDashboard.putNumber("alt encoder position", altEncoder.getPosition());
 
         //System.out.println("counter - " + counter.get());
         // prox sensor checking
@@ -236,11 +237,18 @@ public class Ingestor extends SubsystemBase {
     public void liftIngestor() {
         liftRotations = 0.0;
         liftPidController.setReference(liftRotations, ControlType.kPosition);
+        ingestorLift.setIdleMode(IdleMode.kBrake);
     }
 
     public void lowerIngestor() {
         liftRotations = -0.165;
-        liftPidController.setReference(liftRotations, ControlType.kPosition);
+        double position = altEncoder.getPosition();
+        if (position > liftRotations + (Math.abs(liftRotations) * 0.02)) {
+            liftPidController.setReference(liftRotations, ControlType.kPosition);
+        } else {
+            ingestorLift.set(0); // once it's 98% of the way there let it drop
+        }
+        ingestorLift.setIdleMode(IdleMode.kCoast);
     }
 
     public void threeBallAutonIngest() {
