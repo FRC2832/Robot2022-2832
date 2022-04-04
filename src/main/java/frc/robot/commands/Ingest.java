@@ -12,7 +12,7 @@ public class Ingest extends CommandBase {
     private static final double INGESTOR_SPEED = 0.75; // 1000.0;
     private static final double STAGE_1_SPEED = 0.75;// 1000.0;
     private static final double STAGE_2_SPEED = 0.75; // 1000.0;
-    private static final double INGESTOR_LIFT_SPEED = 0.25;
+    //private static final double INGESTOR_LIFT_SPEED = 0.25;
 
     public Ingest(Ingestor ingestor) {
 
@@ -30,6 +30,7 @@ public class Ingest extends CommandBase {
 
         ingestor.getIngestorWheels().set(-INGESTOR_SPEED);
         ingestor.getStage1Conveyor().set(STAGE_1_SPEED);
+        ingestor.getStage2Conveyor().set(STAGE_2_SPEED);
     }
 
     @Override

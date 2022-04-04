@@ -21,7 +21,7 @@ public class RunClimber extends CommandBase {
     @Override
     public void execute() {
         int pov = controller.getPOV();
-        if(pov != -1) {
+        if (pov != -1) {
             Shooter.setCoast(false);
         }
         switch (pov) {

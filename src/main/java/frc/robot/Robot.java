@@ -4,11 +4,8 @@
 
 package frc.robot;
 
-import javax.xml.crypto.Data;
-
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
@@ -57,20 +54,20 @@ public class Robot extends TimedRobot {
      * private Command auton2;
      * private Command auton1;
      */
-    /*private static final String auton1 = "Auton 1";
+    /* private static final String auton1 = "Auton 1";
     private static final String auton2 = "Auton 2";
     private static final String auton3 = "Auton 3";
     private static final String auton4 = "Auton 4";
-    private static final String auton5 = "Auton 5";*/
+    private static final String auton5 = "Auton 5"; */
     Odometry odometry;
     private String m_selectedAuton;
 
-    /*private static final String option1 = "Option1";
+    /* private static final String option1 = "Option1";
     private static final String option2 = "Option2";
     private static final String option3 = "Option3";
     private static final String option4 = "Option4";
     private static final String option5 = "Option5";
-    private static final String option6 = "Option6";*/
+    private static final String option6 = "Option6"; */
     //private String m_autoSelected;
     private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
@@ -83,13 +80,14 @@ public class Robot extends TimedRobot {
         // Snapshot.start("http://10.28.32.22:1181/stream.mjpg");
 
         ShooterConstants.LoadConstants();
-        shooter = new Shooter(pi, driverController, operatorController, colorSensor, ingestor);
+        CommandScheduler.getInstance().registerSubsystem(pi);
+        shooter = new Shooter(driverController, operatorController, ingestor);
 
         climber = new Climber(ingestor);
 
         //turtleMode = new TurtleMode(swerve, driverController);
 
-        CommandScheduler.getInstance().registerSubsystem(swerve);
+        CommandScheduler.getInstance().registerSubsystem(swerve, colorSensor);
         swerve.setDefaultCommand(new DriveStickSlew(swerve, driverController));
         shooter.setDefaultCommand(new ShooterOff(shooter));
         climber.setDefaultCommand(new RunClimber(climber, ingestor, operatorController));
@@ -191,7 +189,7 @@ public class Robot extends TimedRobot {
         // SmartDashboard.putNumber("YPosition", odometry.getYPosition());
 
         pi.processCargo();
-        pi.processTargets();
+        //pi.processTargets();
         // automatically turn on/off recording
         if (lastEnabled != isEnabled()) {
             // we know the enabled status changed

@@ -2,7 +2,6 @@ package frc.robot.commands;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Drivetrain;
@@ -15,7 +14,7 @@ public class AutonSimpleBack extends CommandBase {
     private Ingestor ingestor;
     private Timer timer;
     private boolean sentToShooter;
-    private Rotation2d startRotation;
+    //private Rotation2d startRotation;
 
     public AutonSimpleBack(Drivetrain drive, Shooter shooter, Ingestor ingestor) {
         this.drive = drive;
@@ -34,12 +33,8 @@ public class AutonSimpleBack extends CommandBase {
         // Rotation2d());
         timer.reset();
         timer.start();
-        startRotation = drive.getPose().getRotation();
+        //startRotation = drive.getPose().getRotation();
         // drive.currentStep++;
-    }
-
-    private void stop() {
-        drive.drive(0, 0, 0, true);
     }
 
     @Override

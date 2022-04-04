@@ -1,14 +1,10 @@
 package frc.robot;
 
-import frc.robot.Drivetrain;
-import frc.robot.SwerveModule;
-import frc.robot.SwerveConstants;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Pose2d;
 
 public class Odometry{
 
@@ -59,7 +55,7 @@ public class Odometry{
     } 
 
     public void setPositionv2(SwerveModuleState setState){
-        SwerveModuleState swerveState = setState;
+        //SwerveModuleState swerveState = setState;
         
     }
 }

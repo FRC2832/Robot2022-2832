@@ -13,7 +13,7 @@ public class AutonOption4 extends CommandBase {
         this.drive = drive;
         addRequirements(drive);
         timer.start();
-        boolean stopMove = false;
+        //boolean stopMove = false;
     }
 
     private void stop() {
