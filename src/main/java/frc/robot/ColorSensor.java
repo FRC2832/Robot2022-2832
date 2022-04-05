@@ -43,10 +43,13 @@ public class ColorSensor extends SubsystemBase {
         color = colorSensor.getColor();
         ColorMatchResult match = colorMatcher.matchClosestColor(color);
         if (match.color == BLUE_TARGET) {
+            // System.out.println("BLUE");
             cargoColor = CargoColor.Blue;
         } else if (match.color == RED_TARGET) {
+            // System.out.println("RED");
             cargoColor = CargoColor.Red;
         } else {
+            // System.out.println("UNKNOWN");
             cargoColor = CargoColor.Unknown;
         }
     }

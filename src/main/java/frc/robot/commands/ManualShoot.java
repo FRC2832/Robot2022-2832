@@ -1,23 +1,29 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Ingestor;
 import frc.robot.Shooter;
 
-public class ManualShoot extends ShootCommand {
+public class ManualShoot extends CommandBase {
+    private static final double SPEED = 2300.0;
+    private final Shooter shooter;
+    private final Ingestor ingestor;
+
     public ManualShoot(Shooter shooter, Ingestor ingestor) {
-        super(shooter, ingestor, 2300.0, 31.0);
-        SmartDashboard.putNumber("Target RPM", targetRpm); // 2300 = sweet spot based on '2022 shooter speed table'
+        this.shooter = shooter;
+        this.ingestor = ingestor;
+        addRequirements(shooter);
+        SmartDashboard.putNumber("Target RPM", SPEED); // 2300 = sweet spot based on '2022 shooter speed table'
     }
 
     @Override
     public void execute() {
-        super.execute();
-        //shooter.setShooterRpm(targetRpm);
-        //shooter.setHoodAngle(targetAngle); // knob 2.5
+        shooter.setShooterRpm(SPEED);
+        shooter.setHoodAngle(31.0); // knob 2.5
         double shooterVel = shooter.getShooterVelocity();
         // if target rpm is within range (+- 50)
-        if (targetRpm - 50 < shooterVel && shooterVel < targetRpm + 50) {
+        if (SPEED - 50 < shooterVel && shooterVel < SPEED + 50) {
             ingestor.sendCargoToShooter();
         }
     }

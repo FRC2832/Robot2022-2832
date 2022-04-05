@@ -1,17 +1,22 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.ColorSensor;
 import frc.robot.ColorSensor.CargoColor;
 import frc.robot.Ingestor;
 import frc.robot.Shooter;
 
-public class DribbleShoot extends ShootCommand {
+public class DribbleShoot extends CommandBase {
+    private final Shooter shooter;
+    private final Ingestor ingestor;
     // private Pi pi;
 
     public DribbleShoot(Shooter shooter, Ingestor ingestor) {
-        super(shooter, ingestor, 1000, 69.0);
+        this.shooter = shooter;
+        this.ingestor = ingestor;
         // this.pi = pi;
+        addRequirements(shooter);
         SmartDashboard.putNumber("Target RPM", 1000); // 1000 = dribble rpm
     }
 
@@ -19,15 +24,16 @@ public class DribbleShoot extends ShootCommand {
     public void execute() {
         // String detectedColor = colorSensor.getColor();
         // String allianceColor = pi.getAllianceColor().getString("default");
-        super.execute();
+
         //double rpm = 1000.0;
-        //shooter.setShooterRpm(targetRpm);
+        double rpm = 1000.0;
+        shooter.setShooterRpm(rpm);
 
         // set hood angle (knob 6, 39? degrees)
-        //shooter.setHoodAngle(targetAngle);
+        shooter.setHoodAngle(69.0);
         double shooterVel = shooter.getShooterVelocity();
         // if target rpm is within range (+- 50)
-        if (targetRpm - 50 < shooterVel && shooterVel < targetRpm + 50) {
+        if (rpm - 50 < shooterVel && shooterVel < rpm + 50) {
             ingestor.sendOneCargoToShooter();
         }
     }

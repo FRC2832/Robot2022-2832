@@ -2,34 +2,34 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.*;
 //import frc.robot.Snapshot;
-import frc.robot.Drivetrain;
-import frc.robot.Ingestor;
-import frc.robot.Pi;
-import frc.robot.Robot;
-import frc.robot.Shooter;
 
-public class AutoShoot extends ShootCommand {
+public class AutoShoot extends CommandBase {
     private final Drivetrain drive;
+    private final Shooter shooter;
     private final XboxController operatorController;
     private final XboxController driverController;
+    private final Ingestor ingestor;
     private boolean cargoSentToShooter;
     // private boolean autonShootFinished;
-    // private boolean lastShot;
+    //private boolean lastShot;
     private boolean snapshotTaken;
 
     public AutoShoot(Drivetrain drive, Shooter shooter, Ingestor ingestor, XboxController operatorController,
-            XboxController driverController) {
-        super(shooter, ingestor, shooter.getTargetRpm(), shooter.getTargetHoodAngle());
+                     XboxController driverController) {
         this.drive = drive;
+        this.shooter = shooter;
         this.operatorController = operatorController;
         this.driverController = driverController;
+        this.ingestor = ingestor;
         cargoSentToShooter = false;
         // autonShootFinished = false;
-        // lastShot = false;
+        //lastShot = false;
         snapshotTaken = false;
 
-        addRequirements(drive);
+        addRequirements(drive, shooter);
     }
 
     @Override
@@ -38,16 +38,15 @@ public class AutoShoot extends ShootCommand {
         String error = "";
 
         // check hood angle is more than 3* off
-        targetAngle = shooter.getTargetHoodAngle();
-        targetRpm = shooter.getTargetRpm();
-        super.execute();
-        if (Math.abs(shooter.getHoodAngle() - targetAngle) > 0.5) {
+        double targetHoodAngle = shooter.getTargetHoodAngle();
+        shooter.setHoodAngle(targetHoodAngle);
+        if (Math.abs(shooter.getHoodAngle() - targetHoodAngle) > 0.5) {
             error = String.join(error, "Hood ");
         }
 
         // check shot speed is within 30 RPM
-        /*targetRpm = shooter.getTargetRpm();
-        shooter.setShooterRpm(targetRpm);*/
+        double targetRpm = shooter.getTargetRpm();
+        shooter.setShooterRpm(targetRpm);
         if (Math.abs(shooter.getShooterVelocity() - targetRpm) > 30.0) {
             error = String.join(error, "RPM ");
         }
@@ -75,12 +74,10 @@ public class AutoShoot extends ShootCommand {
             if (operatorController != null && driverController != null) {
                 Robot.rumbleController(operatorController, 1.0);
                 Robot.rumbleController(driverController, 1.0);
-                /*
-                 * operatorController.setRumble(RumbleType.kLeftRumble, 1.0);
-                 * operatorController.setRumble(RumbleType.kRightRumble, 1.0);
-                 * driverController.setRumble(RumbleType.kLeftRumble, 1.0);
-                 * driverController.setRumble(RumbleType.kRightRumble, 1.0);
-                 */
+                /*operatorController.setRumble(RumbleType.kLeftRumble, 1.0);
+                operatorController.setRumble(RumbleType.kRightRumble, 1.0);
+                driverController.setRumble(RumbleType.kLeftRumble, 1.0);
+                driverController.setRumble(RumbleType.kRightRumble, 1.0);*/
             }
             error = String.join(error, "Vision ");
             drive.swerveDrive(0.0, 0.0, 0.0, false);
@@ -98,15 +95,13 @@ public class AutoShoot extends ShootCommand {
                 // cargo
                 cargoSentToShooter = true;
             }
-            /*
-             * if (!lastShot) {
-             * // Snapshot.TakeSnapshot("SHOT");
-             * }
-             */
-            // lastShot = true;
+            /*if (!lastShot) {
+                // Snapshot.TakeSnapshot("SHOT");
+            } */
+            //lastShot = true;
             SmartDashboard.putBoolean("auto shot shooting", true);
         } else {
-            // lastShot = false;
+            //lastShot = false;
             SmartDashboard.putBoolean("auto shot shooting", false);
         }
         SmartDashboard.putString("Auto Shoot Error", error);
@@ -124,13 +119,13 @@ public class AutoShoot extends ShootCommand {
             Robot.stopControllerRumble(driverController);
         }
         Shooter.setCoast(true);
-        // System.out.println("AutoShoot end");
+        //System.out.println("AutoShoot end");
         cargoSentToShooter = false;
     }
 
     @Override
     public boolean isFinished() {
-        // System.out.println("AutoShoot is finished");
+        //System.out.println("AutoShoot is finished");
         return cargoSentToShooter;
     }
 }

@@ -1,27 +1,37 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Ingestor;
 import frc.robot.Shooter;
 
-public class HubShoot extends ShootCommand {
+public class HubShoot extends CommandBase {
+    private final double speed;
+    private final double angle;
+    private final Shooter shooter;
+    private final Ingestor ingestor;
+
     public HubShoot(Shooter shooter, Ingestor ingestor, boolean isUpper) {
-        super(shooter, ingestor, 1000.0, 69.0); // Assume lower hub shot at first. Change later if needed.
+        this.shooter = shooter;
+        this.ingestor = ingestor;
+        addRequirements(shooter);
         if (isUpper) {
-            targetRpm = 2150.0; // Upper hub
-            targetAngle = 18.0;
+            speed = 2150.0; // Upper hub
+            angle = 18.0;
+        } else {
+            speed = 1000.0; // Lower hub
+            angle = 69.0;
         }
-        SmartDashboard.putNumber("Target RPM", targetRpm);
+        SmartDashboard.putNumber("Target RPM", speed);
     }
 
     @Override
     public void execute() {
-        super.execute();
-        //shooter.setShooterRpm(targetRpm);
-        //shooter.setHoodAngle(targetAngle); // knob 6
+        shooter.setShooterRpm(speed);
+        shooter.setHoodAngle(angle); // knob 6
         double shooterVel = shooter.getShooterVelocity();
         // if target rpm is within range (+- 50)
-        if (targetRpm - 50 < shooterVel && shooterVel < targetRpm + 50) {
+        if (speed - 50 < shooterVel && shooterVel < speed + 50) {
             ingestor.sendCargoToShooter();
         }
     }

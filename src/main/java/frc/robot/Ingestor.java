@@ -23,8 +23,6 @@ public class Ingestor extends SubsystemBase {
     private static final double INGESTOR_SPEED = 0.9; // 1000.0;
     private static final double STAGE_1_SPEED = 0.75;// 1000.0;
     private static final double STAGE_2_SPEED = 0.85; // 1000.0;
-    private static final Timer SEND_TIMER = new Timer();
-    private static final Timer STAGE_TIMER = new Timer();
     private final WPI_TalonSRX ingestorWheels;
     // private WPI_TalonSRX ingestorGate;
     private final WPI_TalonSRX stage1Conveyor;
@@ -34,6 +32,8 @@ public class Ingestor extends SubsystemBase {
     private final SparkMaxPIDController liftPidController;
     // private XboxController driverController;
     private final XboxController operatorController;
+    private final Timer sendTimer;
+    private final Timer stageTimer;
     private final DigitalInput stage1ProxSensor;
     private final Counter counter;
     private boolean sendTimerStarted;
@@ -46,7 +46,7 @@ public class Ingestor extends SubsystemBase {
     private double liftRotations;
     //private static final double INGESTOR_LIFT_SPEED = 0.25;
 
-    public Ingestor() {
+    public Ingestor(ColorSensor colorSensor) {
         ingestorWheels = new WPI_TalonSRX(CanIDConstants.INTAKE_WHEELS);
         // ingestorGate = new WPI_TalonSRX(2);
         stage1Conveyor = new WPI_TalonSRX(CanIDConstants.STAGE_1);
@@ -56,6 +56,8 @@ public class Ingestor extends SubsystemBase {
         altEncoder = ingestorLift.getAlternateEncoder(SparkMaxAlternateEncoder.Type.kQuadrature, 8192);
         // driverController = new XboxController(0);
         operatorController = new XboxController(2);
+        sendTimer = new Timer();
+        stageTimer = new Timer();
         // Port port = Port.kOnboard; // TODO: Need to verify this.
         // stage1ProxSensor = new DigitalInput(0);
         stage1ProxSensor = new DigitalInput(0);
@@ -149,26 +151,26 @@ public class Ingestor extends SubsystemBase {
         double stage1ConveyorSpeed = 0.0;
         double stage2ConveyorSpeed = 0.0;
         // double ingestorLiftSpeed = 0.0;
-
+        
         if (operatorController.getRightTriggerAxis() >= TRIGGER_SENSITIVITY) { // ingestor down and in
             ingestorWheelSpeed = -INGESTOR_SPEED;
             stage1ConveyorSpeed = STAGE_1_SPEED;
             lowerIngestor();
-            STAGE_TIMER.reset();
+            stageTimer.reset();
             triggerPressed = true;
         } else if (operatorController.getLeftTriggerAxis() >= TRIGGER_SENSITIVITY) { // ingestor down and out
             ingestorWheelSpeed = INGESTOR_SPEED;
             stage1ConveyorSpeed = -STAGE_1_SPEED;
             lowerIngestor();
-            STAGE_TIMER.reset();
+            stageTimer.reset();
             triggerPressed = true;
         } else { // ingestor up, run stage 1 for two more seconds
             liftIngestor();
             if (!stageTimerStarted) {
-                STAGE_TIMER.start();
+                stageTimer.start();
                 stageTimerStarted = true;
             }
-            if (STAGE_TIMER.get() < 2.0 && triggerPressed) { // triggerPressed is so stage 1 doesn't run at enabling
+            if (stageTimer.get() < 2.0 && triggerPressed) { // triggerPressed is so stage 1 doesn't run at enabling
                 stage1ConveyorSpeed = STAGE_1_SPEED;
             }
         }
@@ -217,18 +219,18 @@ public class Ingestor extends SubsystemBase {
     public boolean sendCargoToShooter() {
         // TODO: replace timer with prox/color sensor
         if (!sendTimerStarted) {
-            SEND_TIMER.start();
+            sendTimer.start();
             sendTimerStarted = true;
         }
-        double sendTimerVal = SEND_TIMER.get();
+        double sendTimerVal = sendTimer.get();
         if (sendTimerVal < 0.5) {
             stage2Conveyor.set(-STAGE_2_SPEED);
         } else if (sendTimerVal < 2.5) {
             stage2Conveyor.set(-STAGE_2_SPEED);
             stage1Conveyor.set(STAGE_1_SPEED);
         } else {
-            SEND_TIMER.stop();
-            SEND_TIMER.reset();
+            sendTimer.stop();
+            sendTimer.reset();
             sendTimerStarted = false;
             return true;
         }
@@ -238,14 +240,14 @@ public class Ingestor extends SubsystemBase {
     public boolean sendOneCargoToShooter() {
         // TODO: replace timer with prox/color sensor
         if (!sendTimerStarted) {
-            SEND_TIMER.start(); // TODO: This method's boolean return isn't being used? Might that cause issues?
+            sendTimer.start(); // TODO: This method's boolean return isn't being used? Might that cause issues?
             sendTimerStarted = true;
         }
-        if (SEND_TIMER.get() < 3.0) {
+        if (sendTimer.get() < 3.0) {
             stage2Conveyor.set(-STAGE_2_SPEED);
         } else {
-            SEND_TIMER.stop();
-            SEND_TIMER.reset();
+            sendTimer.stop();
+            sendTimer.reset();
             sendTimerStarted = false;
             return true;
         }

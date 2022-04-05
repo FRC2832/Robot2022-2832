@@ -418,7 +418,6 @@ public class Drivetrain extends SubsystemBase {
     public int getCurrentStep() {
         return currentStep;
     }
-
     public void incrementCurrentStep() {
         currentStep++;
     }
