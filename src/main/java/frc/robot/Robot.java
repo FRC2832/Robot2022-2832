@@ -20,14 +20,13 @@ import frc.robot.commands.AutonThreeBall;
 import frc.robot.commands.AutonTwoBall;
 import frc.robot.commands.DriveStick;
 import frc.robot.commands.DriveStickSlew;
-import frc.robot.commands.LowerHubShoot;
+import frc.robot.commands.HubShoot;
 import frc.robot.commands.ManualShoot;
 import frc.robot.commands.ResetOrientation;
 import frc.robot.commands.RunClimber;
 import frc.robot.commands.SafeZoneShoot;
 import frc.robot.commands.ShooterBackwards;
 import frc.robot.commands.ShooterOff;
-import frc.robot.commands.UpperHubShoot;
 
 public class Robot extends TimedRobot {
     private final XboxController DRIVER_CONTROLLER = new XboxController(0);
@@ -85,10 +84,10 @@ public class Robot extends TimedRobot {
         leftBumper.whileActiveContinuous(new SafeZoneShoot(shooter, ingestor, true));
 
         JoystickButton aButton = new JoystickButton(DRIVER_CONTROLLER, 1);
-        aButton.whileActiveContinuous(new UpperHubShoot(shooter, ingestor));
+        aButton.whileActiveContinuous(new HubShoot(shooter, ingestor, true));
 
         JoystickButton bButton = new JoystickButton(DRIVER_CONTROLLER, 2);
-        bButton.whileActiveContinuous(new LowerHubShoot(shooter, ingestor));
+        bButton.whileActiveContinuous(new HubShoot(shooter, ingestor, false));
 
         JoystickButton driverStartButton = new JoystickButton(DRIVER_CONTROLLER, 8);
         driverStartButton.whileActiveContinuous(new ShooterBackwards(shooter, ingestor));

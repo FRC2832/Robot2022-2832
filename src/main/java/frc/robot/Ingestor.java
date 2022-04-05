@@ -151,7 +151,7 @@ public class Ingestor extends SubsystemBase {
         double stage1ConveyorSpeed = 0.0;
         double stage2ConveyorSpeed = 0.0;
         // double ingestorLiftSpeed = 0.0;
-
+        
         if (operatorController.getRightTriggerAxis() >= TRIGGER_SENSITIVITY) { // ingestor down and in
             ingestorWheelSpeed = -INGESTOR_SPEED;
             stage1ConveyorSpeed = STAGE_1_SPEED;
