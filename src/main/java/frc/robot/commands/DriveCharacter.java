@@ -1,7 +1,5 @@
 package frc.robot.commands;
 
-import java.util.ArrayList;
-
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.RobotController;
@@ -11,20 +9,21 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Drivetrain;
 import frc.robot.SwerveModule;
 
-public class DriveCharacter extends CommandBase {
-    private Drivetrain drive;
-    private TimedRobot robot;
+import java.util.ArrayList;
 
-    private NetworkTableEntry autoSpeedEntry = NetworkTableInstance.getDefault().getEntry("/robot/autospeed");
-    private NetworkTableEntry telemetryEntry = NetworkTableInstance.getDefault().getEntry("/robot/telemetry");
-    private NetworkTableEntry rotateEntry = NetworkTableInstance.getDefault().getEntry("/robot/rotate");
-    private double[] numberArray = new double[10];
-    private ArrayList<Double> entries = new ArrayList<Double>();
-    private int counter = 0;
-    private double startTime = 0;
-    private double priorAutospeed = 0;
+public class DriveCharacter extends CommandBase {
+    private final Drivetrain drive;
+    private final NetworkTableEntry autoSpeedEntry = NetworkTableInstance.getDefault().getEntry("/robot/autospeed");
+    private final NetworkTableEntry telemetryEntry = NetworkTableInstance.getDefault().getEntry("/robot/telemetry");
+    private final NetworkTableEntry rotateEntry = NetworkTableInstance.getDefault().getEntry("/robot/rotate");
+    private final double[] numberArray = new double[10];
+    private final ArrayList<Double> entries = new ArrayList<>();
+    private final TimedRobot robot;
+    //private int counter = 0;
+    //private double startTime = 0;
+    private double priorAutospeed;
     private String data = "";
-    private boolean isRunning = false;
+    private boolean isRunning;
 
     public DriveCharacter(TimedRobot robot, Drivetrain drive) {
         this.drive = drive;
@@ -34,8 +33,8 @@ public class DriveCharacter extends CommandBase {
 
     @Override
     public void initialize() {
-        startTime = Timer.getFPGATimestamp();
-        counter = 0;
+        //startTime = Timer.getFPGATimestamp();
+        //counter = 0;
         isRunning = true;
         robot.addPeriodic(this::runCommand, 0.005);
     }
@@ -43,7 +42,7 @@ public class DriveCharacter extends CommandBase {
     @Override
     public void end(boolean interrupted) {
         isRunning = false;
-        double elapsedTime = Timer.getFPGATimestamp() - startTime;
+        //double elapsedTime = Timer.getFPGATimestamp() - startTime;
         //System.out.println("Robot disabled");
         SwerveModule[] modules = drive.getModules();
         modules[Drivetrain.FL].setDrive(0);
@@ -108,6 +107,6 @@ public class DriveCharacter extends CommandBase {
         for (double num : numberArray) {
             entries.add(num);
         }
-        counter++;
+        //counter++;
     }
 }

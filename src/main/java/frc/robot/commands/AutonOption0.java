@@ -7,7 +7,7 @@ import frc.robot.Drivetrain;
 
 public class AutonOption0 extends CommandBase {
 
-   private Drivetrain drive;
+   private final Drivetrain drive;
 
    public AutonOption0(Drivetrain drive) {
       this.drive = drive;

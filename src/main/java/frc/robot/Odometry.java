@@ -12,12 +12,12 @@ public class Odometry {
     SwerveConstants constants;
     SwerveModule swerveModule;
 
-    Translation2d m_frontLeftLocation = new Translation2d(0.381, 0.381);
-    Translation2d m_frontRightLocation = new Translation2d(0.381, -0.381);
-    Translation2d m_backLeftLocation = new Translation2d(-0.381, 0.381);
-    Translation2d m_backRightLocation = new Translation2d(-0.381, -0.381);
-    SwerveDriveKinematics kinematics = new SwerveDriveKinematics(m_frontLeftLocation, m_frontRightLocation,
-            m_backLeftLocation, m_backRightLocation);
+    Translation2d frontLeftLocation = new Translation2d(0.381, 0.381);
+    Translation2d frontRightLocation = new Translation2d(0.381, -0.381);
+    Translation2d backLeftLocation = new Translation2d(-0.381, 0.381);
+    Translation2d backRightLocation = new Translation2d(-0.381, -0.381);
+    SwerveDriveKinematics kinematics =
+            new SwerveDriveKinematics(frontLeftLocation, frontRightLocation, backLeftLocation, backRightLocation);
 
     SwerveDriveOdometry swerveOdometry = new SwerveDriveOdometry(kinematics, drivetrain.getHeading());
 
@@ -28,18 +28,15 @@ public class Odometry {
     }
 
     public double getXPosition() {
-        double xPos = swerveOdometry.getPoseMeters().getX();
-        return xPos;
+        return swerveOdometry.getPoseMeters().getX();
     }
 
     public double getYPosition() {
-        double yPos = swerveOdometry.getPoseMeters().getY();
-        return yPos;
+        return swerveOdometry.getPoseMeters().getY();
     }
 
     public Rotation2d getRot() {
-        Rotation2d rotation2d = drivetrain.getHeading();
-        return rotation2d;
+        return drivetrain.getHeading();
     }
 
     public void setPosition(double xPosition, double yPosition, double rotation, double time) {

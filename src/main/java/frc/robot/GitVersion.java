@@ -1,18 +1,13 @@
 package frc.robot;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
-import java.nio.charset.StandardCharsets;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Filesystem;
+
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class GitVersion implements Serializable {
     static final long SERIAL_VERSION_UID = 12345;
@@ -20,14 +15,6 @@ public class GitVersion implements Serializable {
     public boolean IsModified;
     public Date BuildDate;
     public String BuildAuthor;
-
-    public void printVersions() {
-        NetworkTable table = NetworkTableInstance.getDefault().getTable("SW Version");
-        table.getEntry("Build Date").setString(new SimpleDateFormat("MM/dd/yyyy HH:mm:ss").format(BuildDate));
-        table.getEntry("Build Author").setString(BuildAuthor);
-        table.getEntry("Current Commit").setString(LastCommit);
-        table.getEntry("Modified").setBoolean(IsModified);
-    }
 
     public static GitVersion loadVersion() {
         String path = Filesystem.getDeployDirectory() + "/gitinfo.obj";
@@ -84,12 +71,18 @@ public class GitVersion implements Serializable {
             objectOutputStream.flush();
             objectOutputStream.close();
 
-        } catch (IOException e) {
-            System.exit(1);
-        } catch (InterruptedException e) {
+        } catch (IOException | InterruptedException e) {
             System.exit(1);
         }
 
         System.exit(0);
+    }
+
+    public void printVersions() {
+        NetworkTable table = NetworkTableInstance.getDefault().getTable("SW Version");
+        table.getEntry("Build Date").setString(new SimpleDateFormat("MM/dd/yyyy HH:mm:ss").format(BuildDate));
+        table.getEntry("Build Author").setString(BuildAuthor);
+        table.getEntry("Current Commit").setString(LastCommit);
+        table.getEntry("Modified").setBoolean(IsModified);
     }
 }

@@ -8,12 +8,9 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxAlternateEncoder;
 import com.revrobotics.SparkMaxPIDController;
-
 import edu.wpi.first.wpilibj.Counter;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Timer;
-// import com.revrobotics.CANSparkMaxLowLevel;
-// import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -21,35 +18,32 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 //import edu.wpi.first.wpilibj.DigitalOutput;
 
 public class Ingestor extends SubsystemBase {
-    private WPI_TalonSRX ingestorWheels;
-    // private WPI_TalonSRX ingestorGate;
-    private WPI_TalonSRX stage1Conveyor;
-    private WPI_TalonSRX stage2Conveyor;
-    private CANSparkMax ingestorLift;
-    private RelativeEncoder altEncoder;
-    private SparkMaxPIDController liftPidController;
-    private double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput;
-    private final CANSparkMax.MotorType BRUSHLESS = CANSparkMax.MotorType.valueOf("kBrushless");
-    // private XboxController driverController;
-    private XboxController operatorController;
     private static final double TRIGGER_SENSITIVITY = 0.5;
-    private Timer sendTimer;
-    private Timer stageTimer;
-    private boolean sendTimerStarted = false;
-    private boolean stageTimerStarted = false;
-    private boolean triggerPressed = false;
-    private DigitalInput stage1ProxSensor;
-    private Counter counter;
-    private int totalBalls;
-    // private ColorSensor stage2ColorSensor;
-    // private boolean ballAtColorSensor;
-    private double liftRotations;
-    // private SmartDashboard smartDashboard;
-
     // Targeted motor speeds
     private static final double INGESTOR_SPEED = 0.9; // 1000.0;
     private static final double STAGE_1_SPEED = 0.75;// 1000.0;
     private static final double STAGE_2_SPEED = 0.85; // 1000.0;
+    private final WPI_TalonSRX ingestorWheels;
+    // private WPI_TalonSRX ingestorGate;
+    private final WPI_TalonSRX stage1Conveyor;
+    private final WPI_TalonSRX stage2Conveyor;
+    private final CANSparkMax ingestorLift;
+    private final RelativeEncoder altEncoder;
+    private final SparkMaxPIDController liftPidController;
+    // private XboxController driverController;
+    private final XboxController operatorController;
+    private final Timer sendTimer;
+    private final Timer stageTimer;
+    private final DigitalInput stage1ProxSensor;
+    private final Counter counter;
+    private boolean sendTimerStarted;
+    private boolean stageTimerStarted;
+    // private SmartDashboard smartDashboard;
+    private boolean triggerPressed;
+    private int totalBalls;
+    // private ColorSensor stage2ColorSensor;
+    // private boolean ballAtColorSensor;
+    private double liftRotations;
     //private static final double INGESTOR_LIFT_SPEED = 0.25;
 
     public Ingestor(ColorSensor colorSensor) {
@@ -57,6 +51,7 @@ public class Ingestor extends SubsystemBase {
         // ingestorGate = new WPI_TalonSRX(2);
         stage1Conveyor = new WPI_TalonSRX(CanIDConstants.STAGE_1);
         stage2Conveyor = new WPI_TalonSRX(CanIDConstants.STAGE_2);
+        CANSparkMax.MotorType BRUSHLESS = CANSparkMax.MotorType.valueOf("kBrushless");
         ingestorLift = new CANSparkMax(CanIDConstants.INTAKE_LIFT, BRUSHLESS);
         altEncoder = ingestorLift.getAlternateEncoder(SparkMaxAlternateEncoder.Type.kQuadrature, 8192);
         // driverController = new XboxController(0);
@@ -74,13 +69,13 @@ public class Ingestor extends SubsystemBase {
         liftPidController.setFeedbackDevice(altEncoder);
 
         // PID coefficients
-        kP = 2;
-        kI = 0;
-        kD = 0;
-        kIz = 0;
-        kFF = 0;
-        kMaxOutput = 1;
-        kMinOutput = -1;
+        double kP = 2.0;
+        double kI = 0.0;
+        double kD = 0.0;
+        double kIz = 0.0;
+        double kFF = 0.0;
+        double kMaxOutput = 1.0;
+        double kMinOutput = -1.0;
 
         // set PID coefficients
         liftPidController.setP(kP);
@@ -175,10 +170,8 @@ public class Ingestor extends SubsystemBase {
                 stageTimer.start();
                 stageTimerStarted = true;
             }
-            if (stageTimer.get() < 2 && triggerPressed) { // triggerPressed is so stage 1 doesn't run at enabling
+            if (stageTimer.get() < 2.0 && triggerPressed) { // triggerPressed is so stage 1 doesn't run at enabling
                 stage1ConveyorSpeed = STAGE_1_SPEED;
-            } else {
-                stage1ConveyorSpeed = 0.0;
             }
         }
 
@@ -206,6 +199,23 @@ public class Ingestor extends SubsystemBase {
         // SmartDashboard.putNumber("ProcessVariable", altEncoder.getPosition());
     }
 
+    public void lowerIngestor() {
+        liftRotations = -0.165;
+        double position = altEncoder.getPosition();
+        if (position > liftRotations + (Math.abs(liftRotations) * 0.02)) {
+            liftPidController.setReference(liftRotations, ControlType.kPosition);
+        } else {
+            ingestorLift.set(0.0); // once it's 98% of the way there let it drop
+        }
+        ingestorLift.setIdleMode(IdleMode.kCoast);
+    }
+
+    public void liftIngestor() {
+        liftRotations = 0.0;
+        liftPidController.setReference(liftRotations, ControlType.kPosition);
+        ingestorLift.setIdleMode(IdleMode.kBrake);
+    }
+
     public boolean sendCargoToShooter() {
         // TODO: replace timer with prox/color sensor
         if (!sendTimerStarted) {
@@ -219,6 +229,7 @@ public class Ingestor extends SubsystemBase {
             stage2Conveyor.set(-STAGE_2_SPEED);
             stage1Conveyor.set(STAGE_1_SPEED);
         } else {
+            sendTimer.stop();
             sendTimer.reset();
             sendTimerStarted = false;
             return true;
@@ -229,34 +240,18 @@ public class Ingestor extends SubsystemBase {
     public boolean sendOneCargoToShooter() {
         // TODO: replace timer with prox/color sensor
         if (!sendTimerStarted) {
-            sendTimer.start();
+            sendTimer.start(); // TODO: This method's boolean return isn't being used? Might that cause issues?
             sendTimerStarted = true;
         }
-        if (sendTimer.get() < 3) {
+        if (sendTimer.get() < 3.0) {
             stage2Conveyor.set(-STAGE_2_SPEED);
         } else {
+            sendTimer.stop();
             sendTimer.reset();
             sendTimerStarted = false;
             return true;
         }
         return false;
-    }
-
-    public void liftIngestor() {
-        liftRotations = 0.0;
-        liftPidController.setReference(liftRotations, ControlType.kPosition);
-        ingestorLift.setIdleMode(IdleMode.kBrake);
-    }
-
-    public void lowerIngestor() {
-        liftRotations = -0.165;
-        double position = altEncoder.getPosition();
-        if (position > liftRotations + (Math.abs(liftRotations) * 0.02)) {
-            liftPidController.setReference(liftRotations, ControlType.kPosition);
-        } else {
-            ingestorLift.set(0); // once it's 98% of the way there let it drop
-        }
-        ingestorLift.setIdleMode(IdleMode.kCoast);
     }
 
     public void runStage1Out() {
@@ -267,20 +262,20 @@ public class Ingestor extends SubsystemBase {
         stage2Conveyor.set(-STAGE_2_SPEED);
     }
 
-    public void runStage1In() {
+    /*public void runStage1In() {
         stage1Conveyor.set(STAGE_1_SPEED);
     }
 
     public void runStage2In() {
         stage2Conveyor.set(STAGE_2_SPEED);
-    }
+    } */
 
     public void stopStage1() {
-        stage1Conveyor.set(0);
+        stage1Conveyor.set(0.0);
     }
 
     public void stopStage2() {
-        stage2Conveyor.set(0);
+        stage2Conveyor.set(0.0);
     }
 
     public void threeBallAutonIngest() {
@@ -292,9 +287,9 @@ public class Ingestor extends SubsystemBase {
         return stage1ProxSensor.get();
     }
 
-    public int getStage2Proximity() {
+    /*public int getStage2Proximity() {
         return ColorSensor.getProx();
-    }
+    } */
 
     public WPI_TalonSRX getIngestorWheels() {
         return ingestorWheels;
@@ -312,13 +307,13 @@ public class Ingestor extends SubsystemBase {
      * public void ingest(){
      * ingestorWheels.set(ControlMode.Velocity, 1000);
      * }
-     * 
+     *
      * public void expel(){
      * ingestorWheels.set(ControlMode.Velocity, -1000);
      * }
-     * 
+     *
      * public void stage1(){
-     * 
+     *
      * }
      */
 }

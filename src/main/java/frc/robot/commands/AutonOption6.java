@@ -5,8 +5,8 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Drivetrain;
 
 public class AutonOption6 extends CommandBase {
-    private Drivetrain drive;
-    private Timer timer;
+    private final Drivetrain drive;
+    private final Timer timer;
 
     public AutonOption6(Drivetrain drive) {
         timer = new Timer();

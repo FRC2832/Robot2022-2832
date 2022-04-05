@@ -4,7 +4,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Shooter;
 
 public class SetHood extends CommandBase {
-    private Shooter shooter;
+    private final Shooter shooter;
     // private double targetAngle;
 
     public SetHood(Shooter shooter, double targetAngle) {
@@ -19,12 +19,12 @@ public class SetHood extends CommandBase {
     }
 
     @Override
-    public boolean isFinished() {
-        return shooter.isHoodHomed();
+    public void end(boolean interrupted) {
+        shooter.setHoodSpeedPct(0);
     }
 
     @Override
-    public void end(boolean interrupted) {
-        shooter.setHoodSpeedPct(0);
+    public boolean isFinished() {
+        return shooter.isHoodHomed();
     }
 }

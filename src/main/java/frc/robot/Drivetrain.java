@@ -4,11 +4,8 @@
 
 package frc.robot;
 
-import java.util.ArrayList;
-
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.sensors.PigeonIMU;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -29,35 +26,35 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-/** Represents a swerve drive style drivetrain. */
+import java.util.ArrayList;
+
+/**
+ * Represents a swerve drive style drivetrain.
+ */
 public class Drivetrain extends SubsystemBase {
     public static final int FL = 0;
     public static final int FR = 1;
     public static final int RL = 2;
     public static final int RR = 3;
 
-    public static double kMaxSpeed = 3; // per Thirfty Bot, max speed with Falcon 500 is 15.9ft/s, or 4.85 m/s
+    public static double kMaxSpeed = 3.0; // per Thrifty Bot, max speed with Falcon 500 is 15.9ft/s, or 4.85 m/s
     public static double kMaxAngularSpeed = 2 * Math.PI; // 1 rotation per second
-
-    private XboxController driverController;
-
     private final SwerveModule[] MODULES = new SwerveModule[4];
     private final SwerveConstants[] CONSTANTS = new SwerveConstants[4];
-    private Pose2d[] modulePoses = new Pose2d[4];
+    private final Pose2d[] modulePoses = new Pose2d[4];
+    // private final AnalogGyro gyro = new AnalogGyro(0);
+    private final PigeonIMU pigeon;
+    private final SwerveDriveKinematics kinematics;
+    private final Field2d field = new Field2d();
+    public SwerveDriveOdometry odometry;
+    public int currentStep;
+    private NetworkTable visionTable;
+    private XboxController driverController;
     private Translation2d[] redBalls;
     private Translation2d[] blueBalls;
-    NetworkTable visionTable;
-
-    // private final AnalogGyro gyro = new AnalogGyro(0);
-    private PigeonIMU pigeon;
     private ADXRS450_GyroSim gyroSim;
     private ADXRS450_Gyro gyroBase;
-
-    private SwerveDriveKinematics kinematics;
-
-    public SwerveDriveOdometry odometry;
-
-    private Field2d field = new Field2d();
+    private int loops;
 
     public Drivetrain(XboxController driverController) {
         this.driverController = driverController;
@@ -99,23 +96,23 @@ public class Drivetrain extends SubsystemBase {
             CONSTANTS[i] = new SwerveConstants();
             CONSTANTS[i].Id = (byte) i;
             CONSTANTS[i].TurnMotor = DCMotor.getNeo550(1);
-            CONSTANTS[i].TurnMotorGearRatio = (12 / 1) * (64 / 12); // 12:1 on the motor, 5.33 in the swerve
+            CONSTANTS[i].TurnMotorGearRatio = 12.0 * (64.0 / 12); // 12:1 on the motor, 5.33 in the swerve
             CONSTANTS[i].DriveMotor = DCMotor.getFalcon500(1);
             CONSTANTS[i].DriveMotorGearRatio = 5.25; // 12t to 21t gear stage, 15t to 45t bevel gear stage
 
-            CONSTANTS[i].TurnMotorP = 0;
-            CONSTANTS[i].TurnMotorI = 0;
-            CONSTANTS[i].TurnMotorD = 0;
+            CONSTANTS[i].TurnMotorP = 0.0;
+            CONSTANTS[i].TurnMotorI = 0.0;
+            CONSTANTS[i].TurnMotorD = 0.0;
 
-            CONSTANTS[i].DriveMotorP = 0;
-            CONSTANTS[i].DriveMotorI = 0;
-            CONSTANTS[i].DriveMotorD = 0;
-            CONSTANTS[i].DriveMotorFF = 0;
-            CONSTANTS[i].DriveMotorIZone = 0;
+            CONSTANTS[i].DriveMotorP = 0.0;
+            CONSTANTS[i].DriveMotorI = 0.0;
+            CONSTANTS[i].DriveMotorD = 0.0;
+            CONSTANTS[i].DriveMotorFF = 0.0;
+            CONSTANTS[i].DriveMotorIZone = 0.0;
 
             // TODO: These are example values only - DO NOT USE THESE FOR YOUR OWN ROBOT!
             // this should be once for the drivetrain
-            CONSTANTS[i].DriveMotorKv = 4; // kvVoltSecondsPerMeter (default = 12/kMaxSpeed)
+            CONSTANTS[i].DriveMotorKv = 4.0; // kvVoltSecondsPerMeter (default = 12/kMaxSpeed)
             CONSTANTS[i].DriveMotorKa = 0.0917; // kaVoltSecondsSquaredPerMeter
             // this should be done per turning motor
             CONSTANTS[i].TurnMotorKv = 0.6095; // VoltSecondsPerRadian (default = 12/19.686 (188RPM = 19.686Rad/S))
@@ -138,77 +135,62 @@ public class Drivetrain extends SubsystemBase {
         for (int i = 0; i < MODULES.length; i++) {
             MODULES[i] = new SwerveModule(CONSTANTS[i]);
         }
-        kinematics = new SwerveDriveKinematics(
-                CONSTANTS[FL].Location, CONSTANTS[FR].Location,
-                CONSTANTS[RL].Location, CONSTANTS[RR].Location);
+        kinematics = new SwerveDriveKinematics(CONSTANTS[FL].Location, CONSTANTS[FR].Location, CONSTANTS[RL].Location,
+                                               CONSTANTS[RR].Location);
         odometry = new SwerveDriveOdometry(kinematics, getHeading());
 
         // set the robot to x=0.5m, y=4m, rot=0*
-        odometry.resetPosition(new Pose2d(0.5, 4, new Rotation2d()), new Rotation2d());
+        odometry.resetPosition(new Pose2d(0.5, 4.0, new Rotation2d()), new Rotation2d());
 
         pigeon.clearStickyFaults();
         SmartDashboard.putData("Field", field);
         SmartDashboard.putBoolean("Reset Position", false);
     }
 
+    public Rotation2d getHeading() {
+        // TODO: can we get rid of this allocation
+        return new Rotation2d(Math.toRadians(getAngle()));
+    }
+
+    /**
+     * Gets the robot's angle in degrees
+     *
+     * @return Robot's angle since powerup
+     */
+    public double getAngle() {
+        if (Robot.isReal()) {
+            double[] ypr_deg = new double[3];
+            pigeon.getYawPitchRoll(ypr_deg);
+            return ypr_deg[0];
+        }
+        return gyroBase.getAngle();
+    }
+
     /**
      * Reset the orientation of the robot (and in simulation, also the position)
      */
     public void resetRobot() {
-        odometry.resetPosition(new Pose2d(0.5, 4, getHeading()), getHeading());
+        odometry.resetPosition(new Pose2d(0.5, 4.0, getHeading()), getHeading());
     }
 
     /**
-     * Method to drive the robot using joystick info.
-     *
-     * @param xSpeed        Speed of the robot in the x direction (forward).
-     * @param ySpeed        Speed of the robot in the y direction (sideways).
-     * @param rot           Angular rate of the robot.
-     * @param fieldRelative Whether the provided x and y speeds are relative to the
-     *                      field.
+     * Updates the field relative position of the robot.
      */
-    @SuppressWarnings("ParameterName")
-    public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
-        // ask the kinematics to determine our swerve command
-        ChassisSpeeds speeds;
-        if (fieldRelative) {
-            speeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, getHeading());
-        } else {
-            speeds = new ChassisSpeeds(xSpeed, ySpeed, rot);
-        }
-        SwerveModuleState[] swerveModuleStates = kinematics.toSwerveModuleStates(speeds);
-
-        // sometime the Kinematics spits out too fast of speeds, so this will fix this
-        SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, kMaxSpeed);
-
-        // command each swerve module
-        for (int i = 0; i < MODULES.length; i++) {
-            MODULES[i].setDesiredState(swerveModuleStates[i]);
-        }
-
-        // report our commands to the dashboard
-        SmartDashboard.putNumber("SwerveDrive/xSpeed", xSpeed);
-        SmartDashboard.putNumber("SwerveDrive/ySpeed", ySpeed);
-        SmartDashboard.putNumber("SwerveDrive/rot", rot);
-        SmartDashboard.putBoolean("SwerveDrive/fieldRelative", fieldRelative);
-    }
-
-    /** Updates the field relative position of the robot. */
     public void updateOdometry() {
         // update our estimation where we are on the field
-        odometry.update(getHeading(), MODULES[FL].getState(),
-                MODULES[FR].getState(), MODULES[RL].getState(), MODULES[RR].getState());
+        odometry.update(getHeading(), MODULES[FL].getState(), MODULES[FR].getState(), MODULES[RL].getState(),
+                        MODULES[RR].getState());
         Pose2d pose = getPose();
 
         // Update the poses for the swerveModules. Note that the order of rotating the
         // position and then adding the translation matters
         for (int i = 0; i < MODULES.length; i++) {
-            Translation2d modulePositionFromChassis = CONSTANTS[i].Location.rotateBy(getHeading())
-                    .plus(pose.getTranslation());
+            Translation2d modulePositionFromChassis =
+                    CONSTANTS[i].Location.rotateBy(getHeading()).plus(pose.getTranslation());
 
             // Module's heading is it's angle relative to the chassis heading
-            modulePoses[i] = new Pose2d(modulePositionFromChassis,
-                    MODULES[i].getState().angle.plus(pose.getRotation()));
+            modulePoses[i] =
+                    new Pose2d(modulePositionFromChassis, MODULES[i].getState().angle.plus(pose.getRotation()));
         }
 
         // plot it on the simulated field
@@ -223,30 +205,74 @@ public class Drivetrain extends SubsystemBase {
         return odometry.getPoseMeters();
     }
 
-    public Rotation2d getHeading() {
-        // TODO: can we get rid of this allocation
-        return new Rotation2d(Math.toRadians(getAngle()));
+    public void updateSimulationVision(Pose2d robot) {
+        Translation2d[] balls;
+        final double MAX_SIGHT_DIST = 1.219; // 48"
+
+        Translation2d cameraMove = new Translation2d(0.381, new Rotation2d());// move the camera 15" forward to be at
+        // the front of the robot
+        Pose2d cameraPose = robot.transformBy(new Transform2d(cameraMove, new Rotation2d()));
+
+        if (DriverStation.getAlliance() == Alliance.Red) {
+            balls = redBalls;
+        } else {
+            balls = blueBalls;
+        }
+
+        ArrayList<Double> centerX = new ArrayList<>();
+        ArrayList<Double> centerY = new ArrayList<>();
+        for (Translation2d ball : balls) {
+            Transform2d heading = calcHeading(cameraPose, ball);
+
+            // ball must be within 48" and within a 90* FOV to be seen
+            double angle = heading.getRotation().getDegrees();
+            if (Math.abs(angle) < 45.0) {
+                double dist = heading.getTranslation().getNorm();
+                double x = Math.sin(Math.toRadians(angle)) * dist;
+                double y = Math.cos(Math.toRadians(angle)) * dist;
+
+                // 48" check
+                if (y < MAX_SIGHT_DIST) {
+                    // top left is 0,0
+                    centerX.add((MAX_SIGHT_DIST - x) / MAX_SIGHT_DIST * 320); // since we are 90*, a 45* max triangle
+                    // has equal sides, so we assumed max
+                    // distance side to side also. 640 max
+                    // pixels divided by 2
+                    centerY.add((MAX_SIGHT_DIST - y) / MAX_SIGHT_DIST * 480);
+                }
+            }
+        }
+
+        visionTable.getEntry("cargoX").setDoubleArray(centerX.stream().mapToDouble(d -> d).toArray());
+        visionTable.getEntry("cargoY").setDoubleArray(centerY.stream().mapToDouble(d -> d).toArray());
     }
 
-    /**
-     * Gets the robot's angle in degrees
-     * 
-     * @return Robot's angle since powerup
-     */
-    public double getAngle() {
-        if (Robot.isReal()) {
-            double[] ypr_deg = new double[3];
-            pigeon.getYawPitchRoll(ypr_deg);
-            return ypr_deg[0];
+    public static Transform2d calcHeading(Pose2d robot, Translation2d target) {
+        Translation2d trans = target.minus(robot.getTranslation());
+        double x = trans.getX();
+        double y = trans.getY();
+        double h = trans.getNorm();
+
+        double angle;
+        if (Math.abs(y) < 1e-9 && x < 0.0) {
+            // handle 180* case
+            angle = Math.PI;
+        } else if (x >= 0.0) {
+            // handle quadrants 1 and 4
+            angle = Math.asin(y / h);
+        } else if (y >= 0.0) {
+            // handle quadrant 2
+            angle = Math.acos(x / h);
+        } else {
+            // handle quadrant 3
+            angle = Math.asin(-y / h) + Math.PI;
         }
-        return gyroBase.getAngle();
+        return new Transform2d(trans, (new Rotation2d(angle)).minus(robot.getRotation()));
     }
 
     public SwerveModule[] getModules() {
         return MODULES;
     }
-
-    int loops = 0;
 
     @Override
     public void periodic() {
@@ -255,8 +281,8 @@ public class Drivetrain extends SubsystemBase {
         SmartDashboard.putNumber("SwerveDrive/gyroHeading", getHeading().getDegrees());
         loops++;
         if (loops % 5 == 0) {
-            for (int i = 0; i < MODULES.length; i++) {
-                MODULES[i].putSmartDashboard();
+            for (SwerveModule module : MODULES) {
+                module.putSmartDashboard();
             }
             loops = 0;
         }
@@ -292,9 +318,9 @@ public class Drivetrain extends SubsystemBase {
         double absVal = Math.abs(value);
 
         if (absVal > deadband) {
-            return Math.signum(value) * (deadband + ((.52) * absVal * absVal)); // TODO: change to 1 - x(deadband)
+            return Math.signum(value) * (deadband + ((0.52) * absVal * absVal)); // TODO: change to 1 - x(deadband)
         }
-        return 0;
+        return 0.0;
     }
 
     public void runTurtleMode(XboxController controller) {
@@ -311,77 +337,10 @@ public class Drivetrain extends SubsystemBase {
             kMaxSpeed = 1.4;
             kMaxAngularSpeed = 2.5;
         } else {
-            kMaxSpeed = 3;
+            kMaxSpeed = 3.0;
             kMaxAngularSpeed = 2 * Math.PI;
         }
     }
-
-    public void updateSimulationVision(Pose2d robot) {
-        Translation2d[] balls;
-        final double MAX_SIGHT_DIST = 1.219; // 48"
-
-        Translation2d cameraMove = new Translation2d(0.381, new Rotation2d());// move the camera 15" forward to be at
-                                                                              // the front of the robot
-        Pose2d cameraPose = robot.transformBy(new Transform2d(cameraMove, new Rotation2d()));
-
-        if (DriverStation.getAlliance() == Alliance.Red) {
-            balls = redBalls;
-        } else {
-            balls = blueBalls;
-        }
-
-        ArrayList<Double> centerX = new ArrayList<Double>();
-        ArrayList<Double> centerY = new ArrayList<Double>();
-        for (Translation2d ball : balls) {
-            Transform2d heading = calcHeading(cameraPose, ball);
-
-            // ball must be within 48" and within a 90* FOV to be seen
-            double angle = heading.getRotation().getDegrees();
-            if (Math.abs(angle) < 45) {
-                double dist = heading.getTranslation().getNorm();
-                double x = Math.sin(Math.toRadians(angle)) * dist;
-                double y = Math.cos(Math.toRadians(angle)) * dist;
-
-                // 48" check
-                if (y < MAX_SIGHT_DIST) {
-                    // top left is 0,0
-                    centerX.add((MAX_SIGHT_DIST - x) / MAX_SIGHT_DIST * 320); // since we are 90*, a 45* max triangle
-                                                                              // has equal sides, so we assumed max
-                                                                              // distance side to side also. 640 max
-                                                                              // pixels divided by 2
-                    centerY.add((MAX_SIGHT_DIST - y) / MAX_SIGHT_DIST * 480);
-                }
-            }
-        }
-
-        visionTable.getEntry("cargoX").setDoubleArray(centerX.stream().mapToDouble(d -> d).toArray());
-        visionTable.getEntry("cargoY").setDoubleArray(centerY.stream().mapToDouble(d -> d).toArray());
-    }
-
-    public static Transform2d calcHeading(Pose2d robot, Translation2d target) {
-        Translation2d trans = target.minus(robot.getTranslation());
-        double x = trans.getX();
-        double y = trans.getY();
-        double h = trans.getNorm();
-
-        double angle;
-        if (Math.abs(y) < 1e-9 && x < 0) {
-            // handle 180* case
-            angle = Math.PI;
-        } else if (x >= 0) {
-            // handle quadrants 1 and 4
-            angle = Math.asin(y / h);
-        } else if (y >= 0) {
-            // handle quadrant 2
-            angle = Math.acos(x / h);
-        } else {
-            // handle quadrant 3
-            angle = Math.asin(-y / h) + Math.PI;
-        }
-        return new Transform2d(trans, (new Rotation2d(angle)).minus(robot.getRotation()));
-    }
-
-    public int currentStep = 0;
 
     public void setPosition(double xDesPosition, double yDesPosition, double desRotation, double time, int step) {
         Pose2d pos = odometry.getPoseMeters();
@@ -391,8 +350,8 @@ public class Drivetrain extends SubsystemBase {
         double xMove = xDesPosition - xCurrentPos;
         double yMove = yDesPosition - yCurrentPos;
         // rotCurrentPos = rotCurrentPos % Math.toRadians(360);
-        if (rotCurrentPos < 0) {
-            rotCurrentPos = rotCurrentPos + Math.toRadians(360);
+        if (rotCurrentPos < 0.0) {
+            rotCurrentPos += Math.toRadians(360.0);
         }
         double rotMag = desRotation - rotCurrentPos;
 
@@ -401,19 +360,53 @@ public class Drivetrain extends SubsystemBase {
         double rotSpeed = rotMag / time;
 
         if (step == currentStep) {
-            if (Math.abs(xCurrentPos - xDesPosition) > .1 || Math.abs(yCurrentPos - yDesPosition) > .1
-                    || Math.abs(rotCurrentPos - desRotation) > .1) {
+            if (Math.abs(xCurrentPos - xDesPosition) > 0.1 || Math.abs(yCurrentPos - yDesPosition) > 0.1 ||
+                Math.abs(rotCurrentPos - desRotation) > 0.1) {
                 drive(xSpeed, ySpeed, rotSpeed, true);
             } else {
-                xSpeed = 0;
-                ySpeed = 0;
-                rotSpeed = 0;
+                xSpeed = 0.0;
+                ySpeed = 0.0;
+                rotSpeed = 0.0;
                 drive(xSpeed, ySpeed, rotSpeed, false);
                 System.out.println("Arrived");
                 currentStep++;
             }
         }
 
+    }
+
+    /**
+     * Method to drive the robot using joystick info.
+     *
+     * @param xSpeed        Speed of the robot in the x direction (forward).
+     * @param ySpeed        Speed of the robot in the y direction (sideways).
+     * @param rot           Angular rate of the robot.
+     * @param fieldRelative Whether the provided x and y speeds are relative to the field.
+     */
+    @SuppressWarnings("ParameterName")
+    public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
+        // ask the kinematics to determine our swerve command
+        ChassisSpeeds speeds;
+        if (fieldRelative) {
+            speeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, getHeading());
+        } else {
+            speeds = new ChassisSpeeds(xSpeed, ySpeed, rot);
+        }
+        SwerveModuleState[] swerveModuleStates = kinematics.toSwerveModuleStates(speeds);
+
+        // sometime the Kinematics spits out too fast of speeds, so this will fix this
+        SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, kMaxSpeed);
+
+        // command each swerve module
+        for (int i = 0; i < MODULES.length; i++) {
+            MODULES[i].setDesiredState(swerveModuleStates[i]);
+        }
+
+        // report our commands to the dashboard
+        SmartDashboard.putNumber("SwerveDrive/xSpeed", xSpeed);
+        SmartDashboard.putNumber("SwerveDrive/ySpeed", ySpeed);
+        SmartDashboard.putNumber("SwerveDrive/rot", rot);
+        SmartDashboard.putBoolean("SwerveDrive/fieldRelative", fieldRelative);
     }
 
     public void setBrakeMode(boolean brake) {

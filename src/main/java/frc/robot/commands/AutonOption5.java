@@ -5,8 +5,8 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class AutonOption5 extends CommandBase {
-    private Timer timer;
-    private Drivetrain drive;
+    private final Timer timer;
+    private final Drivetrain drive;
 
     public AutonOption5(Drivetrain drive) {
         timer = new Timer();

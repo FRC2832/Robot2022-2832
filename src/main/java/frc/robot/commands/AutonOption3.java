@@ -6,20 +6,25 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class AutonOption3 extends CommandBase {
-    private Timer timer;
-    private Drivetrain drive;
-    private double delay = 4.0;
+    private final Timer timer;
+    private final Drivetrain drive;
+    private final double delay;
 
     public AutonOption3(Drivetrain drive) {
         timer = new Timer();
         this.drive = drive;
         addRequirements(drive);
         delay = SmartDashboard.getNumber("Shooting Delay:", 0.0);
-        timer.start();
     }
 
     private void stop() {
         drive.drive(0, 0, 0, true);
+    }
+
+    @Override
+    public void initialize() {
+        timer.reset();
+        timer.start();
     }
 
     @Override
@@ -29,13 +34,13 @@ public class AutonOption3 extends CommandBase {
         if (timerVal < (2 + delay)) {
             System.out.println("Moving Back");
             drive.drive(-1, 0, 0, false);
-        } else if (timerVal > 2 + delay && timerVal < 3 + delay) {
+        } else if (timerVal < 3 + delay) {
             System.out.println("Stopping");
             stop();
         }
         // Pick up ball
         // shoot times two
-        else if (timerVal > 3 + delay && timerVal < 6 + delay) {
+        else if (timerVal < 6 + delay) {
             System.out.println("Moving Left");
             drive.drive(0, 1, 0, false);
         } else {

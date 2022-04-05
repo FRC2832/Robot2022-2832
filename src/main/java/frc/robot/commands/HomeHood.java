@@ -4,7 +4,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Shooter;
 
 public class HomeHood extends CommandBase {
-    private Shooter shooter;
+    private final Shooter shooter;
 
     public HomeHood(Shooter shooter) {
         this.shooter = shooter;

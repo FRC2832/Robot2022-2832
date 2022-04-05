@@ -9,10 +9,10 @@ import frc.robot.Ingestor;
 import frc.robot.Shooter;
 
 public class AutonSimpleBack extends CommandBase {
-    private Drivetrain drive;
-    private Shooter shooter;
-    private Ingestor ingestor;
-    private Timer timer;
+    private final Drivetrain drive;
+    private final Shooter shooter;
+    private final Ingestor ingestor;
+    private final Timer timer;
     private boolean sentToShooter;
     //private Rotation2d startRotation;
 

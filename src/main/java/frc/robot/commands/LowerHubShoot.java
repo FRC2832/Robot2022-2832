@@ -6,25 +6,24 @@ import frc.robot.Ingestor;
 import frc.robot.Shooter;
 
 public class LowerHubShoot extends CommandBase {
-    private Shooter shooter;
-    private Ingestor ingestor;
-    private double speed;
+    private static final double SPEED = 1000.0;
+    private final Shooter shooter;
+    private final Ingestor ingestor;
 
     public LowerHubShoot(Shooter shooter, Ingestor ingestor) {
         this.shooter = shooter;
         this.ingestor = ingestor;
-        speed = 1000;
         addRequirements(shooter);
-        SmartDashboard.putNumber("Target RPM", speed);
+        SmartDashboard.putNumber("Target RPM", SPEED);
     }
 
     @Override
     public void execute() {
-        shooter.setShooterRpm(speed);
-        shooter.setHoodAngle(69); // knob 6
-
+        shooter.setShooterRpm(SPEED);
+        shooter.setHoodAngle(69.0); // knob 6
+        double shooterVel = shooter.getShooterVelocity();
         // if target rpm is within range (+- 50)
-        if (speed - 50 < shooter.getShooterVelocity() && shooter.getShooterVelocity() < speed + 50) {
+        if (SPEED - 50 < shooterVel && shooterVel < SPEED + 50) {
             ingestor.sendCargoToShooter();
         }
     }

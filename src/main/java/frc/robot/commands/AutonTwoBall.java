@@ -1,8 +1,8 @@
 package frc.robot.commands;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
-
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Drivetrain;
@@ -11,28 +11,31 @@ import frc.robot.Shooter;
 import frc.robot.SwerveModule;
 
 public class AutonTwoBall extends CommandBase {
-    private Drivetrain drive;
-    private Shooter shooter;
-    private Ingestor ingestor;
-    private Timer timer;
+    private final Timer timer;
+    private static boolean isAutoShootScheduled;
+    private final Drivetrain drive;
+    private final Shooter shooter;
+    private final Ingestor ingestor;
+    private final AutoShoot autoShoot;
+    private final SwerveModule frontLeft;
     // private boolean sentToShooter;
     private double startAngle;
     private double startEncoderCount;
-    private AutoShoot autoShoot;
-    private SwerveModule frontLeft;
-    private static boolean scheduled;
 
     public AutonTwoBall(Drivetrain drive, Shooter shooter, Ingestor ingestor) {
+        timer = new Timer();
         this.drive = drive;
         this.shooter = shooter;
         this.ingestor = ingestor;
         frontLeft = drive.getModules()[0];
         autoShoot = new AutoShoot(drive, shooter, ingestor, null, null);
-        scheduled = false;
-
-        timer = new Timer();
+        isAutoShootScheduled = false;
         addRequirements(drive, shooter, ingestor);
         drive.currentStep = 0;
+    }
+
+    public static void resetAutonShoot() {
+        isAutoShootScheduled = false;
     }
 
     @Override
@@ -40,10 +43,11 @@ public class AutonTwoBall extends CommandBase {
         // TODO: what happens if we start on the equivalent red side of the field?
         // drive.odometry.resetPosition(new Pose2d(8.586, 6.05, new Rotation2d()), new
         // Rotation2d());
-        timer.reset();
-        timer.start();
         startAngle = drive.getAngle() % 360;
         startEncoderCount = frontLeft.getDistance();
+        isAutoShootScheduled = false;
+        timer.reset();
+        timer.start();
         // System.out.println("Start X, Y: " + startPose.getX() + ", " +
         // startPose.getY());
         //System.out.println("Start encoder distance value: " + startEncoderCount);
@@ -69,15 +73,18 @@ public class AutonTwoBall extends CommandBase {
                 }
                 break;
             case 1: // drive forward with ingestor lowered and ready to ingest. TODO: Raise hood to
-                    // manual shot angle?
+                // manual shot angle?
                 // negative x value for drive because motors are currently inverted
-                drive.drive(-Drivetrain.kMaxSpeed / 3, 0, 0.0, false);
+                drive.drive(-Drivetrain.kMaxSpeed / 3, 0.0, 0.0, false);
                 ingestor.lowerIngestor();
                 ingestor.threeBallAutonIngest();
                 shooter.setShooterRpm(2300.0);
                 distance = Math.abs(frontLeft.getDistance() - startEncoderCount);
                 if (distance >= 1.5) {// timer.get() >= 3.0) {// || ingestor.getStage1Proximity()){
                     drive.currentStep++;
+                    if (SmartDashboard.getBoolean("Skip Reverse Auton Drive", false)) {
+                        drive.currentStep++;
+                    }
                     timer.reset();
                     startEncoderCount = frontLeft.getDistance();
                 } /*else {
@@ -128,11 +135,11 @@ public class AutonTwoBall extends CommandBase {
                 // < speed + 50) {
                 // ingestor.sendCargoToShooter();
                 // sentToShooter = true;
-                // timer.reset();
+                // TIMER.reset();
                 // }
-                if (!scheduled) {
+                if (!isAutoShootScheduled) {
                     CommandScheduler.getInstance().schedule(autoShoot);
-                    scheduled = true;
+                    isAutoShootScheduled = true;
                 }
                 if (autoShoot.isFinished()) {
                     drive.currentStep++;
@@ -142,22 +149,22 @@ public class AutonTwoBall extends CommandBase {
             /*
              * drive.setPosition(8.586, 7.107836, Math.toRadians(90), 2, 1);
              * //TODO ingest
-             * 
+             *
              * //turn 180
              * drive.setPosition(8.696, 7.0007836, Math.toRadians(270), 2, 2);
-             * 
-             * 
+             *
+             *
              * //TODO shoot
-             * 
+             *
              * //drive to next ball: 10.340534, 6.433, -30 degrees
              * drive.setPosition(10.340534, 6.433, Math.toRadians(330), 2, 3);
-             * 
+             *
              * //TODO ingest
-             * 
+             *
              * //turn to 220 degrees
              * drive.setPosition(10.450534, 6.543, Math.toRadians(220), 2, 4);
-             * 
-             * 
+             *
+             *
              * //TODO shoot
              */
         }
@@ -165,24 +172,20 @@ public class AutonTwoBall extends CommandBase {
     }
 
     @Override
-    public boolean isFinished() {
-        return drive.currentStep == 5; // change this if any setPosition steps are added in execute()
-    }
-
-    @Override
     public void end(boolean interrupted) {
         timer.stop();
-        drive.drive(0, 0, 0, false);
+        drive.drive(0.0, 0.0, 0.0, false);
         shooter.setShooterRpm(2300.0);
         Shooter.setCoast(true);
         ingestor.liftIngestor();
-        ingestor.getStage1Conveyor().set(ControlMode.PercentOutput, 0);
-        ingestor.getStage2Conveyor().set(ControlMode.PercentOutput, 0);
-        ingestor.getIngestorWheels().set(ControlMode.PercentOutput, 0);
+        ingestor.getStage1Conveyor().set(ControlMode.PercentOutput, 0.0);
+        ingestor.getStage2Conveyor().set(ControlMode.PercentOutput, 0.0);
+        ingestor.getIngestorWheels().set(ControlMode.PercentOutput, 0.0);
     }
 
-    public static void resetAutonShoot() {
-        scheduled = false;
+    @Override
+    public boolean isFinished() {
+        return drive.currentStep == 5; // change this if any setPosition steps are added in execute()
     }
 
 }

@@ -1,7 +1,5 @@
 package frc.robot;
 
-import java.util.ArrayList;
-
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -10,25 +8,11 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+import java.util.ArrayList;
+
 public class Pi extends SubsystemBase {
-    private NetworkTableInstance netTableInstance;
-    private NetworkTable table;
-    private NetworkTableEntry cargoCenterX;
-    private NetworkTableEntry cargoCenterY;
-    private NetworkTableEntry allianceColor;
-    private NetworkTableEntry targetCenterX;
-    private NetworkTableEntry targetCenterY;
-    private NetworkTableEntry targetWidth;
-    private NetworkTableEntry targetHeight;
-    private NetworkTableEntry targetArea;
-    private Number[] targetCenterXArray;
-    private Number[] targetCenterYArray;
-    private Number[] targetWidthArray;
-    private Number[] targetHeightArray;
-    private Number[] targetAreaArray;
-    private final double CAM_X_RES = 640.0;
     // private final double CAM_Y_RES = 480;
-    public final double TARGET_CENTER_X = 320.0;
+    // public final double TARGET_CENTER_X = 320.0;
     private static boolean targetMoveRight;
     private static boolean targetMoveLeft;
     private static boolean cargoMoveRight;
@@ -37,10 +21,24 @@ public class Pi extends SubsystemBase {
     private static double targetCenterXOutput;
     private static double cargoCenterXOutput;
     private static double cargoCenterYOutput;
+    private final NetworkTableEntry cargoCenterX;
+    private final NetworkTableEntry cargoCenterY;
+    private final NetworkTableEntry allianceColor;
+    private final NetworkTableEntry targetCenterX;
+    private final NetworkTableEntry targetCenterY;
+    private final NetworkTableEntry targetWidth;
+    private final NetworkTableEntry targetHeight;
+    private final NetworkTableEntry targetArea;
+    private final double CAM_X_RES = 640.0;
+    private Number[] targetCenterXArray;
+    private Number[] targetCenterYArray;
+    private Number[] targetWidthArray;
+    private Number[] targetHeightArray;
+    private Number[] targetAreaArray;
 
     public Pi() {
-        netTableInstance = NetworkTableInstance.getDefault();
-        table = netTableInstance.getTable("vision");
+        NetworkTableInstance netTableInstance = NetworkTableInstance.getDefault();
+        NetworkTable table = netTableInstance.getTable("vision");
         cargoCenterX = table.getEntry("cargoX");
         cargoCenterY = table.getEntry("cargoY");
         allianceColor = table.getEntry("alliance");
@@ -52,140 +50,28 @@ public class Pi extends SubsystemBase {
         targetCenterYOutput = -1;
     }
 
-    // sends alliance color to the python code so it knows what color cargo to look
-    // for
-    public void sendAlliance() {
-        Alliance alliance = DriverStation.getAlliance();
-        String color;
-        if (alliance == Alliance.Red) {
-            color = "red";
-        } else {
-            color = "blue";
-        }
-        allianceColor.setString(color);
-    }
-
-    public void processCargo() {
-        Number[] cargoCenterXArray = cargoCenterX.getNumberArray(new Number[0]);
-        Number[] cargoCenterYArray = cargoCenterY.getNumberArray(new Number[0]);
-        if (cargoCenterXArray.length == 0 || cargoCenterYArray.length == 0) {
-            cargoMoveRight = false;
-            cargoMoveLeft = false;
-            cargoCenterXOutput = -1;
-            cargoCenterYOutput = -1;
-            return;
-        }
-        // currently just taking the first cargo but considering taking the cargo with
-        // the largest y value becuase it should be closest to the robot
-        double cargoX = (double) cargoCenterXArray[0];
-        cargoCenterXOutput = cargoX;
-        cargoCenterYOutput = (double) cargoCenterYArray[0];
-        if (cargoX < (CAM_X_RES / 2) - (CAM_X_RES * 0.05)) {
-            cargoMoveRight = false;
-            cargoMoveLeft = true;
-        } else if (cargoX > (CAM_X_RES / 2) + (CAM_X_RES * 0.05)) {
-            cargoMoveLeft = false;
-            cargoMoveRight = true;
-        } else {
-            cargoMoveRight = false;
-            cargoMoveLeft = false;
-        }
-    }
-
-    public void processTargets() {
-        targetCenterXArray = targetCenterX.getNumberArray(new Number[0]);
-        targetCenterYArray = targetCenterY.getNumberArray(new Number[0]);
-        targetWidthArray = targetWidth.getNumberArray(new Number[0]);
-        targetHeightArray = targetHeight.getNumberArray(new Number[0]);
-        targetAreaArray = targetArea.getNumberArray(new Number[0]);
-        int size = targetCenterXArray.length;
-        // check if vision saw a target
-        if (size == 0) {
-            targetMoveRight = false;
-            targetMoveLeft = false;
-            targetCenterYOutput = -1;
-            targetCenterXOutput = -1;
-            return;
-        }
-        // consistency check
-        if (size == targetCenterYArray.length
-                && size == targetWidthArray.length
-                && size == targetHeightArray.length
-                && size == targetAreaArray.length) {
-            sortTargets();
-        } else {
-            // unknown order, skip this loop
-            return;
-        }
-
-        // pick a target just right of center so the cargo hopefully doesn't bounce out
-        int index = 0;
-        if (size > 1) {
-            index = (int) Math.ceil((double) size / 2);
-        } 
-        double targetX = (double) targetCenterXArray[index];
-        targetCenterYOutput = (double) targetCenterYArray[index];
-        targetCenterXOutput = targetX;
-        if (targetX < ((CAM_X_RES / 2) - (CAM_X_RES * 0.05))) {
-            targetMoveRight = false;
-            targetMoveLeft = true;
-        } else if (targetX > ((CAM_X_RES / 2) + (CAM_X_RES * 0.05))) {
-            targetMoveLeft = false;
-            targetMoveRight = true;
-        } else {
-            targetMoveRight = false;
-            targetMoveLeft = false;
-        }
-    }
-
-    public void sortTargets() {
-        int size = targetCenterXArray.length;
-        for (int i = 1; i < size; ++i) {
-            double keyX = targetCenterXArray[i].doubleValue();
-            double keyY = targetCenterYArray[i].doubleValue();
-            double keyH = targetHeightArray[i].doubleValue();
-            double keyW = targetWidthArray[i].doubleValue();
-            double keyA = targetAreaArray[i].doubleValue();
-            int j = i - 1;
-            while (j >= 0 && targetCenterXArray[j].doubleValue() > keyX) {
-                targetCenterXArray[j + 1] = targetCenterXArray[j];
-                targetCenterYArray[j + 1] = targetCenterYArray[j];
-                targetHeightArray[j + 1] = targetHeightArray[j];
-                targetWidthArray[j + 1] = targetWidthArray[j];
-                targetAreaArray[j + 1] = targetAreaArray[j];
-                j = j - 1;
-            }
-            targetCenterXArray[j + 1] = keyX;
-            targetCenterYArray[j + 1] = keyY;
-            targetHeightArray[j + 1] = keyH;
-            targetWidthArray[j + 1] = keyW;
-            targetAreaArray[j + 1] = keyA;
-        }
-    }
-
-    @Override
-    public void periodic() {
-        processCargo();
-        processTargets();
-    }
-
     public static double LinearInterp(ArrayList<Pair<Double, Double>> list, double input) {
         // if input is smaller than the table, return the first element
-        if (input < list.get(0).getFirst()) {
-            return list.get(0).getSecond();
+        Pair<Double, Double> zeroPair = list.get(0);
+
+        if (input < zeroPair.getFirst()) {
+            return zeroPair.getSecond();
         }
+        Pair<Double, Double> lastPair = list.get(list.size() - 1);
         // if input is larger than the table, return the last element
-        if (input > list.get(list.size() - 1).getFirst()) {
-            return list.get(list.size() - 1).getSecond();
+        if (input > lastPair.getFirst()) {
+            return lastPair.getSecond();
         }
         // otherwise the value is in the table
         for (int i = 0; i < list.size() - 1; i++) {
-            double x0 = list.get(i).getFirst();
-            double x1 = list.get(i + 1).getFirst();
+            Pair<Double, Double> iPair = list.get(i);
+            Pair<Double, Double> iPlusOnePair = list.get(i + 1);
+            double x0 = iPair.getFirst();
+            double x1 = iPlusOnePair.getFirst();
             if ((x0 <= input) && (input <= x1)) {
                 // see https://en.wikipedia.org/wiki/Linear_interpolation
-                double y0 = list.get(i).getSecond();
-                double y1 = list.get(i + 1).getSecond();
+                double y0 = iPair.getSecond();
+                double y1 = iPlusOnePair.getSecond();
                 return (y0 * (x1 - input) + y1 * (input - x0)) / (x1 - x0);
             }
         }
@@ -235,5 +121,122 @@ public class Pi extends SubsystemBase {
 
     public static double getTargetCenterX() {
         return targetCenterXOutput;
+    }
+
+    // sends alliance color to the python code so it knows what color cargo to look
+    // for
+    public void sendAlliance() {
+        Alliance alliance = DriverStation.getAlliance();
+        String color;
+        if (alliance == Alliance.Red) {
+            color = "red";
+        } else {
+            color = "blue";
+        }
+        allianceColor.setString(color);
+    }
+
+    @Override
+    public void periodic() {
+        processCargo();
+        processTargets();
+    }
+
+    public void processCargo() {
+        Number[] cargoCenterXArray = cargoCenterX.getNumberArray(new Number[0]);
+        Number[] cargoCenterYArray = cargoCenterY.getNumberArray(new Number[0]);
+        if (cargoCenterXArray.length == 0 || cargoCenterYArray.length == 0) {
+            cargoMoveRight = false;
+            cargoMoveLeft = false;
+            cargoCenterXOutput = -1;
+            cargoCenterYOutput = -1;
+            return;
+        }
+        // currently just taking the first cargo but considering taking the cargo with
+        // the largest y value because it should be closest to the robot
+        double cargoX = (double) cargoCenterXArray[0];
+        cargoCenterXOutput = cargoX;
+        cargoCenterYOutput = (double) cargoCenterYArray[0];
+        if (cargoX < (CAM_X_RES / 2) - (CAM_X_RES * 0.05)) {
+            cargoMoveRight = false;
+            cargoMoveLeft = true;
+        } else if (cargoX > (CAM_X_RES / 2) + (CAM_X_RES * 0.05)) {
+            cargoMoveLeft = false;
+            cargoMoveRight = true;
+        } else {
+            cargoMoveRight = false;
+            cargoMoveLeft = false;
+        }
+    }
+
+    public void processTargets() {
+        targetCenterXArray = targetCenterX.getNumberArray(new Number[0]);
+        targetCenterYArray = targetCenterY.getNumberArray(new Number[0]);
+        targetWidthArray = targetWidth.getNumberArray(new Number[0]);
+        targetHeightArray = targetHeight.getNumberArray(new Number[0]);
+        targetAreaArray = targetArea.getNumberArray(new Number[0]);
+        int size = targetCenterXArray.length;
+        // check if vision saw a target
+        if (size == 0) {
+            targetMoveRight = false;
+            targetMoveLeft = false;
+            targetCenterYOutput = -1;
+            targetCenterXOutput = -1;
+            return;
+        }
+        // consistency check
+        if (size == targetCenterYArray.length && size == targetWidthArray.length && size == targetHeightArray.length &&
+            size == targetAreaArray.length) {
+            sortTargets();
+        } else {
+            // unknown order, skip this loop
+            return;
+        }
+
+        // pick a target just right of center so the cargo hopefully doesn't bounce out
+        int index = 0;
+        if (size > 1) {
+            index = (int) Math.ceil(size / 2.0);
+        }
+        double targetX =
+                (double) targetCenterXArray[index]; // TODO: Is there less overhang with casting or calling
+        // doubleValue()?
+        targetCenterYOutput = (double) targetCenterYArray[index];
+        targetCenterXOutput = targetX;
+        if (targetX < ((CAM_X_RES / 2) - (CAM_X_RES * 0.05))) {
+            targetMoveRight = false;
+            targetMoveLeft = true;
+        } else if (targetX > ((CAM_X_RES / 2) + (CAM_X_RES * 0.05))) {
+            targetMoveLeft = false;
+            targetMoveRight = true;
+        } else {
+            targetMoveRight = false;
+            targetMoveLeft = false;
+        }
+    }
+
+    public void sortTargets() {
+        int size = targetCenterXArray.length;
+        for (int i = 1; i < size; ++i) {
+            double keyX = targetCenterXArray[i].doubleValue();
+            double keyY = targetCenterYArray[i].doubleValue();
+            double keyH = targetHeightArray[i].doubleValue();
+            double keyW = targetWidthArray[i].doubleValue();
+            double keyA = targetAreaArray[i].doubleValue();
+            int j = i - 1;
+            while (j >= 0 && targetCenterXArray[j].doubleValue() > keyX) {
+                targetCenterXArray[j + 1] = targetCenterXArray[j];
+                targetCenterYArray[j + 1] = targetCenterYArray[j];
+                targetHeightArray[j + 1] = targetHeightArray[j];
+                targetWidthArray[j + 1] = targetWidthArray[j];
+                targetAreaArray[j + 1] = targetAreaArray[j];
+                j--;
+            }
+            targetCenterXArray[j + 1] = keyX;
+            targetCenterYArray[j + 1] = keyY;
+            targetHeightArray[j + 1] = keyH;
+            targetWidthArray[j + 1] = keyW;
+            targetAreaArray[j + 1] = keyA;
+        }
     }
 }

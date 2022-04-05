@@ -2,15 +2,14 @@ package frc.robot;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
-
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Climber extends SubsystemBase {
-    private WPI_TalonFX rung1;
-    private WPI_TalonFX rung23;
     private static final double CLIMBER_UP_SPEED = -0.6;
     private static final double CLIMBER_DOWN_SPEED = 0.4;
-    private Ingestor ingestor;
+    private final WPI_TalonFX rung1;
+    private final WPI_TalonFX rung23;
+    private final Ingestor ingestor;
     // private ColorSensor colorSensor;
 
     public Climber(Ingestor ingestor) {
