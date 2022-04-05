@@ -22,9 +22,9 @@ public class ManualShoot extends CommandBase {
     public void execute() {
         shooter.setShooterRpm(speed);
         shooter.setHoodAngle(31); // knob 2.5
-
+        double shooterVel = shooter.getShooterVelocity();
         // if target rpm is within range (+- 50)
-        if (speed - 50 < shooter.getShooterVelocity() && shooter.getShooterVelocity() < speed + 50) {
+        if (speed - 50 < shooterVel && shooterVel < speed + 50) {
             ingestor.sendCargoToShooter();
         }
     }

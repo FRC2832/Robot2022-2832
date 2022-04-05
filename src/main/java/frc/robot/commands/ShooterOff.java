@@ -15,7 +15,7 @@ public class ShooterOff extends CommandBase {
     public void execute() {
         double rpm = 0.0;
         if (Shooter.getCoast()) {
-            rpm = 1000.0;
+            rpm = 2300.0;
         }
         shooter.setShooterRpm(rpm);
     }

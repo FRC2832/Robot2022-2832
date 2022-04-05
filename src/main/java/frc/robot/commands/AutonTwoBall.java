@@ -62,7 +62,7 @@ public class AutonTwoBall extends CommandBase {
                 drive.drive(0.0, 0.0, 0.0, false);
                 ingestor.lowerIngestor();
                 ingestor.threeBallAutonIngest();
-                shooter.setShooterRpm(1000.0);
+                shooter.setShooterRpm(2300.0);
                 if (timer.get() >= 0.5) {
                     drive.currentStep++;
                     timer.reset();
@@ -74,7 +74,7 @@ public class AutonTwoBall extends CommandBase {
                 drive.drive(-Drivetrain.kMaxSpeed / 3, 0, 0.0, false);
                 ingestor.lowerIngestor();
                 ingestor.threeBallAutonIngest();
-                shooter.setShooterRpm(1000.0);
+                shooter.setShooterRpm(2300.0);
                 distance = Math.abs(frontLeft.getDistance() - startEncoderCount);
                 if (distance >= 1.5) {// timer.get() >= 3.0) {// || ingestor.getStage1Proximity()){
                     drive.currentStep++;
@@ -94,7 +94,7 @@ public class AutonTwoBall extends CommandBase {
                 drive.drive(Drivetrain.kMaxSpeed / 3, 0.0, 0.0, false);
                 ingestor.lowerIngestor();
                 ingestor.threeBallAutonIngest();
-                shooter.setShooterRpm(1000.0);
+                shooter.setShooterRpm(2300.0);
                 distance = Math.abs(frontLeft.getDistance() - startEncoderCount);
                 if (distance >= 0.5) {
                     drive.currentStep++;
@@ -108,7 +108,7 @@ public class AutonTwoBall extends CommandBase {
                 drive.drive(0.0, 0.0, Math.PI, false);
                 ingestor.threeBallAutonIngest();
                 ingestor.liftIngestor();
-                shooter.setShooterRpm(1000.0);
+                shooter.setShooterRpm(2300.0);
                 double angleDifference = Math.abs(drive.getAngle() % 360 - startAngle);
                 if (angleDifference >= 180.0) {
                     drive.currentStep++;
@@ -173,7 +173,7 @@ public class AutonTwoBall extends CommandBase {
     public void end(boolean interrupted) {
         timer.stop();
         drive.drive(0, 0, 0, false);
-        shooter.setShooterRpm(1000.0);
+        shooter.setShooterRpm(2300.0);
         Shooter.setCoast(true);
         ingestor.liftIngestor();
         ingestor.getStage1Conveyor().set(ControlMode.PercentOutput, 0);

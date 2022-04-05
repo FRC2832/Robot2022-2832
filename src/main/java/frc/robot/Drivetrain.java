@@ -36,7 +36,7 @@ public class Drivetrain extends SubsystemBase {
     public static final int RL = 2;
     public static final int RR = 3;
 
-    public static double kMaxSpeed = 2.85; // per Thirfty Bot, max speed with Falcon 500 is 15.9ft/s, or 4.85 m/s
+    public static double kMaxSpeed = 3; // per Thirfty Bot, max speed with Falcon 500 is 15.9ft/s, or 4.85 m/s
     public static double kMaxAngularSpeed = 2 * Math.PI; // 1 rotation per second
 
     private XboxController driverController;
@@ -115,7 +115,7 @@ public class Drivetrain extends SubsystemBase {
 
             // TODO: These are example values only - DO NOT USE THESE FOR YOUR OWN ROBOT!
             // this should be once for the drivetrain
-            CONSTANTS[i].DriveMotorKv = 2.474; // kvVoltSecondsPerMeter (default = 12/kMaxSpeed)
+            CONSTANTS[i].DriveMotorKv = 4; // kvVoltSecondsPerMeter (default = 12/kMaxSpeed)
             CONSTANTS[i].DriveMotorKa = 0.0917; // kaVoltSecondsSquaredPerMeter
             // this should be done per turning motor
             CONSTANTS[i].TurnMotorKv = 0.6095; // VoltSecondsPerRadian (default = 12/19.686 (188RPM = 19.686Rad/S))
@@ -309,9 +309,9 @@ public class Drivetrain extends SubsystemBase {
          */
         if (driverController.getRightTriggerAxis() >= 0.5) {
             kMaxSpeed = 1.4;
-            kMaxAngularSpeed = 1.8;
+            kMaxAngularSpeed = 2.5;
         } else {
-            kMaxSpeed = 2.85;
+            kMaxSpeed = 3;
             kMaxAngularSpeed = 2 * Math.PI;
         }
     }

@@ -29,7 +29,7 @@ public class Shooter extends SubsystemBase {
     private XboxController driveController;
     private XboxController operatorController;
     private static boolean coastMotor = false;
-    private final int HOOD_SENSOR_ACTIVE = 700;
+    //private final int HOOD_SENSOR_ACTIVE = 700;
     private final int MAX_ANGLE_COUNTS = 400;
     private final int MIN_ANGLE = 20;
     private final int MAX_ANGLE = 70;

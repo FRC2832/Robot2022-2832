@@ -46,11 +46,11 @@ public class Ingestor extends SubsystemBase {
     private double liftRotations;
     // private SmartDashboard smartDashboard;
 
-    // Targetted motor speeds
-    private static final double INGESTOR_SPEED = 0.75; // 1000.0;
+    // Targeted motor speeds
+    private static final double INGESTOR_SPEED = 0.9; // 1000.0;
     private static final double STAGE_1_SPEED = 0.75;// 1000.0;
     private static final double STAGE_2_SPEED = 0.85; // 1000.0;
-    private static final double INGESTOR_LIFT_SPEED = 0.25;
+    //private static final double INGESTOR_LIFT_SPEED = 0.25;
 
     public Ingestor(ColorSensor colorSensor) {
         ingestorWheels = new WPI_TalonSRX(CanIDConstants.INTAKE_WHEELS);
@@ -257,6 +257,30 @@ public class Ingestor extends SubsystemBase {
             ingestorLift.set(0); // once it's 98% of the way there let it drop
         }
         ingestorLift.setIdleMode(IdleMode.kCoast);
+    }
+
+    public void runStage1Out() {
+        stage1Conveyor.set(-STAGE_1_SPEED);
+    }
+
+    public void runStage2Out() {
+        stage2Conveyor.set(-STAGE_2_SPEED);
+    }
+
+    public void runStage1In() {
+        stage1Conveyor.set(STAGE_1_SPEED);
+    }
+
+    public void runStage2In() {
+        stage2Conveyor.set(STAGE_2_SPEED);
+    }
+
+    public void stopStage1() {
+        stage1Conveyor.set(0);
+    }
+
+    public void stopStage2() {
+        stage2Conveyor.set(0);
     }
 
     public void threeBallAutonIngest() {

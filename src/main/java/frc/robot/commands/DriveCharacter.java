@@ -44,7 +44,7 @@ public class DriveCharacter extends CommandBase {
     public void end(boolean interrupted) {
         isRunning = false;
         double elapsedTime = Timer.getFPGATimestamp() - startTime;
-        System.out.println("Robot disabled");
+        //System.out.println("Robot disabled");
         SwerveModule[] modules = drive.getModules();
         modules[Drivetrain.FL].setDrive(0);
         modules[Drivetrain.RL].setDrive(0);
@@ -56,8 +56,8 @@ public class DriveCharacter extends CommandBase {
         data = data.substring(1, data.length() - 1) + ", ";
         telemetryEntry.setString(data);
         entries.clear();
-        System.out.println("Robot disabled");
-        System.out.println("Collected : " + counter + " in " + elapsedTime + " seconds");
+        //System.out.println("Robot disabled");
+        //System.out.println("Collected : " + counter + " in " + elapsedTime + " seconds");
         data = "";
     }
 

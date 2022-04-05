@@ -5,13 +5,11 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.DataLogManager;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -28,6 +26,7 @@ import frc.robot.commands.ManualShoot;
 import frc.robot.commands.ResetOrientation;
 import frc.robot.commands.RunClimber;
 import frc.robot.commands.SafeZoneShoot;
+import frc.robot.commands.ShooterBackwards;
 import frc.robot.commands.ShooterOff;
 import frc.robot.commands.UpperHubShoot;
 
@@ -37,7 +36,7 @@ public class Robot extends TimedRobot {
     private Drivetrain swerve; // = new Drivetrain(DRIVER_CONTROLLER);
     private final Pi PI = new Pi();
     private final ColorSensor COLOR_SENSOR = new ColorSensor();
-    private final Ingestor INGESTOR = new Ingestor(COLOR_SENSOR);
+    private Ingestor ingestor;
     private Shooter shooter;
     private Climber climber;
     private boolean ranAuton = false;
@@ -45,7 +44,7 @@ public class Robot extends TimedRobot {
 
     private boolean lastEnabled = false;
     // Odometry odometry; // TODO: Can this be commented out?
-    private String m_selectedAuton;
+    //private String m_selectedAuton;
 
     /* private static final String option1 = "Option1";
     private static final String option2 = "Option2";
@@ -54,11 +53,12 @@ public class Robot extends TimedRobot {
     private static final String option5 = "Option5";
     private static final String option6 = "Option6"; */
     //private String m_autoSelected;
-    private final SendableChooser<String> CHOOSER = new SendableChooser<>();
+    //private final SendableChooser<String> CHOOSER = new SendableChooser<>();
 
     @Override
     public void robotInit() {
         swerve = new Drivetrain(DRIVER_CONTROLLER);
+        ingestor = new Ingestor(COLOR_SENSOR);
         Configuration.SetPersistentKeys();
         GitVersion vers = GitVersion.loadVersion();
         vers.printVersions();
@@ -67,35 +67,38 @@ public class Robot extends TimedRobot {
 
         ShooterConstants.LoadConstants();
         CommandScheduler.getInstance().registerSubsystem(PI);
-        shooter = new Shooter(DRIVER_CONTROLLER, OPERATOR_CONTROLLER, INGESTOR);
+        shooter = new Shooter(DRIVER_CONTROLLER, OPERATOR_CONTROLLER, ingestor);
 
-        climber = new Climber(INGESTOR);
+        climber = new Climber(ingestor);
 
         //turtleMode = new TurtleMode(swerve, driverController);
 
         CommandScheduler.getInstance().registerSubsystem(swerve, COLOR_SENSOR);
         swerve.setDefaultCommand(new DriveStickSlew(swerve, DRIVER_CONTROLLER));
         shooter.setDefaultCommand(new ShooterOff(shooter));
-        climber.setDefaultCommand(new RunClimber(climber, INGESTOR, OPERATOR_CONTROLLER));
+        climber.setDefaultCommand(new RunClimber(climber, ingestor, OPERATOR_CONTROLLER));
         //swerve.setDefaultCommand(new TurtleMode(swerve, driverController));
 
         JoystickButton selectButton = new JoystickButton(OPERATOR_CONTROLLER, 7); 
-        selectButton.whileActiveContinuous(new ManualShoot(shooter, INGESTOR));
+        selectButton.whileActiveContinuous(new ManualShoot(shooter, ingestor));
 
         JoystickButton startButton = new JoystickButton(OPERATOR_CONTROLLER, 8); 
-        startButton.whileActiveContinuous(new SafeZoneShoot(shooter, INGESTOR, false));
+        startButton.whileActiveContinuous(new SafeZoneShoot(shooter, ingestor, false));
 
         JoystickButton rightBumper = new JoystickButton(OPERATOR_CONTROLLER, 6);
-        rightBumper.whileActiveContinuous(new AutoShoot(swerve, shooter, INGESTOR, OPERATOR_CONTROLLER, DRIVER_CONTROLLER));
+        rightBumper.whileActiveContinuous(new AutoShoot(swerve, shooter, ingestor, OPERATOR_CONTROLLER, DRIVER_CONTROLLER));
 
         JoystickButton leftBumper = new JoystickButton(OPERATOR_CONTROLLER, 5);
-        leftBumper.whileActiveContinuous(new SafeZoneShoot(shooter, INGESTOR, true));
+        leftBumper.whileActiveContinuous(new SafeZoneShoot(shooter, ingestor, true));
 
         JoystickButton aButton = new JoystickButton(DRIVER_CONTROLLER, 1);
-        aButton.whileActiveContinuous(new UpperHubShoot(shooter, INGESTOR));
+        aButton.whileActiveContinuous(new UpperHubShoot(shooter, ingestor));
 
         JoystickButton bButton = new JoystickButton(DRIVER_CONTROLLER, 2);
-        bButton.whileActiveContinuous(new LowerHubShoot(shooter, INGESTOR));
+        bButton.whileActiveContinuous(new LowerHubShoot(shooter, ingestor));
+
+        JoystickButton driverStartButton = new JoystickButton(DRIVER_CONTROLLER, 8);
+        driverStartButton.whileActiveContinuous(new ShooterBackwards(shooter, ingestor));
 
         // this.setNetworkTablesFlushEnabled(true); //turn off 20ms Dashboard update
         // rate
@@ -134,15 +137,15 @@ public class Robot extends TimedRobot {
     public void autonomousInit() {
        // AutonTwoBall.resetAutonShoot();
         CommandScheduler.getInstance().cancelAll();
-        m_selectedAuton = CHOOSER.getSelected();
+        //m_selectedAuton = CHOOSER.getSelected();
         //System.out.println("Auton Selected: " + m_selectedAuton);
 
         // CommandScheduler.getInstance().schedule(new HomeHood(shooter));
         Command autonCom;
         if (SmartDashboard.getBoolean("Two/Three Ball Auton", false)) {
-            autonCom = new AutonTwoBall(swerve, shooter, INGESTOR);
+            autonCom = new AutonTwoBall(swerve, shooter, ingestor);
         } else {
-            autonCom = new AutonThreeBall(swerve, shooter, INGESTOR);
+            autonCom = new AutonThreeBall(swerve, shooter, ingestor);
         }
 
         CommandScheduler.getInstance().schedule(autonCom);
@@ -170,7 +173,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopPeriodic() {
-        INGESTOR.runIngestor();
+        ingestor.runIngestor();
         swerve.runTurtleMode(DRIVER_CONTROLLER);
     }
 

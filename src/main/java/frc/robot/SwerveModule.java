@@ -55,7 +55,7 @@ public class SwerveModule {
     private double turnVoltCommand;
     private double driveVoltCommand;
     private SwerveConstants constants;
-    private double oldTurnAngle = 0.0;
+    //private double oldTurnAngle = 0.0;
 
     // Using FlywheelSim as a stand-in for a simple motor
     private FlywheelSim m_turnMotorSim;

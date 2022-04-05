@@ -8,7 +8,7 @@ import frc.robot.Drivetrain;
 import frc.robot.Ingestor;
 import frc.robot.Pi;
 import frc.robot.Shooter;
-import frc.robot.Snapshot;
+//import frc.robot.Snapshot;
 
 public class AutoShoot extends CommandBase {
     private Drivetrain drive;
@@ -57,10 +57,8 @@ public class AutoShoot extends CommandBase {
         // check if PI saw target
         if (Pi.getTargetCenterX() > 0) {
             if (operatorController != null && driverController != null) {
-                operatorController.setRumble(RumbleType.kLeftRumble, 0.0);
-                operatorController.setRumble(RumbleType.kRightRumble, 0.0);
-                driverController.setRumble(RumbleType.kLeftRumble, 0.0);
-                driverController.setRumble(RumbleType.kRightRumble, 0.0);
+                rumbleOff(operatorController);
+                rumbleOff(driverController);
             }
             if (Pi.getTargetMoveLeft()) {
                 error = String.join(error, "TurnL ");
@@ -76,10 +74,12 @@ public class AutoShoot extends CommandBase {
         } else {
             // pi is not seeing hub
             if (operatorController != null && driverController != null) {
-                operatorController.setRumble(RumbleType.kLeftRumble, 1.0);
+                rumbleOn(operatorController, 1.0);
+                rumbleOn(driverController, 1.0);
+                /*operatorController.setRumble(RumbleType.kLeftRumble, 1.0);
                 operatorController.setRumble(RumbleType.kRightRumble, 1.0);
                 driverController.setRumble(RumbleType.kLeftRumble, 1.0);
-                driverController.setRumble(RumbleType.kRightRumble, 1.0);
+                driverController.setRumble(RumbleType.kRightRumble, 1.0);*/
             }
             error = String.join(error, "Vision ");
             drive.drive(0, 0, 0, false);
@@ -114,9 +114,19 @@ public class AutoShoot extends CommandBase {
         }
     }
 
-    @Override
+    private void rumbleOff(XboxController controller) {
+        controller.setRumble(RumbleType.kLeftRumble, 0.0);
+        controller.setRumble(RumbleType.kRightRumble, 0.0);
+	}
+
+    private void rumbleOn(XboxController controller, double rumbleSpeed) {
+        controller.setRumble(RumbleType.kLeftRumble, rumbleSpeed);
+        controller.setRumble(RumbleType.kRightRumble, rumbleSpeed);
+    }
+
+	@Override
     public boolean isFinished() {
-        System.out.println("AutoShoot is finished");
+        //System.out.println("AutoShoot is finished");
         return cargoSentToShooter;
     }
 
@@ -129,7 +139,7 @@ public class AutoShoot extends CommandBase {
             driverController.setRumble(RumbleType.kRightRumble, 0.0);
         }
         Shooter.setCoast(true);
-        System.out.println("AutoShoot end");
+        //System.out.println("AutoShoot end");
         cargoSentToShooter = false;
     }
 }
