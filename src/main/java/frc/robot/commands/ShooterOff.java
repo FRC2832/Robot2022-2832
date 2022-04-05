@@ -1,22 +1,19 @@
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Shooter;
 
-public class ShooterOff extends CommandBase {
-    private final Shooter shooter;
+public class ShooterOff extends ShootCommand {
 
     public ShooterOff(Shooter shooter) {
-        this.shooter = shooter;
-        addRequirements(shooter);
+        super(shooter, null, 0.0, shooter.getHoodAngle());
     }
 
     @Override
     public void execute() {
-        double rpm = 0.0;
+        targetRpm = 0.0;
         if (Shooter.getCoast()) {
-            rpm = 2300.0;
+            targetRpm = 2300.0;
         }
-        shooter.setShooterRpm(rpm);
+        super.execute();
     }
 }

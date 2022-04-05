@@ -49,7 +49,7 @@ public class Robot extends TimedRobot {
     public void robotInit() {
         colorSensor = new ColorSensor();
         swerve = new Drivetrain(DRIVER_CONTROLLER);
-        ingestor = new Ingestor(colorSensor);
+        ingestor = new Ingestor();
         Configuration.SetPersistentKeys();
         GitVersion vers = GitVersion.loadVersion();
         vers.printVersions();

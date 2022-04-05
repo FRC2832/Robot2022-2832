@@ -2,25 +2,23 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Ingestor;
 import frc.robot.Shooter;
 
-public class DashboardShoot extends CommandBase {
-    private final Shooter shooter;
+public class DashboardShoot extends ShootCommand {
     private final XboxController driverController;
 
-    public DashboardShoot(Shooter shooter, XboxController driverController) {
-        this.shooter = shooter;
+    public DashboardShoot(Shooter shooter, Ingestor ingestor, XboxController driverController) {
+        super(shooter, ingestor, 2000, shooter.getHoodAngle());
         this.driverController = driverController;
-        addRequirements(shooter);
         SmartDashboard.putNumber("Target RPM", 2000);
     }
 
     @Override
     public void execute() {
         if (driverController.getYButton()) {
-            double rpm = SmartDashboard.getNumber("Target RPM", 2000);
-            shooter.setShooterRpm(rpm);
+            targetRpm = SmartDashboard.getNumber("Target RPM", 2000);
+            shooter.setShooterRpm(targetRpm);
         }
     }
 }
