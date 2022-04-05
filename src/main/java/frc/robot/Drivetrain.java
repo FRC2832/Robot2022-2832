@@ -39,6 +39,7 @@ public class Drivetrain extends SubsystemBase {
 
     public static double kMaxSpeed = 3.0; // per Thrifty Bot, max speed with Falcon 500 is 15.9ft/s, or 4.85 m/s
     public static double kMaxAngularSpeed = 2 * Math.PI; // 1 rotation per second
+    private static int loops;
     private final SwerveModule[] MODULES = new SwerveModule[4];
     private final SwerveConstants[] CONSTANTS = new SwerveConstants[4];
     private final Pose2d[] modulePoses = new Pose2d[4];
@@ -47,14 +48,13 @@ public class Drivetrain extends SubsystemBase {
     private final SwerveDriveKinematics kinematics;
     private final Field2d field = new Field2d();
     public SwerveDriveOdometry odometry;
-    public int currentStep;
+    private int currentStep;
     private NetworkTable visionTable;
     private XboxController driverController;
     private Translation2d[] redBalls;
     private Translation2d[] blueBalls;
     private ADXRS450_GyroSim gyroSim;
     private ADXRS450_Gyro gyroBase;
-    private int loops;
 
     public Drivetrain(XboxController driverController) {
         this.driverController = driverController;
@@ -362,12 +362,12 @@ public class Drivetrain extends SubsystemBase {
         if (step == currentStep) {
             if (Math.abs(xCurrentPos - xDesPosition) > 0.1 || Math.abs(yCurrentPos - yDesPosition) > 0.1 ||
                 Math.abs(rotCurrentPos - desRotation) > 0.1) {
-                drive(xSpeed, ySpeed, rotSpeed, true);
+                swerveDrive(xSpeed, ySpeed, rotSpeed, true);
             } else {
                 xSpeed = 0.0;
                 ySpeed = 0.0;
                 rotSpeed = 0.0;
-                drive(xSpeed, ySpeed, rotSpeed, false);
+                swerveDrive(xSpeed, ySpeed, rotSpeed, false);
                 System.out.println("Arrived");
                 currentStep++;
             }
@@ -384,7 +384,7 @@ public class Drivetrain extends SubsystemBase {
      * @param fieldRelative Whether the provided x and y speeds are relative to the field.
      */
     @SuppressWarnings("ParameterName")
-    public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
+    public void swerveDrive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
         // ask the kinematics to determine our swerve command
         ChassisSpeeds speeds;
         if (fieldRelative) {
@@ -413,5 +413,16 @@ public class Drivetrain extends SubsystemBase {
         for (SwerveModule module : MODULES) {
             module.setBrakeMode(brake);
         }
+    }
+
+    public int getCurrentStep() {
+        return currentStep;
+    }
+    public void incrementCurrentStep() {
+        currentStep++;
+    }
+
+    public void resetCurrentStep() {
+        currentStep = 0;
     }
 }

@@ -18,7 +18,7 @@ public class AutonOption4 extends CommandBase {
 
 
     private void stop() {
-        drive.drive(0, 0, 0, false);
+        drive.swerveDrive(0, 0, 0, false);
     }
     
     @Override
@@ -34,7 +34,7 @@ public class AutonOption4 extends CommandBase {
         double timerVal = timer.get();
         if (timerVal < 2) { // simulation endlessly repeating this if statement, doesn't continue to next
             System.out.println("Moving Off Tarmac");
-            drive.drive(-1, 0, 0, false);
+            drive.swerveDrive(-1, 0, 0, false);
         } else if (timerVal < 3) { // change end time to account for below functions
             System.out.println("Stopping");
             stop();
@@ -67,16 +67,16 @@ public class AutonOption4 extends CommandBase {
         // process
         else if (timerVal < 7) {
             System.out.println("Moving diagonally towards second ball");
-            drive.drive(0.3, 1, 0, false);
+            drive.swerveDrive(0.3, 1, 0, false);
         } else if (timerVal < 8) {
             System.out.println("Stopping");
             stop();
         } else if (timerVal < 9) {
             System.out.println("Turning towards Upper Hub");
-            drive.drive(0, 0, -(Math.PI / 2), false);
+            drive.swerveDrive(0, 0, -(Math.PI / 2), false);
         } else if (timerVal < 10) {
             System.out.println("Turning to face Ingestor to Terminal");
-            drive.drive(0, 0, -(Math.PI / 4), false);
+            drive.swerveDrive(0, 0, -(Math.PI / 4), false);
         }
         // INGEST BALL
         // AUTO-AIM TO UPPER HUB
@@ -84,7 +84,7 @@ public class AutonOption4 extends CommandBase {
 
         else if (timerVal < 15) {
             System.out.println("Moving Backwards Towards Terminal");
-            drive.drive(-1, 0, 0, false);
+            drive.swerveDrive(-1, 0, 0, false);
         } else {
             System.out.println("Stopping");
             stop();

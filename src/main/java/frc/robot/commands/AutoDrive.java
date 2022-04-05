@@ -18,6 +18,6 @@ public class AutoDrive extends CommandBase {
     @Override
     public void execute() {
         // ask the drivetrain to run
-        drive.drive(xSpeed, ySpeed, 0.0, true);
+        drive.swerveDrive(xSpeed, ySpeed, 0.0, true);
     }
 }

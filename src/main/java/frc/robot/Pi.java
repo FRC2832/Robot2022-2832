@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.ArrayList;
 
 public class Pi extends SubsystemBase {
+    private static final double CAM_X_RES = 640.0;
     // private final double CAM_Y_RES = 480;
     // public final double TARGET_CENTER_X = 320.0;
     private static boolean targetMoveRight;
@@ -29,7 +30,6 @@ public class Pi extends SubsystemBase {
     private final NetworkTableEntry targetWidth;
     private final NetworkTableEntry targetHeight;
     private final NetworkTableEntry targetArea;
-    private final double CAM_X_RES = 640.0;
     private Number[] targetCenterXArray;
     private Number[] targetCenterYArray;
     private Number[] targetWidthArray;
@@ -198,8 +198,7 @@ public class Pi extends SubsystemBase {
         if (size > 1) {
             index = (int) Math.ceil(size / 2.0);
         }
-        double targetX =
-                (double) targetCenterXArray[index]; // TODO: Is there less overhang with casting or calling
+        double targetX = (double) targetCenterXArray[index]; // TODO: Is there less overhang with casting or calling
         // doubleValue()?
         targetCenterYOutput = (double) targetCenterYArray[index];
         targetCenterXOutput = targetX;

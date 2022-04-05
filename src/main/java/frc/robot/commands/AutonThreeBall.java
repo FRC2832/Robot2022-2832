@@ -31,7 +31,7 @@ public class AutonThreeBall extends CommandBase {
         frontLeft = drive.getModules()[0];
         autoShoot = new AutoShoot(drive, shooter, ingestor, null, null);
         addRequirements(drive, shooter, ingestor);
-        drive.currentStep = 0;
+        drive.resetCurrentStep();
     }
 
     @Override
@@ -58,29 +58,29 @@ public class AutonThreeBall extends CommandBase {
         double distance;
         // TODO decrease time parameter to speed up the robot
         // System.out.println(drive.currentStep);
-        switch (drive.currentStep) { // drive.currentStep = 2;
+        switch (drive.getCurrentStep()) { // drive.currentStep = 2;
             case 0: // prep for auton. Lower ingestor at 1.5 times normal speed TODO: Lower hood?
-                drive.drive(0.0, 0.0, 0.0, false);
+                drive.swerveDrive(0.0, 0.0, 0.0, false);
                 ingestor.lowerIngestor();
                 ingestor.threeBallAutonIngest();
                 shooter.setShooterRpm(2300.0);
                 if (TIMER.get() >= 0.5) {
-                    drive.currentStep++;
+                    drive.incrementCurrentStep();
                     TIMER.reset();
                 }
                 break;
             case 1: // drive forward with ingestor lowered and ready to ingest. TODO: Raise hood to
                     // manual shot angle?
                 // negative x value for drive because motors are currently inverted
-                drive.drive(-Drivetrain.kMaxSpeed / 3, 0.0, 0.0, false);
+                drive.swerveDrive(-Drivetrain.kMaxSpeed / 3, 0.0, 0.0, false);
                 ingestor.lowerIngestor();
                 ingestor.threeBallAutonIngest();
                 shooter.setShooterRpm(2300.0);
                 distance = Math.abs(frontLeft.getDistance() - startEncoderCount);
                 if (distance >= 1.5) {// timer.get() >= 3.0) {// || ingestor.getStage1Proximity()){
-                    drive.currentStep++;
+                    drive.incrementCurrentStep();
                     if (SmartDashboard.getBoolean("Skip Reverse Auton Drive", false)) {
-                        drive.currentStep++;
+                        drive.incrementCurrentStep();
                     }
                     TIMER.reset();
                     startEncoderCount = frontLeft.getDistance();
@@ -95,13 +95,13 @@ public class AutonThreeBall extends CommandBase {
                  */
                 break;
             case 2: // back off so there's room to turn around.
-                drive.drive(Drivetrain.kMaxSpeed / 3, 0.0, 0.0, false);
+                drive.swerveDrive(Drivetrain.kMaxSpeed / 3, 0.0, 0.0, false);
                 ingestor.lowerIngestor();
                 ingestor.threeBallAutonIngest();
                 shooter.setShooterRpm(2300.0);
                 distance = Math.abs(frontLeft.getDistance() - startEncoderCount);
                 if (distance >= 0.5) {
-                    drive.currentStep++;
+                    drive.incrementCurrentStep();
                     TIMER.reset();
                     // nextStepStartPose = drive.getPose();
                 } /*else {
@@ -109,20 +109,20 @@ public class AutonThreeBall extends CommandBase {
                 }*/
                 break;
             case 3: // turn to hub. TODO: Maybe add vision?
-                drive.drive(0.0, 0.0, Math.PI, false);
+                drive.swerveDrive(0.0, 0.0, Math.PI, false);
                 ingestor.threeBallAutonIngest();
                 ingestor.liftIngestor();
                 shooter.setShooterRpm(2300.0);
                 double angleDifference = Math.abs(drive.getAngle() % 360 - startAngle);
                 if (angleDifference >= 180.0) {
-                    drive.currentStep++;
+                    drive.incrementCurrentStep();
                     TIMER.reset();
                 } /*else {
                     System.out.println("Current angle difference: " + angleDifference + " degrees");
                 }*/
                 break;
             case 4: // shoot 2 balls with hood angle set at 2.5 knobs (aka, manual shot)
-                drive.drive(0.0, 0.0, 0.0, false);
+                drive.swerveDrive(0.0, 0.0, 0.0, false);
                 // double speed = 2300.0;
                 // // TODO: Might be able to schedule AutoLShoot later.
                 // // TODO add in hood angle code when working
@@ -139,11 +139,11 @@ public class AutonThreeBall extends CommandBase {
                     isAutoShootScheduled = true;
                 }
                 if (autoShoot.isFinished()) {
-                    drive.currentStep++;
+                    drive.incrementCurrentStep();
                 }
                 break;
             default:
-                drive.drive(0.0, 0.0, 0.0, false);
+                drive.swerveDrive(0.0, 0.0, 0.0, false);
                 break;
             // 8.586, 7.107836, 90 for first ball
             /*
@@ -173,13 +173,13 @@ public class AutonThreeBall extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return drive.currentStep == 5; // change this if any setPosition steps are added in execute()
+        return drive.getCurrentStep() == 5; // change this if any setPosition steps are added in execute()
     }
 
     @Override
     public void end(boolean interrupted) {
         TIMER.stop();
-        drive.drive(0, 0, 0, false);
+        drive.swerveDrive(0, 0, 0, false);
         shooter.setShooterRpm(1000.0);
         Shooter.setCoast(true);
         ingestor.liftIngestor();

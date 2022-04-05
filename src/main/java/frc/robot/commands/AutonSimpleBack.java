@@ -23,7 +23,7 @@ public class AutonSimpleBack extends CommandBase {
 
         timer = new Timer();
         addRequirements(drive, shooter, ingestor);
-        drive.currentStep = 0;
+        drive.resetCurrentStep();
     }
 
     @Override
@@ -41,26 +41,26 @@ public class AutonSimpleBack extends CommandBase {
     public void execute() {
         // TODO decrease time parameter to speed up the robot
         // System.out.println(drive.currentStep);
-        switch (drive.currentStep) { // drive.currentStep = 2;
+        switch (drive.getCurrentStep()) { // drive.currentStep = 2;
             case 0: // prep for auton. TODO: Lower hood?
-                drive.drive(0.0, 0.0, 0.0, false);
+                drive.swerveDrive(0.0, 0.0, 0.0, false);
                 ingestor.liftIngestor();
                 ingestor.threeBallAutonIngest();
                 shooter.setShooterRpm(1000.0);
                 if (timer.get() >= 0.5) {
-                    drive.currentStep++;
+                    drive.incrementCurrentStep();
                     timer.reset();
                 }
                 break;
             case 1: // drive backwards to shoot. TODO: Raise hood to
                     // manual shot angle?
                 // negative x value for drive is forward, positive x val is backwards because motors are currently inverted
-                drive.drive(Drivetrain.kMaxSpeed / 4, 0, 0.0, false);
+                drive.swerveDrive(Drivetrain.kMaxSpeed / 4, 0, 0.0, false);
                 ingestor.liftIngestor();
                 ingestor.threeBallAutonIngest();
                 shooter.setShooterRpm(1000.0);
                 if (timer.get() >= 3.0) {// || ingestor.getStage1Proximity()){
-                    drive.currentStep++;
+                    drive.incrementCurrentStep();
                     timer.reset();
                 }
                 /*
@@ -71,24 +71,25 @@ public class AutonSimpleBack extends CommandBase {
                  */
                 break;
             case 2: // shoot one preloaded ball.
-                drive.drive(0.0, 0.0, 0.0, false);
+                drive.swerveDrive(0.0, 0.0, 0.0, false);
                 double speed = 2300.0;
                 // TODO: Might be able to schedule AutoLShoot later.
                 // TODO add in hood angle code when working
                 ingestor.liftIngestor();
                 shooter.setShooterRpm(speed);
-                if (speed - 50 < shooter.getShooterVelocity() && shooter.getShooterVelocity() < speed + 50) {
+                double shooterVel = shooter.getShooterVelocity();
+                if (speed - 50 < shooterVel && shooterVel < speed + 50) {
                     ingestor.sendCargoToShooter();
                     sentToShooter = true;
                     timer.reset();
                 }
                 if (timer.get() >= 2.0 && sentToShooter) {
-                    drive.currentStep++;
+                    drive.incrementCurrentStep();
                     timer.reset();
                 }
                 break;
             default:
-                drive.drive(0.0, 0.0, 0.0, false);
+                drive.swerveDrive(0.0, 0.0, 0.0, false);
                 ingestor.liftIngestor();
                 ingestor.getStage1Conveyor().set(ControlMode.PercentOutput, 0.0);
                 ingestor.getStage2Conveyor().set(ControlMode.PercentOutput, 0.0);
@@ -122,7 +123,7 @@ public class AutonSimpleBack extends CommandBase {
                     timer.reset();
                 }
                 if (timer.get() >= 2.0 && sentToShooter) {
-                    drive.currentStep++;
+                    drive.incrementCurrentStep();
                     timer.reset();
                 }
                 break;
@@ -134,13 +135,13 @@ public class AutonSimpleBack extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return drive.currentStep == 3; // change this if any setPosition steps are added in execute()
+        return drive.getCurrentStep() == 3; // change this if any setPosition steps are added in execute()
     }
 
     @Override
     public void end(boolean interrupted) {
         timer.stop();
-        drive.drive(0, 0, 0, false);
+        drive.swerveDrive(0, 0, 0, false);
         shooter.setShooterRpm(1000.0);
         Shooter.setCoast(true);
         ingestor.liftIngestor();

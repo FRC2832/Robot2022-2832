@@ -28,11 +28,11 @@ public class Auton1 extends CommandBase {
         double timerVal = timer.get();
         if (timerVal < 3.0) {
             System.out.println("Shooting");
-            drive.drive(0.0, 0.0, 0.0, false);
+            drive.swerveDrive(0.0, 0.0, 0.0, false);
         } else if (timerVal < 5.0) {
-            drive.drive(-1.0, 0.0, 0.0, false);
+            drive.swerveDrive(-1.0, 0.0, 0.0, false);
         } else {
-            drive.drive(0.0, 0.0, 0.0, false);
+            drive.swerveDrive(0.0, 0.0, 0.0, false);
             timer.stop();
         }
     }

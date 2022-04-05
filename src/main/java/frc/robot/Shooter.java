@@ -6,7 +6,6 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.TalonSRXConfiguration;
-
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.XboxController;
@@ -17,16 +16,16 @@ import frc.robot.ColorSensor.CargoColor;
 import frc.robot.commands.DribbleShoot;
 
 public class Shooter extends SubsystemBase {
+    private static final double SENSOR_UNITS_TO_RPM = 3.414;
+    //private static final int HOOD_SENSOR_ACTIVE = 700;
+    private static final int MAX_ANGLE_COUNTS = 400;
+    private static final int MIN_ANGLE = 20;
+    private static final int MAX_ANGLE = 70;
     private static boolean coastMotor;
-    private final double SENSOR_UNITS_TO_RPM = 3.414;
     private final TalonFX shooterFx;
     private final TalonSRX hoodMotor;
     private final XboxController driveController;
     private final XboxController operatorController;
-    //private final int HOOD_SENSOR_ACTIVE = 700;
-    private final int MAX_ANGLE_COUNTS = 400;
-    private final int MIN_ANGLE = 20;
-    private final int MAX_ANGLE = 70;
     private final Ingestor ingestor;
     private boolean isHomed; // report if hood has been homed
     private boolean lastHomed;

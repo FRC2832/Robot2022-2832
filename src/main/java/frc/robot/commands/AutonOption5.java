@@ -16,7 +16,7 @@ public class AutonOption5 extends CommandBase {
     }
 
     private void stop() {
-        drive.drive(0, 0, 0, true);
+        drive.swerveDrive(0, 0, 0, true);
     }
 
     @Override
@@ -25,7 +25,7 @@ public class AutonOption5 extends CommandBase {
         double timerVal = timer.get();
         if (timerVal < 2) {
             System.out.println("Moving Back");
-            drive.drive(-1, 0, 0, false);
+            drive.swerveDrive(-1, 0, 0, false);
         } else if (timerVal > 2 && timerVal < 3) {
             System.out.println("Stopping");
             stop();
@@ -34,7 +34,7 @@ public class AutonOption5 extends CommandBase {
         // SHOOT TWO BALLS
         else if (timerVal > 3 && timerVal < 7) {
             System.out.println("Moving Back Towards Terminal");
-            drive.drive(-1, 0, 0, false);
+            drive.swerveDrive(-1, 0, 0, false);
         } else if (timerVal > 7 && timerVal < 8) {
             System.out.println("Stopping");
             stop();
@@ -43,7 +43,7 @@ public class AutonOption5 extends CommandBase {
         // INGEST BALL FED FROM HUMAN PLAYER
         else if (timerVal > 8 && timerVal < 11) {
             System.out.println("Moving towards Central Hub");
-            drive.drive(1, 0, 0, false);
+            drive.swerveDrive(1, 0, 0, false);
         } else if (timerVal > 11 && timerVal < 12) {
             System.out.println("Stopping");
             stop();

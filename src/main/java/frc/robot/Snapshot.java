@@ -19,10 +19,10 @@ import java.time.format.DateTimeFormatter;
 
 public class Snapshot {
 
-    private static final Thread thread;
-    private static final ZoneId utc = ZoneId.of("UTC");
-    private static final DateTimeFormatter timeFormatter =
-            DateTimeFormatter.ofPattern("yyyyMMdd_HHmmssSSS").withZone(utc);
+    private static final Thread THREAD;
+    private static final ZoneId UTC = ZoneId.of("UTC");
+    private static final DateTimeFormatter TIME_FORMATTER =
+            DateTimeFormatter.ofPattern("yyyyMMdd_HHmmssSSS").withZone(UTC);
 
     private static boolean isUsb;
     private static boolean takeSnap;
@@ -30,12 +30,12 @@ public class Snapshot {
     private static String filePrefix = "FRC";
 
     static {
-        thread = new Thread(Snapshot::logMain, "Snapshot");
-        thread.setDaemon(true);
+        THREAD = new Thread(Snapshot::logMain, "Snapshot");
+        THREAD.setDaemon(true);
     }
 
     public static synchronized void start(String cameraPath) {
-        thread.start();
+        THREAD.start();
         Snapshot.cameraPath = cameraPath;
     }
 
@@ -55,8 +55,8 @@ public class Snapshot {
                     DriverStation.reportWarning("Unable to take snapshot, no USB stick!", false);
                     continue;
                 }
-                LocalDateTime now = LocalDateTime.now(utc);
-                String fileName = filePrefix + "_" + timeFormatter.format(now) + ".jpg";
+                LocalDateTime now = LocalDateTime.now(UTC);
+                String fileName = filePrefix + "_" + TIME_FORMATTER.format(now) + ".jpg";
 
                 try {
                     int prev = 0;

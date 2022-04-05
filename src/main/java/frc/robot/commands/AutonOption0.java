@@ -16,11 +16,11 @@ public class AutonOption0 extends CommandBase {
    @Override
    public void execute() {
 
-      if (drive.currentStep == 0) {
+      if (drive.getCurrentStep() == 0) {
          drive.odometry.resetPosition(new Pose2d(8.3, 5.7, new Rotation2d()), new Rotation2d());
-         drive.currentStep++;
+         drive.incrementCurrentStep();
       }
-      System.out.println(drive.currentStep);
+      System.out.println(drive.getCurrentStep());
       // to get redBalls[1]
       drive.setPosition(10.85, 6.13, 0, .5, 1);
       // ingest

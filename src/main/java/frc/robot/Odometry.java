@@ -49,7 +49,7 @@ public class Odometry {
         rot = rotation - rot;
         // while(swerveOdometry.getPoseMeters().getX()!=xPosition ||
         // swerveOdometry.getPoseMeters().getY()!=yPosition){
-        drivetrain.drive(xPos / time, yPos / time, rot / time, false);
+        drivetrain.swerveDrive(xPos / time, yPos / time, rot / time, false);
         // }
         // drivetrain.drive(0, 0, 0, false);
 

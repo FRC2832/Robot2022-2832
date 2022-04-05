@@ -11,19 +11,19 @@ public class AutonOption2 extends CommandBase {
     public AutonOption2(Drivetrain drive) {
         this.drive = drive;
         addRequirements(drive);
-        drive.currentStep = 0;
+        drive.resetCurrentStep();
     }
 
     @Override
     public void initialize() {
         // TODO: what happens if we start on the equivalent red side of the field?
         drive.odometry.resetPosition(new Pose2d(6.5, 5.0, new Rotation2d()), new Rotation2d());
-        drive.currentStep++;
+        drive.incrementCurrentStep();
     }
 
     @Override
     public void execute() {
-        System.out.println("it is executing \n" + drive.currentStep);
+        System.out.println("it is executing \n" + drive.getCurrentStep());
 
         drive.setPosition(5.06, 5.96, Math.toRadians(135), 1, 1); // to blueBalls[0]
         // ingest- CommandScheduler.getInstance().schedule(new Ingestor());?
@@ -39,12 +39,12 @@ public class AutonOption2 extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return drive.currentStep == 5; // change this if any setPosition steps are added in execute()
+        return drive.getCurrentStep() == 5; // change this if any setPosition steps are added in execute()
     }
 
     @Override
     public void end(boolean interrupted) {
-        drive.drive(0, 0, 0, true);
+        drive.swerveDrive(0, 0, 0, true);
     }
 
 }

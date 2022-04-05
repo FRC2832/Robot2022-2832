@@ -18,7 +18,7 @@ public class AutonOption3 extends CommandBase {
     }
 
     private void stop() {
-        drive.drive(0, 0, 0, true);
+        drive.swerveDrive(0, 0, 0, true);
     }
 
     @Override
@@ -33,7 +33,7 @@ public class AutonOption3 extends CommandBase {
         // timer.start();
         if (timerVal < (2 + delay)) {
             System.out.println("Moving Back");
-            drive.drive(-1, 0, 0, false);
+            drive.swerveDrive(-1, 0, 0, false);
         } else if (timerVal < 3 + delay) {
             System.out.println("Stopping");
             stop();
@@ -42,7 +42,7 @@ public class AutonOption3 extends CommandBase {
         // shoot times two
         else if (timerVal < 6 + delay) {
             System.out.println("Moving Left");
-            drive.drive(0, 1, 0, false);
+            drive.swerveDrive(0, 1, 0, false);
         } else {
             System.out.println("Stopping");
             stop();

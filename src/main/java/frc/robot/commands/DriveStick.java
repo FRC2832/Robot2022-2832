@@ -37,6 +37,6 @@ public class DriveStick extends CommandBase {
         double rot = -drive.deadbandStick(controller.getRightX()) * frc.robot.Drivetrain.kMaxAngularSpeed;
 
         // ask the drivetrain to run
-        drive.drive(xSpeed, ySpeed, rot, false);
+        drive.swerveDrive(xSpeed, ySpeed, rot, false);
     }
 }

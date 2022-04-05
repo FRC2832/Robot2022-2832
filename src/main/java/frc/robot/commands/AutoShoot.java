@@ -61,13 +61,13 @@ public class AutoShoot extends CommandBase {
             if (Pi.getTargetMoveLeft()) {
                 error = String.join(error, "TurnL ");
                 // left is positive turn
-                drive.drive(0.0, 0.0, -rotationSpeed, false);
+                drive.swerveDrive(0.0, 0.0, -rotationSpeed, false);
             } else if (Pi.getTargetMoveRight()) {
                 error = String.join(error, "TurnR ");
-                drive.drive(0.0, 0.0, rotationSpeed, false);
+                drive.swerveDrive(0.0, 0.0, rotationSpeed, false);
             } else {
                 // robot centered, stop driving
-                drive.drive(0.0, 0.0, 0.0, false);
+                drive.swerveDrive(0.0, 0.0, 0.0, false);
             }
         } else {
             // pi is not seeing hub
@@ -80,7 +80,7 @@ public class AutoShoot extends CommandBase {
                 driverController.setRumble(RumbleType.kRightRumble, 1.0);*/
             }
             error = String.join(error, "Vision ");
-            drive.drive(0.0, 0.0, 0.0, false);
+            drive.swerveDrive(0.0, 0.0, 0.0, false);
         }
 
         // check for driving (0.15m/s == 6in/s)

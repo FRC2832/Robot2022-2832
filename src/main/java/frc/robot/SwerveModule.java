@@ -33,13 +33,13 @@ public class SwerveModule {
     // private static final double kModuleMaxAngularAcceleration = 4 * Math.PI; //
     // radians per second squared
 
+    // private double turnMotorAngle;
+    private static final double DRIVE_SCALE_FACTOR = 44836;
     private static int encoderIndex;
     private final WPI_TalonFX driveMotor;
     private final CANSparkMax turningMotor;
     private final CANCoder absEncoder;
     private final RelativeEncoder turningEncoder;
-    // private double turnMotorAngle;
-    private final double DriveScaleFactor = 44836;
     private final PIDController drivePIDController = new PIDController(0.5, 0.0, 0.0);
     // private final ProfiledPIDController turningPIDController = new
     // ProfiledPIDController(5.0, 0.0, 0.0,
@@ -101,7 +101,7 @@ public class SwerveModule {
         // to be continuous.
         turningPIDController.enableContinuousInput(-Math.PI, Math.PI);
 
-        driveFeedForward = new SimpleMotorFeedforward(0, constants.DriveMotorKv, constants.DriveMotorKa);
+        driveFeedForward = new SimpleMotorFeedforward(0.0, constants.DriveMotorKv, constants.DriveMotorKa);
 
         if (Robot.isSimulation()) {
             turnMotorSim =
@@ -134,7 +134,7 @@ public class SwerveModule {
 
     public double getVelocity() {
         if (Robot.isReal()) {
-            return driveMotor.getSelectedSensorVelocity() / DriveScaleFactor;
+            return driveMotor.getSelectedSensorVelocity() / DRIVE_SCALE_FACTOR;
         }
         return driveEncoderSim.getRate();
     }
@@ -232,7 +232,7 @@ public class SwerveModule {
 
     public double getDistance() {
         if (Robot.isReal()) {
-            return driveMotor.getSelectedSensorPosition() / DriveScaleFactor;
+            return driveMotor.getSelectedSensorPosition() / DRIVE_SCALE_FACTOR;
         }
         return driveEncoderSim.getDistance();
     }

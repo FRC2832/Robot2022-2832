@@ -36,11 +36,11 @@ public class AutonOption1 extends CommandBase {
     public void execute() {
         double timerVal = timer.get();
         if (timerVal < DRIVE_TIME) {
-            drive.drive(-1.0, 0.0, 0.0, false);
+            drive.swerveDrive(-1.0, 0.0, 0.0, false);
         } else {
-            drive.drive(0.0, 0.0, 0.0, false);
+            drive.swerveDrive(0.0, 0.0, 0.0, false);
             if (timerVal > delay + DRIVE_TIME) {
-                drive.drive(0.0, 0.0, 0.0, false);
+                drive.swerveDrive(0.0, 0.0, 0.0, false);
                 if (!isAutoShootScheduled) {
                     isAutoShootScheduled = true;
                     CommandScheduler.getInstance().schedule(autoShoot);
