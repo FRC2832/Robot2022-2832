@@ -8,6 +8,7 @@ import frc.robot.Drivetrain;
 import frc.robot.Ingestor;
 import frc.robot.Pi;
 import frc.robot.Shooter;
+import frc.robot.Snapshot;
 
 public class AutoShoot extends CommandBase {
     private Drivetrain drive;
@@ -17,6 +18,8 @@ public class AutoShoot extends CommandBase {
     private Ingestor ingestor;
     private boolean cargoSentToShooter;
     // private boolean autonShootFinished;
+    private boolean lastShot;
+    private boolean snapshotTaken;
 
     public AutoShoot(Drivetrain drive, Shooter shooter, Ingestor ingestor, XboxController operatorController,
             XboxController driverController) {
@@ -27,6 +30,8 @@ public class AutoShoot extends CommandBase {
         this.ingestor = ingestor;
         cargoSentToShooter = false;
         // autonShootFinished = false;
+        lastShot = false;
+        snapshotTaken = false;
 
         addRequirements(drive);
         addRequirements(shooter);
@@ -92,8 +97,21 @@ public class AutoShoot extends CommandBase {
                                                  // cargo
                 cargoSentToShooter = true;
             }
+            if (lastShot == false) {
+                // Snapshot.TakeSnapshot("SHOT");
+            }
+            lastShot = true;
+            SmartDashboard.putBoolean("auto shot shooting", true);
+        } else {
+            lastShot = false;
+            SmartDashboard.putBoolean("auto shot shooting", false);
         }
         SmartDashboard.putString("Auto Shoot Error", error);
+
+        if (!snapshotTaken) {
+            // Snapshot.TakeSnapshot("START");
+            snapshotTaken = true;
+        }
     }
 
     @Override

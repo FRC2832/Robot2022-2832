@@ -28,7 +28,7 @@ public class SafeZoneShoot extends CommandBase {
             shooter.setHoodAngle(53); // knob 4.5
         }
         double shooterVel = shooter.getShooterVelocity();
-        if (speed - 50 < shooterVel && shooterVel < speed + 50) {
+        if (speed - 30 < shooterVel && shooterVel < speed + 30) {
             ingestor.sendCargoToShooter();
         }
     }
