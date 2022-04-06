@@ -7,6 +7,7 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import java.util.ArrayList;
@@ -40,6 +41,8 @@ public class Pi extends SubsystemBase {
     private Number[] targetAreaArray;
 	private static int targetLostCounter;
     private PIDController pid;
+    private double turnMotorVal;
+    private double scaledTurnMotorVal;
 
     public Pi() {
         //NetworkTableInstance netTableInstance = NetworkTableInstance.getDefault();
@@ -53,13 +56,16 @@ public class Pi extends SubsystemBase {
         targetHeight = table.getEntry("targetHeight");
         targetArea = table.getEntry("targetArea");
         targetCenterYOutput = -1;
-        pid = new PIDController(0.35, 0, 0); // values from tyros last year were 0.35, 0.05, 0.8
+        pid = new PIDController(0, 0, 0); // values from tyros last year were 0.35, 0.05, 0.8
+        pid.setSetpoint(CAM_X_RES / 2);
+        pid.setTolerance(10); // tolerance of 10 pixels
     }
 
     @Override
     public void periodic() {
         processCargo();
         processTargets();
+        centerToTarget(); // take this out when done testing
     }
 
     public void processCargo() {
@@ -103,7 +109,7 @@ public class Pi extends SubsystemBase {
             if (targetLostCounter > 4) { // keep last target data for 5 loops ~ less than a second
                 targetCenterYOutput = -1;
                 targetCenterXOutput = -1;
-                System.out.println("lost vision");
+                // System.out.println("lost vision");
             } else {
                 System.out.println("saving old vision target for " + targetLostCounter + " loops");
                 targetLostCounter++;
@@ -147,7 +153,35 @@ public class Pi extends SubsystemBase {
     }
 
     public void centerToTarget() {
-        double pidVal = pid.calculate(targetCenterXOutput, CAM_X_RES/2);
+        double pidVal = pid.calculate(targetCenterXOutput);
+        double maxTurnSpeed = 90; // in degrees, converted to radians at the end
+        double minTurnSpeed = 10; // TODO: what actually is the min speed?
+
+        if (pidVal < 0) {
+            turnMotorVal = pidVal / 660;
+            scaledTurnMotorVal = turnMotorVal * (maxTurnSpeed - minTurnSpeed);
+            scaledTurnMotorVal -= minTurnSpeed;
+        } else if (pidVal > 0) {
+            turnMotorVal = pidVal / 540;
+            scaledTurnMotorVal = turnMotorVal * (maxTurnSpeed - minTurnSpeed);
+            scaledTurnMotorVal += minTurnSpeed;
+        } else {
+            scaledTurnMotorVal = 0;
+            turnMotorVal = 0;
+        }
+
+        // if (motorVal > 0.3) {
+        //     motorVal = 0.3;
+        // } else if (motorVal < -0.3) {
+        //     motorVal = -0.3;
+        // }
+
+        // TODO: add motor commands (remember to convert to radians)
+
+        SmartDashboard.putNumber("Centering PID error", pid.getPositionError());
+        SmartDashboard.putNumber("Centering PID value", pidVal);
+        SmartDashboard.putNumber("Centering motor value", turnMotorVal);
+        SmartDashboard.putNumber("Centering scaled motor value", scaledTurnMotorVal);
 
     }
 

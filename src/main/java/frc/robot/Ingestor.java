@@ -288,7 +288,7 @@ public class Ingestor extends SubsystemBase {
     }
 
     public boolean getStage1Proximity() {
-        return stage1ProxSensor.get();
+        return !stage1ProxSensor.get();
     }
 
     /*public int getStage2Proximity() {
