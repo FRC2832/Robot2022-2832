@@ -16,6 +16,8 @@ public class ShooterBackwards extends CommandBase {
 
     @Override
     public void execute() {
+        ingestor.lowerIngestor();
+        ingestor.runIngestorOut();
         shooter.setShooterRpm(-1000.0);
         ingestor.runStage2Out();
         ingestor.runStage1Out();

@@ -220,6 +220,10 @@ public class Shooter extends SubsystemBase {
         targetRpm = Pi.LinearInterp(ShooterConstants.DIST_RPM_TABLE, distance);
     }
 
+    public double getShooterTemperature() {
+        return shooterFx.getTemperature() * 1.8 + 32;
+    }
+
     /*public CargoColor getCurrentCargoColor() {
         return currentCargoColor;
     } */

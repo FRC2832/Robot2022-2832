@@ -1,6 +1,7 @@
 package frc.robot;
 
 import edu.wpi.first.math.Pair;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -22,6 +23,8 @@ public class Pi extends SubsystemBase {
     private static double targetCenterXOutput;
     private static double cargoCenterXOutput;
     private static double cargoCenterYOutput;
+    private static double oldTargetY;
+    private final NetworkTableInstance netTableInstance = NetworkTableInstance.getDefault();
     private final NetworkTableEntry cargoCenterX;
     private final NetworkTableEntry cargoCenterY;
     private final NetworkTableEntry allianceColor;
@@ -35,9 +38,11 @@ public class Pi extends SubsystemBase {
     private Number[] targetWidthArray;
     private Number[] targetHeightArray;
     private Number[] targetAreaArray;
+	private static int targetLostCounter;
+    private PIDController pid;
 
     public Pi() {
-        NetworkTableInstance netTableInstance = NetworkTableInstance.getDefault();
+        //NetworkTableInstance netTableInstance = NetworkTableInstance.getDefault();
         NetworkTable table = netTableInstance.getTable("vision");
         cargoCenterX = table.getEntry("cargoX");
         cargoCenterY = table.getEntry("cargoY");
@@ -48,6 +53,127 @@ public class Pi extends SubsystemBase {
         targetHeight = table.getEntry("targetHeight");
         targetArea = table.getEntry("targetArea");
         targetCenterYOutput = -1;
+        pid = new PIDController(0.35, 0, 0); // values from tyros last year were 0.35, 0.05, 0.8
+    }
+
+    @Override
+    public void periodic() {
+        processCargo();
+        processTargets();
+    }
+
+    public void processCargo() {
+        Number[] cargoCenterXArray = cargoCenterX.getNumberArray(new Number[0]);
+        Number[] cargoCenterYArray = cargoCenterY.getNumberArray(new Number[0]);
+        if (cargoCenterXArray.length == 0 || cargoCenterYArray.length == 0) {
+            cargoMoveRight = false;
+            cargoMoveLeft = false;
+            cargoCenterXOutput = -1;
+            cargoCenterYOutput = -1;
+            return;
+        }
+        // currently just taking the first cargo but considering taking the cargo with
+        // the largest y value because it should be closest to the robot
+        double cargoX = (double) cargoCenterXArray[0];
+        cargoCenterXOutput = cargoX;
+        cargoCenterYOutput = (double) cargoCenterYArray[0];
+        if (cargoX < (CAM_X_RES / 2) - (CAM_X_RES * 0.05)) {
+            cargoMoveRight = false;
+            cargoMoveLeft = true;
+        } else if (cargoX > (CAM_X_RES / 2) + (CAM_X_RES * 0.05)) {
+            cargoMoveLeft = false;
+            cargoMoveRight = true;
+        } else {
+            cargoMoveRight = false;
+            cargoMoveLeft = false;
+        }
+    }
+
+    public void processTargets() {
+        targetCenterXArray = targetCenterX.getNumberArray(new Number[0]);
+        targetCenterYArray = targetCenterY.getNumberArray(new Number[0]);
+        targetWidthArray = targetWidth.getNumberArray(new Number[0]);
+        targetHeightArray = targetHeight.getNumberArray(new Number[0]);
+        targetAreaArray = targetArea.getNumberArray(new Number[0]);
+        int size = targetCenterXArray.length;
+        // check if vision saw a target
+        if (size == 0) {
+            targetMoveRight = false;
+            targetMoveLeft = false;
+            if (targetLostCounter > 4) { // keep last target data for 5 loops ~ less than a second
+                targetCenterYOutput = -1;
+                targetCenterXOutput = -1;
+                System.out.println("lost vision");
+            } else {
+                System.out.println("saving old vision target for " + targetLostCounter + " loops");
+                targetLostCounter++;
+            }
+            return;
+        }
+        targetLostCounter = 0;
+        // consistency check
+        if (size == targetCenterYArray.length && size == targetWidthArray.length && size == targetHeightArray.length &&
+            size == targetAreaArray.length) {
+            sortTargets();
+        } else {
+            // unknown order, skip this loop
+            return;
+        }
+
+        // pick a target just right of center so the cargo hopefully doesn't bounce out
+        int index = 0;
+        if (size > 1) {
+            index = (int) Math.ceil(size / 2.0);
+        }
+        double targetX = (double) targetCenterXArray[index]; // TODO: Is there less overhang with casting or calling
+        // doubleValue()?
+        targetCenterYOutput = (double) targetCenterYArray[index];
+        if (Math.abs(targetCenterYOutput - oldTargetY) == 0.5) { // changes of only 0.5 pixels to Y are not useful
+            targetCenterYOutput = oldTargetY;
+        } else {
+            oldTargetY = targetCenterYOutput;
+        }
+        targetCenterXOutput = targetX;
+        if (targetX < ((CAM_X_RES / 2) - (CAM_X_RES * 0.05))) {
+            targetMoveRight = false;
+            targetMoveLeft = true;
+        } else if (targetX > ((CAM_X_RES / 2) + (CAM_X_RES * 0.05))) {
+            targetMoveLeft = false;
+            targetMoveRight = true;
+        } else {
+            targetMoveRight = false;
+            targetMoveLeft = false;
+        }
+    }
+
+    public void centerToTarget() {
+        double pidVal = pid.calculate(targetCenterXOutput, CAM_X_RES/2);
+
+    }
+
+    public void sortTargets() {
+        int size = targetCenterXArray.length;
+        for (int i = 1; i < size; ++i) {
+            double keyX = targetCenterXArray[i].doubleValue();
+            double keyY = targetCenterYArray[i].doubleValue();
+            double keyH = targetHeightArray[i].doubleValue();
+            double keyW = targetWidthArray[i].doubleValue();
+            double keyA = targetAreaArray[i].doubleValue();
+            int j = i - 1;
+            while (j >= 0 && targetCenterXArray[j].doubleValue() > keyX) {
+                targetCenterXArray[j + 1] = targetCenterXArray[j];
+                targetCenterYArray[j + 1] = targetCenterYArray[j];
+                targetHeightArray[j + 1] = targetHeightArray[j];
+                targetWidthArray[j + 1] = targetWidthArray[j];
+                targetAreaArray[j + 1] = targetAreaArray[j];
+                j--;
+            }
+            targetCenterXArray[j + 1] = keyX;
+            targetCenterYArray[j + 1] = keyY;
+            targetHeightArray[j + 1] = keyH;
+            targetWidthArray[j + 1] = keyW;
+            targetAreaArray[j + 1] = keyA;
+        }
     }
 
     public static double LinearInterp(ArrayList<Pair<Double, Double>> list, double input) {
@@ -136,106 +262,4 @@ public class Pi extends SubsystemBase {
         allianceColor.setString(color);
     }
 
-    @Override
-    public void periodic() {
-        processCargo();
-        processTargets();
-    }
-
-    public void processCargo() {
-        Number[] cargoCenterXArray = cargoCenterX.getNumberArray(new Number[0]);
-        Number[] cargoCenterYArray = cargoCenterY.getNumberArray(new Number[0]);
-        if (cargoCenterXArray.length == 0 || cargoCenterYArray.length == 0) {
-            cargoMoveRight = false;
-            cargoMoveLeft = false;
-            cargoCenterXOutput = -1;
-            cargoCenterYOutput = -1;
-            return;
-        }
-        // currently just taking the first cargo but considering taking the cargo with
-        // the largest y value because it should be closest to the robot
-        double cargoX = (double) cargoCenterXArray[0];
-        cargoCenterXOutput = cargoX;
-        cargoCenterYOutput = (double) cargoCenterYArray[0];
-        if (cargoX < (CAM_X_RES / 2) - (CAM_X_RES * 0.05)) {
-            cargoMoveRight = false;
-            cargoMoveLeft = true;
-        } else if (cargoX > (CAM_X_RES / 2) + (CAM_X_RES * 0.05)) {
-            cargoMoveLeft = false;
-            cargoMoveRight = true;
-        } else {
-            cargoMoveRight = false;
-            cargoMoveLeft = false;
-        }
-    }
-
-    public void processTargets() {
-        targetCenterXArray = targetCenterX.getNumberArray(new Number[0]);
-        targetCenterYArray = targetCenterY.getNumberArray(new Number[0]);
-        targetWidthArray = targetWidth.getNumberArray(new Number[0]);
-        targetHeightArray = targetHeight.getNumberArray(new Number[0]);
-        targetAreaArray = targetArea.getNumberArray(new Number[0]);
-        int size = targetCenterXArray.length;
-        // check if vision saw a target
-        if (size == 0) {
-            targetMoveRight = false;
-            targetMoveLeft = false;
-            targetCenterYOutput = -1;
-            targetCenterXOutput = -1;
-            return;
-        }
-        // consistency check
-        if (size == targetCenterYArray.length && size == targetWidthArray.length && size == targetHeightArray.length &&
-            size == targetAreaArray.length) {
-            sortTargets();
-        } else {
-            // unknown order, skip this loop
-            return;
-        }
-
-        // pick a target just right of center so the cargo hopefully doesn't bounce out
-        int index = 0;
-        if (size > 1) {
-            index = (int) Math.ceil(size / 2.0);
-        }
-        double targetX = (double) targetCenterXArray[index]; // TODO: Is there less overhang with casting or calling
-        // doubleValue()?
-        targetCenterYOutput = (double) targetCenterYArray[index];
-        targetCenterXOutput = targetX;
-        if (targetX < ((CAM_X_RES / 2) - (CAM_X_RES * 0.05))) {
-            targetMoveRight = false;
-            targetMoveLeft = true;
-        } else if (targetX > ((CAM_X_RES / 2) + (CAM_X_RES * 0.05))) {
-            targetMoveLeft = false;
-            targetMoveRight = true;
-        } else {
-            targetMoveRight = false;
-            targetMoveLeft = false;
-        }
-    }
-
-    public void sortTargets() {
-        int size = targetCenterXArray.length;
-        for (int i = 1; i < size; ++i) {
-            double keyX = targetCenterXArray[i].doubleValue();
-            double keyY = targetCenterYArray[i].doubleValue();
-            double keyH = targetHeightArray[i].doubleValue();
-            double keyW = targetWidthArray[i].doubleValue();
-            double keyA = targetAreaArray[i].doubleValue();
-            int j = i - 1;
-            while (j >= 0 && targetCenterXArray[j].doubleValue() > keyX) {
-                targetCenterXArray[j + 1] = targetCenterXArray[j];
-                targetCenterYArray[j + 1] = targetCenterYArray[j];
-                targetHeightArray[j + 1] = targetHeightArray[j];
-                targetWidthArray[j + 1] = targetWidthArray[j];
-                targetAreaArray[j + 1] = targetAreaArray[j];
-                j--;
-            }
-            targetCenterXArray[j + 1] = keyX;
-            targetCenterYArray[j + 1] = keyY;
-            targetHeightArray[j + 1] = keyH;
-            targetWidthArray[j + 1] = keyW;
-            targetAreaArray[j + 1] = keyA;
-        }
-    }
 }

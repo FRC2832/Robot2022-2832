@@ -113,12 +113,12 @@ public class AutonTwoBall extends CommandBase {
                 }*/
                 break;
             case 3: // turn to hub. TODO: Maybe add vision?
-                drive.swerveDrive(0.0, 0.0, Math.PI, false);
+                drive.swerveDrive(0.0, 0.0, (3 * Math.PI) / 4, false);
                 ingestor.threeBallAutonIngest();
                 ingestor.liftIngestor();
                 shooter.setShooterRpm(2300.0);
                 double angleDifference = Math.abs(drive.getAngle() % 360 - startAngle);
-                if (angleDifference >= 180.0) {
+                if (angleDifference >= 170.0) {
                     drive.incrementCurrentStep();
                     timer.reset();
                 } /*else {

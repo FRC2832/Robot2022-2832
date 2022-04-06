@@ -103,6 +103,7 @@ public class Robot extends TimedRobot {
         SmartDashboard.putData("Reset Orientation", new ResetOrientation(swerve));
         SmartDashboard.putBoolean("Two/Three Ball Auton", false);
         SmartDashboard.putBoolean("Skip Reverse Auton Drive", false);
+        SmartDashboard.putNumber("Angle Difference", 0.0);
 
         /*
          * m_chooser.setDefaultOption("Auton1", auton1);
@@ -179,6 +180,8 @@ public class Robot extends TimedRobot {
         lastEnabled = isEnabled();
 
         SmartDashboard.putData(swerve);
+        SmartDashboard.putBoolean("Stage 1 Proximity", ingestor.getStage1Proximity());
+        SmartDashboard.putNumber("Shooter Motor Temperature F", shooter.getShooterTemperature());
     }
 
     @Override

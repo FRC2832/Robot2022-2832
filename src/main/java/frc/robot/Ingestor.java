@@ -40,7 +40,7 @@ public class Ingestor extends SubsystemBase {
     private boolean stageTimerStarted;
     // private SmartDashboard smartDashboard;
     private boolean triggerPressed;
-    private int totalBalls;
+    private static int totalBalls;
     // private ColorSensor stage2ColorSensor;
     // private boolean ballAtColorSensor;
     private double liftRotations;
@@ -175,9 +175,9 @@ public class Ingestor extends SubsystemBase {
             }
         }
 
-        if (operatorController.getXButton()) { // push ball to shooter
+        if (operatorController.getXButton()) { // push ball to stage 1
             stage2ConveyorSpeed = STAGE_2_SPEED;
-        } else if (operatorController.getYButton()) { // push ball to stage 1
+        } else if (operatorController.getYButton()) { // push ball to shooter
             stage2ConveyorSpeed = -STAGE_2_SPEED;
         }
 
@@ -259,7 +259,7 @@ public class Ingestor extends SubsystemBase {
     }
 
     public void runStage2Out() {
-        stage2Conveyor.set(-STAGE_2_SPEED);
+        stage2Conveyor.set(STAGE_2_SPEED);
     }
 
     /*public void runStage1In() {
@@ -276,6 +276,10 @@ public class Ingestor extends SubsystemBase {
 
     public void stopStage2() {
         stage2Conveyor.set(0.0);
+    }
+
+    public void runIngestorOut() {
+        ingestorWheels.set(INGESTOR_SPEED);
     }
 
     public void threeBallAutonIngest() {
@@ -302,6 +306,8 @@ public class Ingestor extends SubsystemBase {
     public WPI_TalonSRX getStage2Conveyor() {
         return stage2Conveyor;
     }
+
+
 
     /*
      * public void ingest(){

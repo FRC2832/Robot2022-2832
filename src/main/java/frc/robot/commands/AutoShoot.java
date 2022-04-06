@@ -57,7 +57,7 @@ public class AutoShoot extends CommandBase {
                 Robot.stopControllerRumble(operatorController);
                 Robot.stopControllerRumble(driverController);
             }
-            double rotationSpeed = Math.toRadians(70.0);
+            double rotationSpeed = Math.toRadians(50.0);
             if (Pi.getTargetMoveLeft()) {
                 error = String.join(error, "TurnL ");
                 // left is positive turn
