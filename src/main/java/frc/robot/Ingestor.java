@@ -12,8 +12,8 @@ import com.revrobotics.SparkMaxPIDController;
 import edu.wpi.first.wpilibj.Counter;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Timer;
-// import com.revrobotics.CANSparkMaxLowLevel;
 // import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+// import com.revrobotics.CANSparkMaxLowLevel;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -67,6 +67,7 @@ public class Ingestor extends SubsystemBase {
         // stage1ProxSensor = new DigitalInput(0);
         stage1ProxSensor = new DigitalInput(0);
         counter = new Counter(stage1ProxSensor);
+        
         totalBalls = 0;
         //ballAtColorSensor = false;
 
@@ -110,12 +111,12 @@ public class Ingestor extends SubsystemBase {
 
         //System.out.println("counter - " + counter.get());
         // prox sensor checking
-        if (counter.get() > 0) {
+        if (counter.get() > 0 && stage1ProxSensor.getStage1Proximity()) {
             //System.out.println("Ball ingested!");
             totalBalls++;
             //System.out.println("Total Balls 1:" + totalBalls);
             SmartDashboard.putNumber("Total Balls", totalBalls);
-            if (counter.get() >= 2) {
+            if (counter.get() > 2) {
                 totalBalls = 0;
                 counter.reset();
             }
