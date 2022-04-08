@@ -106,15 +106,18 @@ public class Ingestor extends SubsystemBase {
 
         // System.out.println("counter - " + counter.get());
         // prox sensor checking
-        if (counter.get() > 0) {
+        //if (counter.get() > 0) {
+        if(getStage1Proximity()){
             // System.out.println("Ball ingested!");
             totalBalls++;
             // System.out.println("Total Balls 1:" + totalBalls);
             SmartDashboard.putNumber("Total Balls", totalBalls);
+            /*
             if (counter.get() >= 2) {
                 totalBalls = 0;
                 counter.reset();
             }
+            */
         }
 
         // color sensor conditions
@@ -232,6 +235,15 @@ public class Ingestor extends SubsystemBase {
             sendTimer.stop();
             sendTimer.reset();
             sendTimerStarted = false;
+            //Check if a ball is in 1st slip stream
+            if(getStage1Proximity()){
+                //TODO: Check for ball in second stream and then send ball to second slip stream if empty
+                totalBalls = 1;
+            }
+            //TODO: Add second proximity sensor detection 
+            else
+                totalBalls = 0;
+            SmartDashboard.putNumber("Total Balls", totalBalls);
             return true;
         }
         return false;

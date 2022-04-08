@@ -56,7 +56,7 @@ public class Pi extends SubsystemBase {
         targetHeight = table.getEntry("targetHeight");
         targetArea = table.getEntry("targetArea");
         targetCenterYOutput = -1;
-        pid = new PIDController(0, 0, 0); // values from tyros last year were 0.35, 0.05, 0.8
+        pid = new PIDController(.35, 0, 0); // values from tyros last year were 0.35, 0.05, 0.8
         pid.setSetpoint(CAM_X_RES / 2);
         pid.setTolerance(10); // tolerance of 10 pixels
     }

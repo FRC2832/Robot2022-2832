@@ -97,10 +97,10 @@ public class Robot extends TimedRobot {
         LiveWindow.setEnabled(false);
         // add commands to the dashboard so we can run them seperately
 
-        SmartDashboard.putData("Stick Drive", new DriveStick(swerve, DRIVER_CONTROLLER));
-        SmartDashboard.putData("Drive Forward 0.5mps", new AutoDrive(swerve, 0.5, 0.0));
-        SmartDashboard.putData("Drive FR 0.5mps", new AutoDrive(swerve, 0.5, 0.5));
-        SmartDashboard.putData("Reset Orientation", new ResetOrientation(swerve));
+        //SmartDashboard.putData("Stick Drive", new DriveStick(swerve, DRIVER_CONTROLLER));
+        //SmartDashboard.putData("Drive Forward 0.5mps", new AutoDrive(swerve, 0.5, 0.0));
+        //SmartDashboard.putData("Drive FR 0.5mps", new AutoDrive(swerve, 0.5, 0.5));
+        //SmartDashboard.putData("Reset Orientation", new ResetOrientation(swerve));
         SmartDashboard.putBoolean("Two/Three Ball Auton", false);
         SmartDashboard.putBoolean("Skip Reverse Auton Drive", false);
         SmartDashboard.putNumber("Angle Difference", 0.0);
@@ -114,7 +114,7 @@ public class Robot extends TimedRobot {
          * SmartDashboard.putData(m_chooser);
          */
 
-        SmartDashboard.putNumber("Shooting delay", 0.0);
+        //SmartDashboard.putNumber("Shooting delay", 0.0);
     }
 
     @Override
