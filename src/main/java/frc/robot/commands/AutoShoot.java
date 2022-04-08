@@ -79,10 +79,6 @@ public class AutoShoot extends CommandBase {
             if (operatorController != null && driverController != null) {
                 Robot.rumbleController(operatorController, 1.0);
                 Robot.rumbleController(driverController, 1.0);
-                /*operatorController.setRumble(RumbleType.kLeftRumble, 1.0);
-                operatorController.setRumble(RumbleType.kRightRumble, 1.0);
-                driverController.setRumble(RumbleType.kLeftRumble, 1.0);
-                driverController.setRumble(RumbleType.kRightRumble, 1.0);*/
             }
             error = String.join(error, "Vision ");
             drive.swerveDrive(0.0, 0.0, 0.0, false);

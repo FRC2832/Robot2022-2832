@@ -64,7 +64,7 @@ public class Robot extends TimedRobot {
         CommandScheduler.getInstance().registerSubsystem(swerve, colorSensor);
         swerve.setDefaultCommand(new DriveStickSlew(swerve, DRIVER_CONTROLLER));
         shooter.setDefaultCommand(new ShooterOff(shooter));
-        climber.setDefaultCommand(new RunClimber(climber, ingestor, OPERATOR_CONTROLLER));
+        climber.setDefaultCommand(new RunClimber(climber, OPERATOR_CONTROLLER));
         //swerve.setDefaultCommand(new TurtleMode(swerve, driverController));
 
         JoystickButton selectButton = new JoystickButton(OPERATOR_CONTROLLER, 7);
