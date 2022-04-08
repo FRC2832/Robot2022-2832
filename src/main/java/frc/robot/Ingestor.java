@@ -46,7 +46,7 @@ public class Ingestor extends SubsystemBase {
     private double liftRotations;
     //private static final double INGESTOR_LIFT_SPEED = 0.25;
 
-    public Ingestor(ColorSensor colorSensor) {
+    public Ingestor(ColorSensor colorSensor, XboxController controller) {
         ingestorWheels = new WPI_TalonSRX(CanIDConstants.INTAKE_WHEELS);
         // ingestorGate = new WPI_TalonSRX(2);
         stage1Conveyor = new WPI_TalonSRX(CanIDConstants.STAGE_1);
@@ -55,7 +55,7 @@ public class Ingestor extends SubsystemBase {
         ingestorLift = new CANSparkMax(CanIDConstants.INTAKE_LIFT, BRUSHLESS);
         altEncoder = ingestorLift.getAlternateEncoder(SparkMaxAlternateEncoder.Type.kQuadrature, 8192);
         // driverController = new XboxController(0);
-        operatorController = new XboxController(2);
+        operatorController = controller;
         sendTimer = new Timer();
         stageTimer = new Timer();
         // Port port = Port.kOnboard; // TODO: Need to verify this.

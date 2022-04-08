@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Drivetrain;
 import frc.robot.Ingestor;
+import frc.robot.Pi;
 import frc.robot.Shooter;
 import frc.robot.SwerveModule;
 
@@ -56,6 +57,7 @@ public class AutonThreeBall extends CommandBase {
     @Override
     public void execute() {
         double distance;
+        double angleDifference;
         // TODO decrease time parameter to speed up the robot
         // System.out.println(drive.currentStep);
         switch (drive.getCurrentStep()) { // drive.currentStep = 2;
@@ -113,7 +115,7 @@ public class AutonThreeBall extends CommandBase {
                 ingestor.threeBallAutonIngest();
                 ingestor.liftIngestor();
                 shooter.setShooterRpm(2300.0);
-                double angleDifference = Math.abs(drive.getAngle() % 360 - startAngle);
+                angleDifference = Math.abs(drive.getAngle() % 360 - startAngle);
                 if (angleDifference >= 170.0) {
                     drive.incrementCurrentStep();
                     TIMER.reset();
@@ -121,7 +123,7 @@ public class AutonThreeBall extends CommandBase {
                     System.out.println("Current angle difference: " + angleDifference + " degrees");
                 }*/
                 break;
-            case 4: // shoot 2 balls with hood angle set at 2.5 knobs (aka, manual shot)
+            case 4: // Shoot 2 balls using AutoShoot 
                 drive.swerveDrive(0.0, 0.0, 0.0, false);
                 // double speed = 2300.0;
                 // // TODO: Might be able to schedule AutoLShoot later.
@@ -140,10 +142,87 @@ public class AutonThreeBall extends CommandBase {
                 }
                 if (autoShoot.isFinished()) {
                     drive.incrementCurrentStep();
+                    isAutoShootScheduled = false;
+                    startAngle = drive.getAngle() % 360;
+                    TIMER.reset();
+                }
+                break;
+            case 5: // Rotate 90 degrees left.
+                angleDifference = Math.abs(drive.getAngle() % 360 - startAngle);
+                ingestor.lowerIngestor();
+                ingestor.threeBallAutonIngest();
+                shooter.setShooterRpm(2300.0);
+                if (angleDifference >= 90.0) { // TODO: Might need to account for no seen cargo.
+                    drive.incrementCurrentStep();
+                    drive.swerveDrive(0.0, 0.0, 0.0, false);
+                } else {
+                    drive.swerveDrive(0.0, 0.0, -Math.PI / 2, false);
+                }
+                break;
+            case 6: // Rotate towards third cargo.
+                shooter.setShooterRpm(2300.0);
+                ingestor.lowerIngestor();
+                ingestor.threeBallAutonIngest();
+                if (Pi.getCargoCenterX() > -1.0 && Pi.getCargoCenterY() > -1.0) {
+                    byte speedMultiplier = 0;
+                    if (Pi.getCargoMoveLeft()) {
+                        speedMultiplier = -1;
+                    } else if (Pi.getCargoMoveRight()) {
+                        speedMultiplier = 1;
+                    } else {
+                        drive.incrementCurrentStep();
+                        startEncoderCount = frontLeft.getDistance();
+                        TIMER.reset();
+                    }
+                    drive.swerveDrive(0.0, 0.0, speedMultiplier * (Math.PI / 2), false);
+                } else {
+                    drive.swerveDrive(0.0, 0.0, 0.0, false); // TODO: May need to add more logic here.
+                }
+                break;
+            case 7: // Move towards cargo and ingest.
+                shooter.setShooterRpm(2300.0);
+                ingestor.lowerIngestor();
+                ingestor.threeBallAutonIngest();
+                distance = Math.abs(frontLeft.getDistance() - startEncoderCount);
+                if (distance >= 3.0) {
+                    drive.swerveDrive(0.0, 0.0, 0.0, false);
+                    drive.incrementCurrentStep();
+                    TIMER.reset();
+                    startAngle = drive.getAngle() % 360;
+                } else {
+                    drive.swerveDrive(-Drivetrain.kMaxSpeed / 3, 0.0, 0.0, false);
+                }
+                break;
+            case 8: // Rotate right towards hub.
+                shooter.setShooterRpm(2300.0);
+                ingestor.liftIngestor();
+                ingestor.threeBallAutonIngest();
+                angleDifference = Math.abs(drive.getAngle() % 360 - startAngle);
+                if (angleDifference >= 120.0) {
+                    drive.swerveDrive(0.0, 0.0, 0.0, false);
+                    drive.incrementCurrentStep();
+                    TIMER.reset();
+                } else {
+                    drive.swerveDrive(0.0, 0.0, Math.PI / 2, false);
+                }
+                break;
+            case 9: // Shoot 1 ball using AutoShoot
+                drive.swerveDrive(0.0, 0.0, 0.0, false);
+                if (!isAutoShootScheduled) {
+                    CommandScheduler.getInstance().schedule(autoShoot); // TODO: May need to set autoShoot to new AutoShoot again.
+                    isAutoShootScheduled = true;
+                }
+                if (autoShoot.isFinished()) {
+                    drive.incrementCurrentStep();
+                    isAutoShootScheduled = false;
+                    TIMER.reset();
                 }
                 break;
             default:
                 drive.swerveDrive(0.0, 0.0, 0.0, false);
+                shooter.setShooterRpm(2300.0);
+                ingestor.liftIngestor();
+
                 break;
             // 8.586, 7.107836, 90 for first ball
             /*
@@ -173,7 +252,7 @@ public class AutonThreeBall extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return drive.getCurrentStep() == 5; // change this if any setPosition steps are added in execute()
+        return drive.getCurrentStep() == 10; // change this if any setPosition steps are added in execute()
     }
 
     @Override

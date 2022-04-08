@@ -33,6 +33,11 @@ public class AutoShoot extends CommandBase {
     }
 
     @Override
+    public void initialize() {
+        cargoSentToShooter = false;
+    }
+
+    @Override
     public void execute() {
         shooter.calcShot();
         String error = "";
@@ -89,7 +94,7 @@ public class AutoShoot extends CommandBase {
             // driving might be because of centering, so don't stop it
         }
 
-        if (error.length() == 0) {
+        if (error.isEmpty()) {
             // error = "SHOOT!!!";
             if (ingestor.sendCargoToShooter()) { // sends cargo to shooter and returns true once it finishes sending
                 // cargo

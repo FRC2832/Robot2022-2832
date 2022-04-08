@@ -14,15 +14,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.commands.AutoDrive;
 import frc.robot.commands.AutoShoot;
 import frc.robot.commands.AutonThreeBall;
 import frc.robot.commands.AutonTwoBall;
-import frc.robot.commands.DriveStick;
 import frc.robot.commands.DriveStickSlew;
 import frc.robot.commands.HubShoot;
 import frc.robot.commands.ManualShoot;
-import frc.robot.commands.ResetOrientation;
 import frc.robot.commands.RunClimber;
 import frc.robot.commands.SafeZoneShoot;
 import frc.robot.commands.ShooterBackwards;
@@ -49,7 +46,7 @@ public class Robot extends TimedRobot {
     public void robotInit() {
         colorSensor = new ColorSensor();
         swerve = new Drivetrain(DRIVER_CONTROLLER);
-        ingestor = new Ingestor(colorSensor);
+        ingestor = new Ingestor(colorSensor, OPERATOR_CONTROLLER);
         Configuration.SetPersistentKeys();
         GitVersion vers = GitVersion.loadVersion();
         vers.printVersions();

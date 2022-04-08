@@ -80,9 +80,9 @@ public class Pi extends SubsystemBase {
         }
         // currently just taking the first cargo but considering taking the cargo with
         // the largest y value because it should be closest to the robot
-        double cargoX = (double) cargoCenterXArray[0];
+        double cargoX = cargoCenterXArray[0].doubleValue();
         cargoCenterXOutput = cargoX;
-        cargoCenterYOutput = (double) cargoCenterYArray[0];
+        cargoCenterYOutput = cargoCenterYArray[0].doubleValue();
         if (cargoX < (CAM_X_RES / 2) - (CAM_X_RES * 0.05)) {
             cargoMoveRight = false;
             cargoMoveLeft = true;
@@ -131,9 +131,9 @@ public class Pi extends SubsystemBase {
         if (size > 1) {
             index = (int) Math.ceil(size / 2.0);
         }
-        double targetX = (double) targetCenterXArray[index]; // TODO: Is there less overhang with casting or calling
+        double targetX = targetCenterXArray[index].doubleValue(); // TODO: Is there less overhang with casting or calling
         // doubleValue()?
-        targetCenterYOutput = (double) targetCenterYArray[index];
+        targetCenterYOutput = targetCenterYArray[index].doubleValue();
         if (Math.abs(targetCenterYOutput - oldTargetY) == 0.5) { // changes of only 0.5 pixels to Y are not useful
             targetCenterYOutput = oldTargetY;
         } else {
@@ -240,7 +240,7 @@ public class Pi extends SubsystemBase {
     }
 
     public static boolean isCargoCentered() {
-        return !cargoMoveRight && !cargoMoveLeft;
+        return !(cargoMoveRight || cargoMoveLeft);
     }
 
     // if true, the robot needs to turn right to see the cargo
@@ -262,7 +262,7 @@ public class Pi extends SubsystemBase {
     }
 
     public static boolean isTargetCentered() {
-        return !targetMoveRight && !targetMoveLeft;
+        return !(targetMoveRight || targetMoveLeft);
     }
 
     // if true, the robot needs to turn right to see the target
@@ -287,11 +287,9 @@ public class Pi extends SubsystemBase {
     // for
     public void sendAlliance() {
         Alliance alliance = DriverStation.getAlliance();
-        String color;
+        String color = "blue";
         if (alliance == Alliance.Red) {
             color = "red";
-        } else {
-            color = "blue";
         }
         allianceColor.setString(color);
     }
