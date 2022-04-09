@@ -12,7 +12,7 @@ public class CenterToCargo extends CommandBase {
 
     public CenterToCargo(Drivetrain drive) {
         this.drive = drive;
-        addRequirements(drive);
+        addRequirements(drive); // TODO: This is commented out on CenterToHub. Interesting. May be worth investigating if we need it here.
         pid = new PIDController(0.35, 0, 0); // values from tyros last year were 0.35, 0.05, 0.8
         pid.setSetpoint(381);
         pid.setTolerance(13); // tolerance of 10 pixels
