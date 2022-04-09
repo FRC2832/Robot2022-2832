@@ -298,6 +298,10 @@ public class Ingestor extends SubsystemBase {
         ingestorWheels.set(INGESTOR_SPEED);
     }
 
+    public void stopIngestorWheels() {
+        ingestorWheels.set(0);
+    }
+
     public void threeBallAutonIngest() {
         stage1Conveyor.set(ControlMode.PercentOutput, STAGE_1_SPEED);
         ingestorWheels.set(ControlMode.PercentOutput, -INGESTOR_SPEED);
