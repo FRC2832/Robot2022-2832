@@ -17,6 +17,8 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.AutoShoot;
 import frc.robot.commands.AutonThreeBall;
 import frc.robot.commands.AutonTwoBall;
+import frc.robot.commands.CenterToCargo;
+import frc.robot.commands.CenterToHub;
 import frc.robot.commands.DriveStickSlew;
 import frc.robot.commands.HubShoot;
 import frc.robot.commands.ManualShoot;
@@ -88,6 +90,12 @@ public class Robot extends TimedRobot {
 
         JoystickButton driverStartButton = new JoystickButton(DRIVER_CONTROLLER, 8);
         driverStartButton.whileActiveContinuous(new ShooterBackwards(shooter, ingestor));
+
+        JoystickButton xButton = new JoystickButton(DRIVER_CONTROLLER, 3);
+        xButton.whileActiveContinuous(new CenterToHub(swerve));
+
+        JoystickButton yButton = new JoystickButton(DRIVER_CONTROLLER, 4);
+        yButton.whileActiveContinuous(new CenterToCargo(swerve));
 
         // this.setNetworkTablesFlushEnabled(true); //turn off 20ms Dashboard update
         // rate

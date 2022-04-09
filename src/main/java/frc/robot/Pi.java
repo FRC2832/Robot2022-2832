@@ -56,7 +56,7 @@ public class Pi extends SubsystemBase {
         targetHeight = table.getEntry("targetHeight");
         targetArea = table.getEntry("targetArea");
         targetCenterYOutput = -1;
-        pid = new PIDController(.35, 0, 0); // values from tyros last year were 0.35, 0.05, 0.8
+        pid = new PIDController(.2, 0, 0); // values from tyros last year were 0.35, 0.05, 0.8
         pid.setSetpoint(CAM_X_RES / 2);
         pid.setTolerance(10); // tolerance of 10 pixels
     }
@@ -65,7 +65,7 @@ public class Pi extends SubsystemBase {
     public void periodic() {
         processCargo();
         processTargets();
-        centerToTarget(); // take this out when done testing
+        // centerToTarget(); // take this out when done testing
     }
 
     public void processCargo() {
@@ -154,21 +154,8 @@ public class Pi extends SubsystemBase {
 
     public void centerToTarget() {
         double pidVal = pid.calculate(targetCenterXOutput);
-        double maxTurnSpeed = 90; // in degrees, converted to radians at the end
-        double minTurnSpeed = 10; // TODO: what actually is the min speed?
-
-        if (pidVal < 0) {
-            turnMotorVal = pidVal / 660;
-            scaledTurnMotorVal = turnMotorVal * (maxTurnSpeed - minTurnSpeed);
-            scaledTurnMotorVal -= minTurnSpeed;
-        } else if (pidVal > 0) {
-            turnMotorVal = pidVal / 540;
-            scaledTurnMotorVal = turnMotorVal * (maxTurnSpeed - minTurnSpeed);
-            scaledTurnMotorVal += minTurnSpeed;
-        } else {
-            scaledTurnMotorVal = 0;
-            turnMotorVal = 0;
-        }
+        // double maxTurnSpeed = 90; // in degrees, converted to radians at the end
+        // double minTurnSpeed = 10; // TODO: what actually is the min speed?
 
         // if (motorVal > 0.3) {
         //     motorVal = 0.3;
@@ -177,11 +164,10 @@ public class Pi extends SubsystemBase {
         // }
 
         // TODO: add motor commands (remember to convert to radians)
+        
 
         SmartDashboard.putNumber("Centering PID error", pid.getPositionError());
         SmartDashboard.putNumber("Centering PID value", pidVal);
-        SmartDashboard.putNumber("Centering motor value", turnMotorVal);
-        SmartDashboard.putNumber("Centering scaled motor value", scaledTurnMotorVal);
 
     }
 
