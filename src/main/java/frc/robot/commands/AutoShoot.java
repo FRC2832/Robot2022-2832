@@ -3,6 +3,7 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.*;
 //import frc.robot.Snapshot;
 
@@ -12,10 +13,12 @@ public class AutoShoot extends CommandBase {
     private final XboxController operatorController;
     private final XboxController driverController;
     private final Ingestor ingestor;
+    private final CenterToHub centerToHub;
     private boolean cargoSentToShooter;
     // private boolean autonShootFinished;
     //private boolean lastShot;
     private boolean snapshotTaken;
+    private boolean centerScheduled;
 
     public AutoShoot(Drivetrain drive, Shooter shooter, Ingestor ingestor, XboxController operatorController,
                      XboxController driverController) {
@@ -24,10 +27,12 @@ public class AutoShoot extends CommandBase {
         this.operatorController = operatorController;
         this.driverController = driverController;
         this.ingestor = ingestor;
+        centerToHub = new CenterToHub(drive);
         cargoSentToShooter = false;
         // autonShootFinished = false;
         //lastShot = false;
         snapshotTaken = false;
+        centerScheduled = false;
 
         addRequirements(drive, shooter);
     }
@@ -62,18 +67,25 @@ public class AutoShoot extends CommandBase {
                 Robot.stopControllerRumble(operatorController);
                 Robot.stopControllerRumble(driverController);
             }
-            double rotationSpeed = Math.toRadians(50.0);
-            if (Pi.getTargetMoveLeft()) {
-                error = String.join(error, "TurnL ");
-                // left is positive turn
-                drive.swerveDrive(0.0, 0.0, -rotationSpeed, false);
-            } else if (Pi.getTargetMoveRight()) {
-                error = String.join(error, "TurnR ");
-                drive.swerveDrive(0.0, 0.0, rotationSpeed, false);
-            } else {
-                // robot centered, stop driving
-                drive.swerveDrive(0.0, 0.0, 0.0, false);
+            if (!centerScheduled) {
+                CommandScheduler.getInstance().schedule(centerToHub);
+                centerScheduled = true;
             }
+            if (!centerToHub.isFinished()) {
+                error = String.join(error, "Centering");
+            }
+            // double rotationSpeed = Math.toRadians(50.0);
+            // if (Pi.getTargetMoveLeft()) {
+            //     error = String.join(error, "TurnL ");
+            //     // left is positive turn
+            //     drive.swerveDrive(0.0, 0.0, -rotationSpeed, false);
+            // } else if (Pi.getTargetMoveRight()) {
+            //     error = String.join(error, "TurnR ");
+            //     drive.swerveDrive(0.0, 0.0, rotationSpeed, false);
+            // } else {
+            //     // robot centered, stop driving
+            //     drive.swerveDrive(0.0, 0.0, 0.0, false);
+            // }
         } else {
             // pi is not seeing hub
             if (operatorController != null && driverController != null) {
@@ -122,6 +134,7 @@ public class AutoShoot extends CommandBase {
         Shooter.setCoast(true);
         //System.out.println("AutoShoot end");
         cargoSentToShooter = false;
+        centerScheduled = false;
     }
 
     @Override

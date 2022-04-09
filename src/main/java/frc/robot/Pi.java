@@ -34,6 +34,8 @@ public class Pi extends SubsystemBase {
     private final NetworkTableEntry targetWidth;
     private final NetworkTableEntry targetHeight;
     private final NetworkTableEntry targetArea;
+    private Number[] cargoCenterXArray;
+    private Number[] cargoCenterYArray;
     private Number[] targetCenterXArray;
     private Number[] targetCenterYArray;
     private Number[] targetWidthArray;
@@ -69,8 +71,8 @@ public class Pi extends SubsystemBase {
     }
 
     public void processCargo() {
-        Number[] cargoCenterXArray = cargoCenterX.getNumberArray(new Number[0]);
-        Number[] cargoCenterYArray = cargoCenterY.getNumberArray(new Number[0]);
+        cargoCenterXArray = cargoCenterX.getNumberArray(new Number[0]);
+        cargoCenterYArray = cargoCenterY.getNumberArray(new Number[0]);
         if (cargoCenterXArray.length == 0 || cargoCenterYArray.length == 0) {
             cargoMoveRight = false;
             cargoMoveLeft = false;
@@ -78,11 +80,11 @@ public class Pi extends SubsystemBase {
             cargoCenterYOutput = -1;
             return;
         }
-        // currently just taking the first cargo but considering taking the cargo with
-        // the largest y value because it should be closest to the robot
-        double cargoX = cargoCenterXArray[0].doubleValue();
+        sortCargo();
+        // take the cargo with the largest y value (closest to the robot)
+        double cargoX = cargoCenterXArray[cargoCenterXArray.length - 1].doubleValue();
         cargoCenterXOutput = cargoX;
-        cargoCenterYOutput = cargoCenterYArray[0].doubleValue();
+        cargoCenterYOutput = cargoCenterYArray[cargoCenterYArray.length - 1].doubleValue();
         if (cargoX < (CAM_X_RES / 2) - (CAM_X_RES * 0.05)) {
             cargoMoveRight = false;
             cargoMoveLeft = true;
@@ -193,6 +195,22 @@ public class Pi extends SubsystemBase {
             targetHeightArray[j + 1] = keyH;
             targetWidthArray[j + 1] = keyW;
             targetAreaArray[j + 1] = keyA;
+        }
+    }
+
+    public void sortCargo() {
+        int size = cargoCenterXArray.length;
+        for (int i = 1; i < size; ++i) {
+            double keyX = cargoCenterXArray[i].doubleValue();
+            double keyY = cargoCenterYArray[i].doubleValue();
+            int j = i - 1;
+            while (j >= 0 && cargoCenterYArray[j].doubleValue() > keyY) {
+                cargoCenterXArray[j + 1] = cargoCenterXArray[j];
+                cargoCenterYArray[j + 1] = cargoCenterYArray[j];
+                j--;
+            }
+            cargoCenterXArray[j + 1] = keyX;
+            cargoCenterYArray[j + 1] = keyY;
         }
     }
 

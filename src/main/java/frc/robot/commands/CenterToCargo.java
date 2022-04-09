@@ -14,8 +14,8 @@ public class CenterToCargo extends CommandBase {
         this.drive = drive;
         addRequirements(drive);
         pid = new PIDController(0.35, 0, 0); // values from tyros last year were 0.35, 0.05, 0.8
-        pid.setSetpoint(320);
-        pid.setTolerance(10); // tolerance of 10 pixels
+        pid.setSetpoint(381);
+        pid.setTolerance(13); // tolerance of 10 pixels
     }
 
     @Override
@@ -29,6 +29,11 @@ public class CenterToCargo extends CommandBase {
 
         SmartDashboard.putNumber("Centering PID error", pid.getPositionError());
         SmartDashboard.putNumber("Centering PID value", pidVal);
+    }
+
+    @Override
+    public boolean isFinished() {
+        return pid.atSetpoint();
     }
 
     @Override

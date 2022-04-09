@@ -12,10 +12,10 @@ public class CenterToHub extends CommandBase {
 
     public CenterToHub(Drivetrain drive) {
         this.drive = drive;
-        addRequirements(drive);
+        // addRequirements(drive);
         pid = new PIDController(0.35, 0, 0); // values from tyros last year were 0.35, 0.05, 0.8
         pid.setSetpoint(320);
-        pid.setTolerance(10); // tolerance of 10 pixels
+        pid.setTolerance(15); // tolerance of 10 pixels
     }
 
     @Override
@@ -32,7 +32,14 @@ public class CenterToHub extends CommandBase {
     }
 
     @Override
+    public boolean isFinished() {
+        // System.out.println("CenterToHub finished");
+        return pid.atSetpoint();
+    }
+
+    @Override
     public void end(boolean interrupted) {
         drive.swerveDrive(0, 0, 0, false);
+        System.out.println("CenterToHub end");
     }
 }
