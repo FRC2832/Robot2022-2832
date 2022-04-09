@@ -48,4 +48,37 @@ public class Climber extends SubsystemBase {
     public void arm2Hold() {
         rung23.set(0);
     }
+
+    //COMMANDS FOR NEW ROTATING CLIMBER ARM
+    public void raiseArm(){ //dpad up
+        rung1.set(CLIMBER_UP_SPEED);
+    }
+
+    public void lowerArm(){ //dpad down
+        rung1.set(CLIMBER_DOWN_SPEED);
+    }
+
+    public void rotateArmUp(){ //dpad left
+        //run motor
+    }
+
+    public void rotateArmDown(){ //dpad right
+        //run motor in opposite direction
+    }
+
+    public void clampHookOne(){ //a button
+        //see if they are using a motor to extend the spring
+    }
+
+    public void clampHookTwo(){ //b button
+        //same as clampHookOne
+    }
+
+    public void holdArm(){
+        rung1.set(0);
+    }
+
+    public void holdRotator(){
+        //set rotational motor to zero
+    }
 }
