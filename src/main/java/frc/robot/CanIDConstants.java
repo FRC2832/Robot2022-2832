@@ -21,8 +21,8 @@ public class CanIDConstants {
     public static final int SHOOTER_DRIVE = 24;
 
     // climber
-    public static final int RUNG_1_2_WINCH = 33;
-    public static final int RUNG_3_4_WINCH = 34;
+    public static final int CLIMB_B = 33;
+    public static final int CLIMB_A = 34;
 
     public static final int HOOD_MOTOR = 26;
 

@@ -21,25 +21,25 @@ public class RunClimber extends CommandBase {
         if (pov != -1) {
             Shooter.setCoast(false);
         }
-        switch (pov) {
-            case 180: case 135: case 225: // Down pressed
-                climber.arm1Down();
-                break;
-            case 0: case 45: case 315: // Up pressed
-                // ingestor.liftIngestor();
-                climber.arm1Up();
-                break;
-            case 90:
-                climber.arm2Up();
-                break;
-            case 270:
-                climber.arm2Down();
-                break;
-            default: // Nothing pressed. Move neither arm.
-                climber.arm1Hold();
-                climber.arm2Hold();
-                break;
-        }
+        // switch (pov) {
+        //     case 180: case 135: case 225: // Down pressed
+        //         climber.arm1Down();
+        //         break;
+        //     case 0: case 45: case 315: // Up pressed
+        //         // ingestor.liftIngestor();
+        //         climber.arm1Up();
+        //         break;
+        //     case 90:
+        //         climber.arm2Up();
+        //         break;
+        //     case 270:
+        //         climber.arm2Down();
+        //         break;
+        //     default: // Nothing pressed. Move neither arm.
+        //         climber.arm1Hold();
+        //         climber.arm2Hold();
+        //         break;
+        // }
     }
 
 }

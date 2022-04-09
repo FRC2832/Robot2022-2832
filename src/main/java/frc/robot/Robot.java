@@ -59,7 +59,7 @@ public class Robot extends TimedRobot {
         CommandScheduler.getInstance().registerSubsystem(PI);
         shooter = new Shooter(DRIVER_CONTROLLER, OPERATOR_CONTROLLER, ingestor);
 
-        climber = new Climber(ingestor);
+        climber = new Climber(ingestor, OPERATOR_CONTROLLER);
 
         //turtleMode = new TurtleMode(swerve, driverController);
 

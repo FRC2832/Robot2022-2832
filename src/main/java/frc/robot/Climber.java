@@ -2,49 +2,70 @@ package frc.robot;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Climber extends SubsystemBase {
-    private static final double CLIMBER_UP_SPEED = -0.6;
-    private static final double CLIMBER_DOWN_SPEED = 0.4;
-    private final WPI_TalonFX rung1;
-    private final WPI_TalonFX rung23;
+    private final double CLIMBER_SLOW_SPEED = 0.2;
+    private final double CLIMBER_FAST_SPEED = 0.3;
+    private final WPI_TalonFX motorA;
+    private final WPI_TalonFX motorB;
     private final Ingestor ingestor;
-    // private ColorSensor colorSensor;
+    private final XboxController controller;
+    private boolean unlocked;
 
-    public Climber(Ingestor ingestor) {
-        rung1 = new WPI_TalonFX(CanIDConstants.RUNG_1_2_WINCH);
-        rung23 = new WPI_TalonFX(CanIDConstants.RUNG_3_4_WINCH);
-        rung1.setNeutralMode(NeutralMode.Brake);
-        rung23.setNeutralMode(NeutralMode.Brake);
-        // colorSensor = new ColorSensor();
-        // ingestor = new Ingestor(colorSensor);
+    public Climber(Ingestor ingestor, XboxController controller) {
+        motorA = new WPI_TalonFX(CanIDConstants.CLIMB_A);
+        motorB = new WPI_TalonFX(CanIDConstants.CLIMB_B);
+        motorA.setNeutralMode(NeutralMode.Brake);
+        motorB.setNeutralMode(NeutralMode.Brake);
         this.ingestor = ingestor;
+        this.controller = controller;
+        unlocked = false;
     }
 
-    public void arm1Up() {
-        rung1.set(CLIMBER_UP_SPEED);
+    @Override
+    public void periodic() {
+        if(controller.getBButton()) {
+            unlock();
+        } else {
+            motorA.set(0);
+            motorB.set(0);
+        }
     }
 
-    public void arm1Down() {
-        rung1.set(CLIMBER_DOWN_SPEED);
+    public void armCounterclockwise(boolean slow) {
+        if (slow) {
+            motorA.set(CLIMBER_SLOW_SPEED);
+            motorB.set(CLIMBER_SLOW_SPEED);
+        } else {
+            motorA.set(CLIMBER_FAST_SPEED);
+            motorB.set(CLIMBER_FAST_SPEED);
+        }
     }
 
-    public void arm1Hold() {
-        rung1.set(0);
+    public void armClockwise(boolean slow) {
+        if (slow) {
+            motorA.set(-CLIMBER_SLOW_SPEED);
+            motorB.set(-CLIMBER_SLOW_SPEED);
+        } else {
+            motorA.set(-CLIMBER_FAST_SPEED);
+            motorB.set(-CLIMBER_FAST_SPEED);
+        }
     }
 
-    public void arm2Up() {
-        ingestor.lowerIngestor();
-        rung23.set(-CLIMBER_UP_SPEED);
+    public void stopArm() {
+        motorA.set(0);
+        motorB.set(0);
     }
 
-    public void arm2Down() {
-        ingestor.liftIngestor();
-        rung23.set(-CLIMBER_DOWN_SPEED);
+    public void unlock() {
+
+        unlocked = true;
     }
 
-    public void arm2Hold() {
-        rung23.set(0);
+    public boolean getUnlocked() {
+        return unlocked;
     }
 }
