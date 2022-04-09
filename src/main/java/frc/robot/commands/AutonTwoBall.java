@@ -51,8 +51,8 @@ public class AutonTwoBall extends CommandBase {
         timer.start();
         // System.out.println("Start X, Y: " + startPose.getX() + ", " +
         // startPose.getY());
-        //System.out.println("Start encoder distance value: " + startEncoderCount);
-        //System.out.println("Start angle: " + startAngle + " degrees");
+        // System.out.println("Start encoder distance value: " + startEncoderCount);
+        // System.out.println("Start angle: " + startAngle + " degrees");
 
         // drive.currentStep++;
     }
@@ -88,9 +88,11 @@ public class AutonTwoBall extends CommandBase {
                     }
                     timer.reset();
                     startEncoderCount = frontLeft.getDistance();
-                } /*else {
-                    //System.out.println("Current distance (step 2): " + distance);
-                }*/
+                } /*
+                   * else {
+                   * //System.out.println("Current distance (step 2): " + distance);
+                   * }
+                   */
                 /*
                  * if (timer.get() >= 3.0) {
                  * drive.currentStep++;
@@ -108,9 +110,11 @@ public class AutonTwoBall extends CommandBase {
                     drive.incrementCurrentStep();
                     timer.reset();
                     // nextStepStartPose = drive.getPose();
-                } /*else {
-                    System.out.println("Current distance (step 3): " + distance);
-                }*/
+                } /*
+                   * else {
+                   * System.out.println("Current distance (step 3): " + distance);
+                   * }
+                   */
                 break;
             case 3: // turn to hub. TODO: Maybe add vision?
                 drive.swerveDrive(0.0, 0.0, (3 * Math.PI) / 4, false);
@@ -121,9 +125,12 @@ public class AutonTwoBall extends CommandBase {
                 if (angleDifference >= 170.0) {
                     drive.incrementCurrentStep();
                     timer.reset();
-                } /*else {
-                    System.out.println("Current angle difference: " + angleDifference + " degrees");
-                }*/
+                } /*
+                   * else {
+                   * System.out.println("Current angle difference: " + angleDifference +
+                   * " degrees");
+                   * }
+                   */
                 break;
             case 4: // shoot 2 balls with hood angle set at 2.5 knobs (aka, manual shot)
                 drive.swerveDrive(0.0, 0.0, 0.0, false);
@@ -145,6 +152,11 @@ public class AutonTwoBall extends CommandBase {
                 if (autoShoot.isFinished()) {
                     drive.incrementCurrentStep();
                 }
+                break;
+            default:
+                drive.swerveDrive(0.0, 0.0, 0.0, false);
+                shooter.setShooterRpm(2300.0);
+                ingestor.liftIngestor();
                 break;
             // 8.586, 7.107836, 90 for first ball
             /*

@@ -113,7 +113,7 @@ public class Pi extends SubsystemBase {
                 targetCenterXOutput = -1;
                 // System.out.println("lost vision");
             } else {
-                System.out.println("saving old vision target for " + targetLostCounter + " loops");
+                System.out.println("saving old vision target for " + targetLostCounter + " loops"); // TODO: Comment this out before comp!
                 targetLostCounter++;
             }
             return;

@@ -13,7 +13,9 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.ColorSensor.CargoColor;
 
 //import edu.wpi.first.wpilibj.DigitalOutput;
 
@@ -235,14 +237,16 @@ public class Ingestor extends SubsystemBase {
             sendTimer.stop();
             sendTimer.reset();
             sendTimerStarted = false;
+            totalBalls = 0;
             //Check if a ball is in 1st slip stream
             if(getStage1Proximity()){
                 //TODO: Check for ball in second stream and then send ball to second slip stream if empty
-                totalBalls = 1;
+                totalBalls++;
             }
             //TODO: Add second proximity sensor detection 
-            else
-                totalBalls = 0;
+            if (ColorSensor.getCargoColor() != CargoColor.Unknown) {
+                totalBalls++;
+            }
             SmartDashboard.putNumber("Total Balls", totalBalls);
             return true;
         }

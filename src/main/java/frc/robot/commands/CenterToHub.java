@@ -40,6 +40,6 @@ public class CenterToHub extends CommandBase {
     @Override
     public void end(boolean interrupted) {
         drive.swerveDrive(0, 0, 0, false);
-        System.out.println("CenterToHub end");
+        System.out.println("CenterToHub end"); // TODO: Comment this out before comp!
     }
 }
