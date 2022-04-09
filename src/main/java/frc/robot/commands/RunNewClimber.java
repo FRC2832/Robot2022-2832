@@ -17,6 +17,7 @@ public class RunNewClimber extends CommandBase {
     @Override
     public void execute() {
         if(!climber.getUnlocked()) { // if not unlocked the climber won't move
+            climber.stopArm();
             return;
         }
 
@@ -31,6 +32,7 @@ public class RunNewClimber extends CommandBase {
         } else {
             climber.stopArm();
         }
+
     }
 
     @Override

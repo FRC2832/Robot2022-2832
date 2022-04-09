@@ -23,6 +23,7 @@ import frc.robot.commands.DriveStickSlew;
 import frc.robot.commands.HubShoot;
 import frc.robot.commands.ManualShoot;
 import frc.robot.commands.RunClimber;
+import frc.robot.commands.RunNewClimber;
 import frc.robot.commands.SafeZoneShoot;
 import frc.robot.commands.ShooterBackwards;
 import frc.robot.commands.ShooterOff;
@@ -66,7 +67,7 @@ public class Robot extends TimedRobot {
         CommandScheduler.getInstance().registerSubsystem(swerve, colorSensor);
         swerve.setDefaultCommand(new DriveStickSlew(swerve, DRIVER_CONTROLLER));
         shooter.setDefaultCommand(new ShooterOff(shooter));
-        climber.setDefaultCommand(new RunClimber(climber, OPERATOR_CONTROLLER));
+        climber.setDefaultCommand(new RunNewClimber(climber, OPERATOR_CONTROLLER));
         //swerve.setDefaultCommand(new TurtleMode(swerve, driverController));
 
         JoystickButton selectButton = new JoystickButton(OPERATOR_CONTROLLER, 7);
@@ -130,6 +131,7 @@ public class Robot extends TimedRobot {
         stopControllerRumble(OPERATOR_CONTROLLER);
         Shooter.setCoast(false);
         swerve.setBrakeMode(false);
+        climber.setUnlocked(false);
     }
 
     @Override

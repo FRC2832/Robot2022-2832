@@ -7,8 +7,8 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Climber extends SubsystemBase {
-    private final double CLIMBER_SLOW_SPEED = 0.2;
-    private final double CLIMBER_FAST_SPEED = 0.3;
+    private final double CLIMBER_SLOW_SPEED = 0.4;
+    private final double CLIMBER_FAST_SPEED = 0.7;
     private final WPI_TalonFX motorA;
     private final WPI_TalonFX motorB;
     private final Ingestor ingestor;
@@ -27,11 +27,11 @@ public class Climber extends SubsystemBase {
 
     @Override
     public void periodic() {
-        if(controller.getBButton()) {
-            unlock();
+        if(controller.getRightStickButton()) {
+            Robot.rumbleController(controller, 1);
+            unlocked = true;
         } else {
-            motorA.set(0);
-            motorB.set(0);
+            Robot.stopControllerRumble(controller);
         }
     }
 
@@ -60,12 +60,11 @@ public class Climber extends SubsystemBase {
         motorB.set(0);
     }
 
-    public void unlock() {
-
-        unlocked = true;
-    }
-
     public boolean getUnlocked() {
         return unlocked;
+    }
+
+    public void setUnlocked(boolean unlocked) {
+        this.unlocked = unlocked;
     }
 }
