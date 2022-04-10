@@ -19,6 +19,7 @@ public class ManualShoot extends CommandBase {
 
     @Override
     public void execute() {
+        //SPEED = SmartDashboard.getNumber("Target RPM", 2300.0);
         shooter.setShooterRpm(SPEED);
         shooter.setHoodAngle(31.0); // knob 2.5
         double shooterVel = shooter.getShooterVelocity();

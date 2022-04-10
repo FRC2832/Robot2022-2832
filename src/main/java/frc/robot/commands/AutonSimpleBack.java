@@ -55,7 +55,7 @@ public class AutonSimpleBack extends CommandBase {
             case 1: // drive backwards to shoot. TODO: Raise hood to
                     // manual shot angle?
                 // negative x value for drive is forward, positive x val is backwards because motors are currently inverted
-                drive.swerveDrive(Drivetrain.kMaxSpeed / 4, 0, 0.0, false);
+                drive.swerveDrive(Drivetrain.kMaxSpeed / 4, 0.0, 0.0, false);
                 ingestor.liftIngestor();
                 ingestor.threeBallAutonIngest();
                 shooter.setShooterRpm(1000.0);
@@ -141,7 +141,7 @@ public class AutonSimpleBack extends CommandBase {
     @Override
     public void end(boolean interrupted) {
         timer.stop();
-        drive.swerveDrive(0, 0, 0, false);
+        drive.swerveDrive(0.0, 0.0, 0.0, false);
         shooter.setShooterRpm(1000.0);
         Shooter.setCoast(true);
         ingestor.liftIngestor();

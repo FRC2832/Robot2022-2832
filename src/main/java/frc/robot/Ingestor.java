@@ -8,12 +8,12 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxAlternateEncoder;
 import com.revrobotics.SparkMaxPIDController;
+
 import edu.wpi.first.wpilibj.Counter;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.ColorSensor.CargoColor;
 
@@ -40,6 +40,7 @@ public class Ingestor extends SubsystemBase {
     private final Counter counter;
     private boolean sendTimerStarted;
     private boolean stageTimerStarted;
+    private boolean hasCargo;
     // private SmartDashboard smartDashboard;
     private boolean triggerPressed;
     private static int totalBalls;
@@ -109,17 +110,24 @@ public class Ingestor extends SubsystemBase {
         // System.out.println("counter - " + counter.get());
         // prox sensor checking
         //if (counter.get() > 0) {
+        totalBalls = 0;
         if(getStage1Proximity()){
             // System.out.println("Ball ingested!");
             totalBalls++;
             // System.out.println("Total Balls 1:" + totalBalls);
-            SmartDashboard.putNumber("Total Balls", totalBalls);
             /*
             if (counter.get() >= 2) {
                 totalBalls = 0;
                 counter.reset();
             }
             */
+        }
+        if (ColorSensor.getCargoColor() != CargoColor.Unknown) {
+            totalBalls++;
+        }
+        if ((totalBalls > 0 && !hasCargo) || (hasCargo && totalBalls == 0)) {
+            SmartDashboard.putNumber("Total Balls", totalBalls);
+            hasCargo = !hasCargo;
         }
 
         // color sensor conditions
@@ -237,7 +245,7 @@ public class Ingestor extends SubsystemBase {
             sendTimer.stop();
             sendTimer.reset();
             sendTimerStarted = false;
-            totalBalls = 0;
+            /*totalBalls = 0;
             //Check if a ball is in 1st slip stream
             if(getStage1Proximity()){
                 //TODO: Check for ball in second stream and then send ball to second slip stream if empty
@@ -247,7 +255,7 @@ public class Ingestor extends SubsystemBase {
             if (ColorSensor.getCargoColor() != CargoColor.Unknown) {
                 totalBalls++;
             }
-            SmartDashboard.putNumber("Total Balls", totalBalls);
+            SmartDashboard.putNumber("Total Balls", totalBalls);*/
             return true;
         }
         return false;

@@ -5,9 +5,9 @@ import edu.wpi.first.math.Pair;
 import java.util.ArrayList;
 
 public class ShooterConstants {
-    public static final ArrayList<Pair<Double, Double>> VISION_DIST_TABLE = new ArrayList<>();
-    public static final ArrayList<Pair<Double, Double>> DIST_RPM_TABLE = new ArrayList<>();
-    public static final ArrayList<Pair<Double, Double>> DIST_HOOD_TABLE = new ArrayList<>();
+    public static final ArrayList<Pair<Double, Double>> VISION_DIST_TABLE = new ArrayList<>(15);
+    public static final ArrayList<Pair<Double, Double>> DIST_RPM_TABLE = new ArrayList<>(15);
+    public static final ArrayList<Pair<Double, Double>> DIST_HOOD_TABLE = new ArrayList<>(15);
 
     public static void LoadConstants() {
         // table is input: pixel Y, output: in from target

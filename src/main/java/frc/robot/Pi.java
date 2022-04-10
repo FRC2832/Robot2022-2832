@@ -136,7 +136,7 @@ public class Pi extends SubsystemBase {
         double targetX = targetCenterXArray[index].doubleValue(); // TODO: Is there less overhang with casting or calling
         // doubleValue()?
         targetCenterYOutput = targetCenterYArray[index].doubleValue();
-        if (Math.abs(targetCenterYOutput - oldTargetY) == 0.5) { // changes of only 0.5 pixels to Y are not useful
+        if (Math.abs(targetCenterYOutput - oldTargetY) == 0.5) { // changes of only 0.5 pixels to Y are not useful // TODO: Equality comparisons with floating point numbers is rarely a good idea.
             targetCenterYOutput = oldTargetY;
         } else {
             oldTargetY = targetCenterYOutput;
@@ -175,7 +175,7 @@ public class Pi extends SubsystemBase {
 
     public void sortTargets() {
         int size = targetCenterXArray.length;
-        for (int i = 1; i < size; ++i) {
+        for (int i = 1; i < size; i++) {
             double keyX = targetCenterXArray[i].doubleValue();
             double keyY = targetCenterYArray[i].doubleValue();
             double keyH = targetHeightArray[i].doubleValue();
@@ -200,7 +200,7 @@ public class Pi extends SubsystemBase {
 
     public void sortCargo() {
         int size = cargoCenterXArray.length;
-        for (int i = 1; i < size; ++i) {
+        for (int i = 1; i < size; i++) {
             double keyX = cargoCenterXArray[i].doubleValue();
             double keyY = cargoCenterYArray[i].doubleValue();
             int j = i - 1;

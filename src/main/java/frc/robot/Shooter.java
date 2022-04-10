@@ -213,9 +213,9 @@ public class Shooter extends SubsystemBase {
 
     public void calcShot() {
         // first, calculate distance to target
-        double centerY = Pi.getTargetCenterY();
-        distance = Pi.LinearInterp(ShooterConstants.VISION_DIST_TABLE, centerY);
-
+        //double centerY = Pi.getTargetCenterY();
+        distance = Lidar.getDistanceToTarget();
+        //distance = Pi.LinearInterp(ShooterConstants.VISION_DIST_TABLE, centerY);
         targetHoodAngle = Pi.LinearInterp(ShooterConstants.DIST_HOOD_TABLE, distance);
         targetRpm = Pi.LinearInterp(ShooterConstants.DIST_RPM_TABLE, distance);
     }

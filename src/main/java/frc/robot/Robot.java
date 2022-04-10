@@ -31,7 +31,8 @@ import frc.robot.commands.ShooterOff;
 public class Robot extends TimedRobot {
     private final XboxController DRIVER_CONTROLLER = new XboxController(0);
     private final XboxController OPERATOR_CONTROLLER = new XboxController(2);
-    private final Pi PI = new Pi();
+    private final Pi pi = new Pi();
+    private final Lidar lidar = new Lidar();
     private ColorSensor colorSensor;
     private Drivetrain swerve;
     private Ingestor ingestor;
@@ -57,7 +58,7 @@ public class Robot extends TimedRobot {
         // Snapshot.start("http://10.28.32.22:1181/stream.mjpg");
 
         ShooterConstants.LoadConstants();
-        CommandScheduler.getInstance().registerSubsystem(PI);
+        CommandScheduler.getInstance().registerSubsystem(pi, lidar);
         shooter = new Shooter(DRIVER_CONTROLLER, OPERATOR_CONTROLLER, ingestor);
 
         climber = new Climber(ingestor, OPERATOR_CONTROLLER);
@@ -170,7 +171,7 @@ public class Robot extends TimedRobot {
         // SmartDashboard.putNumber("XPosition", odometry.getXPosition());
         // SmartDashboard.putNumber("YPosition", odometry.getYPosition());
 
-        PI.processCargo();
+        //pi.processCargo();
         //pi.processTargets();
         // automatically turn on/off recording
         if (lastEnabled != isEnabled()) {
@@ -187,7 +188,6 @@ public class Robot extends TimedRobot {
         lastEnabled = isEnabled();
 
         SmartDashboard.putData(swerve);
-        SmartDashboard.putBoolean("Stage 1 Proximity", ingestor.getStage1Proximity());
         SmartDashboard.putNumber("Shooter Motor Temperature F", shooter.getShooterTemperature());
     }
 

@@ -258,7 +258,7 @@ public class AutonThreeBall extends CommandBase {
     @Override
     public void end(boolean interrupted) {
         TIMER.stop();
-        drive.swerveDrive(0, 0, 0, false);
+        drive.swerveDrive(0.0, 0.0, 0.0, false);
         shooter.setShooterRpm(1000.0);
         Shooter.setCoast(true);
         ingestor.liftIngestor();
