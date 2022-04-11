@@ -44,10 +44,10 @@ class DriverCam(threading.Thread):
         cap.set(cv2.CAP_PROP_FRAME_WIDTH, 320)
         cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 240)
         output_stream = inst.putVideo(name='Processed', height = 320, width=240)
-        redOffsetX = 30
-        redOffsetY = 30
-        yelOffsetX = 10
-        yelOffsetY = 10
+        redOffsetX = 25
+        redOffsetY = 36
+        yelOffsetX = 19
+        yelOffsetY = 30
         while self.running:
             ret, frame = cap.read()
             frame = cv2.rotate(frame, cv2.ROTATE_180)
@@ -57,14 +57,14 @@ class DriverCam(threading.Thread):
             frame = cv2.line(frame, (160+yelOffsetY , 0), (160+yelOffsetY,250), (0,255,255), 1)
             frame = cv2.line(frame, (160-yelOffsetY, 0), (160-yelOffsetY,250), (0,255,255), 1)
             
-            frame = cv2.line(frame, (0, 90+yelOffsetX), (320,90+yelOffsetX), (0,255,255), 1)
-            frame = cv2.line(frame, (0, 90-yelOffsetX), (320,90-yelOffsetX), (0,255,255), 1)
+            frame = cv2.line(frame, (0, 90+yelOffsetX -15), (320,90+yelOffsetX-15), (0,255,255), 1)
+            frame = cv2.line(frame, (0, 90-yelOffsetX ), (320,90-yelOffsetX), (0,255,255), 1)
             
             frame = cv2.line(frame, (160+redOffsetY , 0), (160+redOffsetY,250), (0,0,255), 1)
             frame = cv2.line(frame, (160-redOffsetY, 0), (160-redOffsetY,250), (0,0,255), 1)
             
-            frame = cv2.line(frame, (0, 90+redOffsetX), (320,90+redOffsetX), (0,0,255), 1)
-            frame = cv2.line(frame, (0, 90-redOffsetX), (320,90-redOffsetX), (0,0,255), 1)
+            frame = cv2.line(frame, (0, 90+redOffsetX -15), (320,90+redOffsetX-15), (0,0,255), 1)
+            frame = cv2.line(frame, (0, 90-redOffsetX ), (320,90-redOffsetX), (0,0,255), 1)
             
             output_stream.putFrame(frame)
 
@@ -332,9 +332,9 @@ class TargetPipeline:
         """initializes all values to presets or None if need to be set
         """
 
-        self.__hsv_threshold_hue = [46.942446043165454, 83.24232081911263]
-        self.__hsv_threshold_saturation = [128.41726618705036, 255.0]
-        self.__hsv_threshold_value = [32.10431654676259, 255.0]
+        self.__hsv_threshold_hue = [40.46762589928056, 86.31399317406144]
+        self.__hsv_threshold_saturation = [149.05575539568343, 255.0]
+        self.__hsv_threshold_value = [48.156474820143885, 255.0]
 
         self.hsv_threshold_output = None
 
@@ -708,25 +708,25 @@ class findCargo (threading.Thread):
 
     def run(self):
         red_pipeline = {
-            'rgb_red': [220.90395480225988, 255.0], 
-            'rgb_green': [0.0, 152.72727272727275], 
+            'rgb_red': [218.50282485875704, 255.0], 
+            'rgb_green': [0.0, 255.0], 
             'rgb_blue': [0.0, 255.0], 
-            'hsv_hue': [0.0, 6.73796791443851], 
-            'hsv_sat': [23.38942405397715, 255.0], 
-            'hsv_value': [0.0, 255.0], 
-            'hsl_hue': [131.72478965979764, 180.0], 
-            'hsl_sat': [16.80790960451977, 255.0], 
-            'hsl_lum': [0.0, 255.0]
+            'hsv_hue': [0.0, 14.266576622971181], 
+            'hsv_sat': [54.60411331951388, 255.0], 
+            'hsv_value': [152.56244157216597, 255.0], 
+            'hsl_hue': [141.8942811852213, 180.0], 
+            'hsl_sat': [36.04286062675284, 255.0], 
+            'hsl_lum': [66.82569198878186, 255.0]
         }
         blue_pipeline = {
-            'rgb_red': [0.0, 132.27272727272728], 
+            'rgb_red': [0.0, 184.54545454545456], 
             'rgb_green': [0.0, 255.0], 
-            'rgb_blue': [194.49152542372883, 255.0], 
-            'hsv_hue': [84.74576271186442, 115.33609533954873], 
-            'hsv_sat': [129.03914156810146, 255.0], 
+            'rgb_blue': [177.68361581920905, 255.0], 
+            'hsv_hue': [86.4406779661017, 121.75320763901397], 
+            'hsv_sat': [42.598463601999754, 255.0], 
             'hsv_value': [0.0, 255.0], 
-            'hsl_hue': [97.82648457505178, 127.05882352941175], 
-            'hsl_sat': [86.46658944031215, 255.0], 
+            'hsl_hue': [79.18241677844163, 138.28877005347593], 
+            'hsl_sat': [88.86771938381499, 255.0], 
             'hsl_lum': [0.0, 255.0]
         }
         table = NetworkTables.getTable('datatable')
