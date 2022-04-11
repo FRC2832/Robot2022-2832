@@ -16,6 +16,8 @@ public class Pi extends SubsystemBase {
     private static final double CAM_X_RES = 640.0;
     // private final double CAM_Y_RES = 480;
     // public final double TARGET_CENTER_X = 320.0;
+    private static boolean isCargoCamConnected;
+    private static boolean isTargetCamConnected;
     private static boolean targetMoveRight;
     private static boolean targetMoveLeft;
     private static boolean cargoMoveRight;
@@ -34,6 +36,8 @@ public class Pi extends SubsystemBase {
     private final NetworkTableEntry targetWidth;
     private final NetworkTableEntry targetHeight;
     private final NetworkTableEntry targetArea;
+    private final NetworkTableEntry cargoCameraConnected;
+    private final NetworkTableEntry targetCameraConnected;
     private Number[] cargoCenterXArray;
     private Number[] cargoCenterYArray;
     private Number[] targetCenterXArray;
@@ -57,6 +61,8 @@ public class Pi extends SubsystemBase {
         targetWidth = table.getEntry("targetWidth");
         targetHeight = table.getEntry("targetHeight");
         targetArea = table.getEntry("targetArea");
+        cargoCameraConnected = table.getEntry("cargoCamConnected");
+        targetCameraConnected = table.getEntry("targetCamConnected");
         targetCenterYOutput = -1;
         pid = new PIDController(.2, 0, 0); // values from tyros last year were 0.35, 0.05, 0.8
         pid.setSetpoint(CAM_X_RES / 2);
@@ -65,8 +71,30 @@ public class Pi extends SubsystemBase {
 
     @Override
     public void periodic() {
-        processCargo();
-        processTargets();
+        isCargoCamConnected = cargoCameraConnected.getBoolean(true); // TODO: Change default to false when it's added to Python code.
+        if (isCargoCamConnected) {
+            processCargo();
+        } else {
+            cargoMoveRight = false;
+            cargoMoveLeft = false;
+            cargoCenterXOutput = -1;
+            cargoCenterYOutput = -1;
+        }
+        isTargetCamConnected = targetCameraConnected.getBoolean(true); // TODO: Change default to false when it's added to Python code.
+        if (isTargetCamConnected) {
+            processTargets();
+        } else {
+            targetMoveRight = false;
+            targetMoveLeft = false;
+            if (targetLostCounter > 4) { // keep last target data for 5 loops ~ less than a second
+                targetCenterYOutput = -1;
+                targetCenterXOutput = -1;
+                // System.out.println("lost vision");
+            } else {
+                //System.out.println("saving old vision target for " + targetLostCounter + " loops"); // TODO: Comment this out before comp!
+                targetLostCounter++;
+            }
+        }
         // centerToTarget(); // take this out when done testing
     }
 
@@ -113,7 +141,7 @@ public class Pi extends SubsystemBase {
                 targetCenterXOutput = -1;
                 // System.out.println("lost vision");
             } else {
-                System.out.println("saving old vision target for " + targetLostCounter + " loops"); // TODO: Comment this out before comp!
+                //System.out.println("saving old vision target for " + targetLostCounter + " loops"); // TODO: Comment this out before comp!
                 targetLostCounter++;
             }
             return;
@@ -285,6 +313,12 @@ public class Pi extends SubsystemBase {
 
     public static double getTargetCenterX() {
         return targetCenterXOutput;
+    }
+    public static boolean getIsCargoCamConnected() {
+        return isCargoCamConnected;
+    }
+    public static boolean getIsTargetCamConnected() {
+        return isTargetCamConnected;
     }
 
     // sends alliance color to the python code so it knows what color cargo to look

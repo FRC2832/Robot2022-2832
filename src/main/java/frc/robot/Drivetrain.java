@@ -13,7 +13,6 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.networktables.NetworkTable;
@@ -48,7 +47,7 @@ public class Drivetrain extends SubsystemBase {
     private final PigeonIMU pigeon;
     private final SwerveDriveKinematics kinematics;
     private final Field2d field = new Field2d();
-    public SwerveDriveOdometry odometry;
+    // public SwerveDriveOdometry odometry;
     private int currentStep;
     private NetworkTable visionTable;
     private XboxController driverController;
@@ -137,15 +136,16 @@ public class Drivetrain extends SubsystemBase {
             MODULES[i] = new SwerveModule(CONSTANTS[i]);
         }
         kinematics = new SwerveDriveKinematics(CONSTANTS[FL].Location, CONSTANTS[FR].Location, CONSTANTS[RL].Location,
-                                               CONSTANTS[RR].Location);
-        odometry = new SwerveDriveOdometry(kinematics, getHeading());
+                CONSTANTS[RR].Location);
+        // odometry = new SwerveDriveOdometry(kinematics, getHeading());
 
         // set the robot to x=0.5m, y=4m, rot=0*
-        odometry.resetPosition(new Pose2d(0.5, 4.0, new Rotation2d()), new Rotation2d());
+        // odometry.resetPosition(new Pose2d(0.5, 4.0, new Rotation2d()), new
+        // Rotation2d());
 
         pigeon.clearStickyFaults();
         SmartDashboard.putData("Field", field);
-        //SmartDashboard.putBoolean("Reset Position", false);
+        // SmartDashboard.putBoolean("Reset Position", false);
     }
 
     public Rotation2d getHeading() {
@@ -171,40 +171,47 @@ public class Drivetrain extends SubsystemBase {
      * Reset the orientation of the robot (and in simulation, also the position)
      */
     public void resetRobot() {
-        odometry.resetPosition(new Pose2d(0.5, 4.0, getHeading()), getHeading());
+        // odometry.resetPosition(new Pose2d(0.5, 4.0, getHeading()), getHeading());
     }
 
     /**
      * Updates the field relative position of the robot.
      */
-    public void updateOdometry() {
-        // update our estimation where we are on the field
-        odometry.update(getHeading(), MODULES[FL].getState(), MODULES[FR].getState(), MODULES[RL].getState(),
-                        MODULES[RR].getState());
-        Pose2d pose = getPose();
+    /*
+     * public void updateOdometry() {
+     * // update our estimation where we are on the field
+     * /*odometry.update(getHeading(), MODULES[FL].getState(),
+     * MODULES[FR].getState(), MODULES[RL].getState(),
+     * MODULES[RR].getState());
+     * Pose2d pose = getPose();
+     * 
+     * // Update the poses for the swerveModules. Note that the order of rotating
+     * the
+     * // position and then adding the translation matters
+     * for (int i = 0; i < MODULES.length; i++) {
+     * Translation2d modulePositionFromChassis =
+     * CONSTANTS[i].Location.rotateBy(getHeading()).plus(pose.getTranslation());
+     * 
+     * // Module's heading is it's angle relative to the chassis heading
+     * modulePoses[i] =
+     * new Pose2d(modulePositionFromChassis,
+     * MODULES[i].getState().angle.plus(pose.getRotation()));
+     * }
+     * 
+     * // plot it on the simulated field
+     * field.setRobotPose(pose);
+     * if (Robot.isSimulation()) {
+     * updateSimulationVision(pose);
+     * }
+     * field.getObject("Swerve Modules").setPoses(modulePoses);
+     * }
+     */
 
-        // Update the poses for the swerveModules. Note that the order of rotating the
-        // position and then adding the translation matters
-        for (int i = 0; i < MODULES.length; i++) {
-            Translation2d modulePositionFromChassis =
-                    CONSTANTS[i].Location.rotateBy(getHeading()).plus(pose.getTranslation());
-
-            // Module's heading is it's angle relative to the chassis heading
-            modulePoses[i] =
-                    new Pose2d(modulePositionFromChassis, MODULES[i].getState().angle.plus(pose.getRotation()));
-        }
-
-        // plot it on the simulated field
-        field.setRobotPose(pose);
-        if (Robot.isSimulation()) {
-            updateSimulationVision(pose);
-        }
-        field.getObject("Swerve Modules").setPoses(modulePoses);
-    }
-
-    public Pose2d getPose() {
-        return odometry.getPoseMeters();
-    }
+    /*
+     * public Pose2d getPose() {
+     * return odometry.getPoseMeters();
+     * }
+     */
 
     public void updateSimulationVision(Pose2d robot) {
         Translation2d[] balls;
@@ -278,11 +285,11 @@ public class Drivetrain extends SubsystemBase {
     @Override
     public void periodic() {
         // put data on dashboard
-        SmartDashboard.putNumber("SwerveDrive/gyroAngle", getAngle());
-        SmartDashboard.putNumber("SwerveDrive/gyroHeading", getHeading().getDegrees());
         loops++;
         if (loops % 5 == 0) {
             for (SwerveModule module : MODULES) {
+                SmartDashboard.putNumber("SwerveDrive/gyroAngle", getAngle());
+                SmartDashboard.putNumber("SwerveDrive/gyroHeading", getHeading().getDegrees());
                 module.putSmartDashboard();
             }
             loops = 0;
@@ -294,7 +301,8 @@ public class Drivetrain extends SubsystemBase {
         boolean reset = SmartDashboard.getBoolean("Reset Position", false);
         if (reset) {
             // set the robot to x=0.5m, y=4m, rot=0*
-            odometry.resetPosition(new Pose2d(6.5, 4.72, new Rotation2d()), new Rotation2d());
+            // odometry.resetPosition(new Pose2d(6.5, 4.72, new Rotation2d()), new
+            // Rotation2d());
             SmartDashboard.putBoolean("Reset Position", false);
         }
 
@@ -311,7 +319,8 @@ public class Drivetrain extends SubsystemBase {
         double omega = kinematics.toChassisSpeeds(states).omegaRadiansPerSecond;
         // set the IMU to the calculated robot rotation
         double angle = Math.toDegrees(omega * rate);
-        gyroSim.setAngle(odometry.getPoseMeters().getRotation().getDegrees() + angle);
+        // gyroSim.setAngle(odometry.getPoseMeters().getRotation().getDegrees() +
+        // angle);
     }
 
     public double deadbandStick(double value) {
@@ -343,38 +352,42 @@ public class Drivetrain extends SubsystemBase {
         }
     }
 
-    public void setPosition(double xDesPosition, double yDesPosition, double desRotation, double time, int step) {
-        Pose2d pos = odometry.getPoseMeters();
-        double xCurrentPos = pos.getX();
-        double yCurrentPos = pos.getY();
-        double rotCurrentPos = pos.getRotation().getRadians();
-        double xMove = xDesPosition - xCurrentPos;
-        double yMove = yDesPosition - yCurrentPos;
-        // rotCurrentPos = rotCurrentPos % Math.toRadians(360);
-        if (rotCurrentPos < 0.0) {
-            rotCurrentPos += Math.toRadians(360.0);
-        }
-        double rotMag = desRotation - rotCurrentPos;
-
-        double xSpeed = xMove / time;
-        double ySpeed = yMove / time;
-        double rotSpeed = rotMag / time;
-
-        if (step == currentStep) {
-            if (Math.abs(xCurrentPos - xDesPosition) > 0.1 || Math.abs(yCurrentPos - yDesPosition) > 0.1 ||
-                Math.abs(rotCurrentPos - desRotation) > 0.1) {
-                swerveDrive(xSpeed, ySpeed, rotSpeed, true);
-            } else {
-                xSpeed = 0.0;
-                ySpeed = 0.0;
-                rotSpeed = 0.0;
-                swerveDrive(xSpeed, ySpeed, rotSpeed, false);
-                System.out.println("Arrived");
-                currentStep++;
-            }
-        }
-
-    }
+    /*
+     * public void setPosition(double xDesPosition, double yDesPosition, double
+     * desRotation, double time, int step) {
+     * Pose2d pos = odometry.getPoseMeters();
+     * double xCurrentPos = pos.getX();
+     * double yCurrentPos = pos.getY();
+     * double rotCurrentPos = pos.getRotation().getRadians();
+     * double xMove = xDesPosition - xCurrentPos;
+     * double yMove = yDesPosition - yCurrentPos;
+     * // rotCurrentPos = rotCurrentPos % Math.toRadians(360);
+     * if (rotCurrentPos < 0.0) {
+     * rotCurrentPos += Math.toRadians(360.0);
+     * }
+     * double rotMag = desRotation - rotCurrentPos;
+     * 
+     * double xSpeed = xMove / time;
+     * double ySpeed = yMove / time;
+     * double rotSpeed = rotMag / time;
+     * 
+     * if (step == currentStep) {
+     * if (Math.abs(xCurrentPos - xDesPosition) > 0.1 || Math.abs(yCurrentPos -
+     * yDesPosition) > 0.1 ||
+     * Math.abs(rotCurrentPos - desRotation) > 0.1) {
+     * swerveDrive(xSpeed, ySpeed, rotSpeed, true);
+     * } else {
+     * xSpeed = 0.0;
+     * ySpeed = 0.0;
+     * rotSpeed = 0.0;
+     * swerveDrive(xSpeed, ySpeed, rotSpeed, false);
+     * System.out.println("Arrived");
+     * currentStep++;
+     * }
+     * }
+     * 
+     * }
+     */
 
     /**
      * Method to drive the robot using joystick info.
@@ -382,7 +395,8 @@ public class Drivetrain extends SubsystemBase {
      * @param xSpeed        Speed of the robot in the x direction (forward).
      * @param ySpeed        Speed of the robot in the y direction (sideways).
      * @param rot           Angular rate of the robot.
-     * @param fieldRelative Whether the provided x and y speeds are relative to the field.
+     * @param fieldRelative Whether the provided x and y speeds are relative to the
+     *                      field.
      */
     @SuppressWarnings("ParameterName")
     public void swerveDrive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
@@ -419,6 +433,7 @@ public class Drivetrain extends SubsystemBase {
     public int getCurrentStep() {
         return currentStep;
     }
+
     public void incrementCurrentStep() {
         currentStep++;
     }

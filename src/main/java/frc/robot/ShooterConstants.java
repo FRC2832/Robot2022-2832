@@ -1,11 +1,12 @@
 package frc.robot;
 
-import edu.wpi.first.math.Pair;
-
 import java.util.ArrayList;
+
+import edu.wpi.first.math.Pair;
 
 public class ShooterConstants {
     public static final ArrayList<Pair<Double, Double>> VISION_DIST_TABLE = new ArrayList<>(15);
+    public static final ArrayList<Pair<Double, Double>> LIDAR_DIST_TABLE = new ArrayList<>(8);
     public static final ArrayList<Pair<Double, Double>> DIST_RPM_TABLE = new ArrayList<>(15);
     public static final ArrayList<Pair<Double, Double>> DIST_HOOD_TABLE = new ArrayList<>(15);
 
@@ -27,6 +28,19 @@ public class ShooterConstants {
         VISION_DIST_TABLE.add(new Pair<>(384.0, 204d));
         VISION_DIST_TABLE.add(new Pair<>(404.0, 216d));
         VISION_DIST_TABLE.add(new Pair<>(406.5, 228d));
+
+        // table is input: distance in m, output: rpm
+        LIDAR_DIST_TABLE.add(new Pair<>(1.06, 2070.0)); // At hub, zero degrees on hood
+        LIDAR_DIST_TABLE.add(new Pair<>(1.65, 2070.0)); // 2 ft away, zero degrees on hood
+        LIDAR_DIST_TABLE.add(new Pair<>(2.32, 2320.0)); // 4 ft away, zero degrees on hood
+        LIDAR_DIST_TABLE.add(new Pair<>(4.54, 2480.0)); // 6 ft away, zero degrees on hood (TODO: May need to verify hood angle)
+        LIDAR_DIST_TABLE.add(new Pair<>(3.5, 2320.0)); // 8 ft away, 41.125 degrees on hood
+        LIDAR_DIST_TABLE.add(new Pair<>(4.25, 2470.0)); // 10 ft away, 51.375 degrees on hood
+        LIDAR_DIST_TABLE.add(new Pair<>(6.22, 2570.0)); // 12 ft away, 51.375 degrees on hood
+        LIDAR_DIST_TABLE.add(new Pair<>(8.68, 2690.0)); // 13 ft away, 51.375 degrees on hood
+        LIDAR_DIST_TABLE.add(new Pair<>(2.54, 2370.0));
+
+
 
         // table is input: distance in in, output: rpm
         // from auto shots sheet in 2022 shooter speed table

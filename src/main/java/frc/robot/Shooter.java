@@ -17,7 +17,7 @@ import frc.robot.commands.DribbleShoot;
 
 public class Shooter extends SubsystemBase {
     private static final double SENSOR_UNITS_TO_RPM = 3.414;
-    //private static final int HOOD_SENSOR_ACTIVE = 700;
+    // private static final int HOOD_SENSOR_ACTIVE = 700;
     private static final int MAX_ANGLE_COUNTS = 400;
     private static final int MIN_ANGLE = 20;
     private static final int MAX_ANGLE = 70;
@@ -81,9 +81,11 @@ public class Shooter extends SubsystemBase {
         return coastMotor;
     }
 
-    /* public void setShootPct(double percent) {
-        shooterFx.set(ControlMode.PercentOutput, percent);
-    } */
+    /*
+     * public void setShootPct(double percent) {
+     * shooterFx.set(ControlMode.PercentOutput, percent);
+     * }
+     */
 
     public static void setCoast(boolean coast) {
         coastMotor = coast;
@@ -211,20 +213,32 @@ public class Shooter extends SubsystemBase {
         hoodMotor.set(ControlMode.PercentOutput, percentage);
     }
 
-    public void calcShot() {
+    public void calcShot(boolean useRunningAvg) {
         // first, calculate distance to target
-        //double centerY = Pi.getTargetCenterY();
-        distance = Lidar.getDistanceToTarget();
-        //distance = Pi.LinearInterp(ShooterConstants.VISION_DIST_TABLE, centerY);
-        targetHoodAngle = Pi.LinearInterp(ShooterConstants.DIST_HOOD_TABLE, distance);
-        targetRpm = Pi.LinearInterp(ShooterConstants.DIST_RPM_TABLE, distance);
+        // double centerY = Pi.getTargetCenterY();
+        if (useRunningAvg) {
+            distance = Lidar.getRunningAvg();
+        } else {
+            distance = Lidar.getDistanceToTarget();
+        }
+        // distance = Pi.LinearInterp(ShooterConstants.VISION_DIST_TABLE, centerY);
+        // targetHoodAngle = Pi.LinearInterp(ShooterConstants.DIST_HOOD_TABLE,
+        // distance);
+        if (Lidar.getIsConnected()) {
+            targetHoodAngle = Lidar.calculateTargetAngle(distance);
+        } else {
+            targetHoodAngle = Pi.LinearInterp(ShooterConstants.DIST_HOOD_TABLE, distance * 39.3701);
+        }
+        targetRpm = Pi.LinearInterp(ShooterConstants.LIDAR_DIST_TABLE, distance);
     }
 
     public double getShooterTemperature() {
         return shooterFx.getTemperature() * 1.8 + 32;
     }
 
-    /*public CargoColor getCurrentCargoColor() {
-        return currentCargoColor;
-    } */
+    /*
+     * public CargoColor getCurrentCargoColor() {
+     * return currentCargoColor;
+     * }
+     */
 }

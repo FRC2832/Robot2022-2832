@@ -16,12 +16,12 @@ public class AutoShoot extends CommandBase {
     private final CenterToHub centerToHub;
     private boolean cargoSentToShooter;
     // private boolean autonShootFinished;
-    //private boolean lastShot;
+    // private boolean lastShot;
     private boolean snapshotTaken;
     private boolean centerScheduled;
 
     public AutoShoot(Drivetrain drive, Shooter shooter, Ingestor ingestor, XboxController operatorController,
-                     XboxController driverController) {
+            XboxController driverController) {
         this.drive = drive;
         this.shooter = shooter;
         this.operatorController = operatorController;
@@ -30,7 +30,7 @@ public class AutoShoot extends CommandBase {
         centerToHub = new CenterToHub(drive);
         cargoSentToShooter = false;
         // autonShootFinished = false;
-        //lastShot = false;
+        // lastShot = false;
         snapshotTaken = false;
         centerScheduled = false;
 
@@ -44,7 +44,7 @@ public class AutoShoot extends CommandBase {
 
     @Override
     public void execute() {
-        shooter.calcShot();
+        shooter.calcShot(false);
         String error = "";
 
         // check hood angle is more than 3* off
@@ -76,15 +76,15 @@ public class AutoShoot extends CommandBase {
             }
             // double rotationSpeed = Math.toRadians(50.0);
             // if (Pi.getTargetMoveLeft()) {
-            //     error = String.join(error, "TurnL ");
-            //     // left is positive turn
-            //     drive.swerveDrive(0.0, 0.0, -rotationSpeed, false);
+            // error = String.join(error, "TurnL ");
+            // // left is positive turn
+            // drive.swerveDrive(0.0, 0.0, -rotationSpeed, false);
             // } else if (Pi.getTargetMoveRight()) {
-            //     error = String.join(error, "TurnR ");
-            //     drive.swerveDrive(0.0, 0.0, rotationSpeed, false);
+            // error = String.join(error, "TurnR ");
+            // drive.swerveDrive(0.0, 0.0, rotationSpeed, false);
             // } else {
-            //     // robot centered, stop driving
-            //     drive.swerveDrive(0.0, 0.0, 0.0, false);
+            // // robot centered, stop driving
+            // drive.swerveDrive(0.0, 0.0, 0.0, false);
             // }
         } else {
             // pi is not seeing hub
@@ -104,20 +104,24 @@ public class AutoShoot extends CommandBase {
 
         if (error.isEmpty()) {
             // error = "SHOOT!!!";
+            //System.out.println("You need to shoot!");
             if (ingestor.sendCargoToShooter()) { // sends cargo to shooter and returns true once it finishes sending
                 // cargo
                 cargoSentToShooter = true;
             }
-            /*if (!lastShot) {
-                // Snapshot.TakeSnapshot("SHOT");
-            } */
-            //lastShot = true;
+            /*
+             * if (!lastShot) {
+             * // Snapshot.TakeSnapshot("SHOT");
+             * }
+             */
+            // lastShot = true;
             SmartDashboard.putBoolean("auto shot shooting", true);
         } else {
-            //lastShot = false;
+            // lastShot = false;
             SmartDashboard.putBoolean("auto shot shooting", false);
         }
         SmartDashboard.putString("Auto Shoot Error", error);
+        System.out.println("Auto Shoot Error: " + error);
 
         if (!snapshotTaken) {
             // Snapshot.TakeSnapshot("START");
@@ -132,14 +136,14 @@ public class AutoShoot extends CommandBase {
             Robot.stopControllerRumble(driverController);
         }
         Shooter.setCoast(true);
-        //System.out.println("AutoShoot end");
+        // System.out.println("AutoShoot end");
         cargoSentToShooter = false;
         centerScheduled = false;
     }
 
     @Override
     public boolean isFinished() {
-        //System.out.println("AutoShoot is finished");
+        // System.out.println("AutoShoot is finished");
         return cargoSentToShooter;
     }
 }

@@ -23,7 +23,6 @@ import frc.robot.commands.DriveStickSlew;
 import frc.robot.commands.HubShoot;
 import frc.robot.commands.ManualShoot;
 import frc.robot.commands.RunClimber;
-import frc.robot.commands.RunNewClimber;
 import frc.robot.commands.SafeZoneShoot;
 import frc.robot.commands.ShooterBackwards;
 import frc.robot.commands.ShooterOff;
@@ -68,18 +67,16 @@ public class Robot extends TimedRobot {
         CommandScheduler.getInstance().registerSubsystem(swerve, colorSensor);
         swerve.setDefaultCommand(new DriveStickSlew(swerve, DRIVER_CONTROLLER));
         shooter.setDefaultCommand(new ShooterOff(shooter));
-        climber.setDefaultCommand(new RunNewClimber(climber, OPERATOR_CONTROLLER));
+        climber.setDefaultCommand(new RunClimber(climber, OPERATOR_CONTROLLER));
         //swerve.setDefaultCommand(new TurtleMode(swerve, driverController));
 
         JoystickButton selectButton = new JoystickButton(OPERATOR_CONTROLLER, 7);
         selectButton.whileActiveContinuous(new ManualShoot(shooter, ingestor));
-
         JoystickButton startButton = new JoystickButton(OPERATOR_CONTROLLER, 8);
         startButton.whileActiveContinuous(new SafeZoneShoot(shooter, ingestor, false));
 
         JoystickButton rightBumper = new JoystickButton(OPERATOR_CONTROLLER, 6);
-        rightBumper.whileActiveContinuous(
-                new AutoShoot(swerve, shooter, ingestor, OPERATOR_CONTROLLER, DRIVER_CONTROLLER));
+        rightBumper.whileActiveContinuous(new AutoShoot(swerve, shooter, ingestor, OPERATOR_CONTROLLER, DRIVER_CONTROLLER));
 
         JoystickButton leftBumper = new JoystickButton(OPERATOR_CONTROLLER, 5);
         leftBumper.whileActiveContinuous(new SafeZoneShoot(shooter, ingestor, true));
@@ -133,6 +130,7 @@ public class Robot extends TimedRobot {
         Shooter.setCoast(false);
         swerve.setBrakeMode(false);
         climber.setUnlocked(false);
+        Shuffleboard.stopRecording();
     }
 
     @Override
@@ -151,6 +149,7 @@ public class Robot extends TimedRobot {
         }
 
         CommandScheduler.getInstance().schedule(autonCom);
+        Shuffleboard.startRecording();
         //ranAuton = true;
     }
 
@@ -158,6 +157,7 @@ public class Robot extends TimedRobot {
     public void teleopInit() {
         CommandScheduler.getInstance().cancelAll();
         AutonTwoBall.resetAutonShoot();
+        Shuffleboard.startRecording();
         /*if (!ranAuton) {
             // CommandScheduler.getInstance().schedule(new HomeHood(shooter));
         }*/
@@ -167,28 +167,28 @@ public class Robot extends TimedRobot {
     public void robotPeriodic() {
         CommandScheduler.getInstance().run();
         // have the field position constantly update
-        swerve.updateOdometry();
+        //swerve.updateOdometry();
         // SmartDashboard.putNumber("XPosition", odometry.getXPosition());
         // SmartDashboard.putNumber("YPosition", odometry.getYPosition());
 
         //pi.processCargo();
         //pi.processTargets();
         // automatically turn on/off recording
-        if (lastEnabled != isEnabled()) {
+        /*if (lastEnabled != isEnabled()) {
             // we know the enabled status changed
             if (lastEnabled) {
-                // robot stopped, stop recording
                 Shuffleboard.stopRecording();
+                // robot stopped, stop recording
             } else {
-                // robot started, start recording
                 Shuffleboard.startRecording();
+                // robot started, start recording
             }
-        }
+        }*/
         // save the result for next loop
-        lastEnabled = isEnabled();
+        //lastEnabled = isEnabled();
 
-        SmartDashboard.putData(swerve);
-        SmartDashboard.putNumber("Shooter Motor Temperature F", shooter.getShooterTemperature());
+        //SmartDashboard.putData(swerve);
+        //SmartDashboard.putNumber("Shooter Motor Temperature F", shooter.getShooterTemperature());
     }
 
     @Override
@@ -197,13 +197,14 @@ public class Robot extends TimedRobot {
         // Pose2d pos = swerve.odometry.getPoseMeters();
         // swerve.setPosition(10.85, 6.13, 0, 2);
         // swerve.setPosition(8.57, 7.53, 0, 1);
-
+        SmartDashboard.putData(swerve);
     }
 
     @Override
     public void teleopPeriodic() {
         ingestor.runIngestor();
         swerve.runTurtleMode(DRIVER_CONTROLLER);
+        SmartDashboard.putData(swerve);
     }
 
     public static void stopControllerRumble(XboxController controller) {
@@ -213,5 +214,16 @@ public class Robot extends TimedRobot {
     public static void rumbleController(XboxController controller, double rumbleSpeed) {
         controller.setRumble(RumbleType.kLeftRumble, rumbleSpeed);
         controller.setRumble(RumbleType.kRightRumble, rumbleSpeed);
+    }
+
+    @Override
+    public void testInit() {
+        Shuffleboard.startRecording();
+    }
+
+    public static Command shotCaller(Drivetrain drive, Shooter shooter, Ingestor ingestor, XboxController driverController, XboxController operatorController) {
+        /*if (Pi.getIsTargetCamConnected() && Pi.getIsCargoCamConnected()) {
+        }*/ //TODO: Add logic to pick between auto shot and hybrid
+        return new AutoShoot(drive, shooter, ingestor, operatorController, driverController);
     }
 }

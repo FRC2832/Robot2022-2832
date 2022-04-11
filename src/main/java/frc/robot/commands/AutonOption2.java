@@ -1,8 +1,6 @@
 package frc.robot.commands;
 
 import frc.robot.Drivetrain;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class AutonOption2 extends CommandBase {
@@ -17,7 +15,7 @@ public class AutonOption2 extends CommandBase {
     @Override
     public void initialize() {
         // TODO: what happens if we start on the equivalent red side of the field?
-        drive.odometry.resetPosition(new Pose2d(6.5, 5.0, new Rotation2d()), new Rotation2d());
+        //drive.odometry.resetPosition(new Pose2d(6.5, 5.0, new Rotation2d()), new Rotation2d());
         drive.incrementCurrentStep();
     }
 
@@ -25,7 +23,7 @@ public class AutonOption2 extends CommandBase {
     public void execute() {
         System.out.println("it is executing \n" + drive.getCurrentStep());
 
-        drive.setPosition(5.06, 5.96, Math.toRadians(135), 1, 1); // to blueBalls[0]
+        /*drive.setPosition(5.06, 5.96, Math.toRadians(135), 1, 1); // to blueBalls[0]
         // ingest- CommandScheduler.getInstance().schedule(new Ingestor());?
 
         // shoot - CommandScheduler.getInstance().schedule(new AutoShoot());?
@@ -34,7 +32,7 @@ public class AutonOption2 extends CommandBase {
         drive.setPosition(4.65, 6.84, Math.toRadians(190), 1, 3); // to hangar
         // shoot lightly into hangar - DashboardShoot but with a value of 1000 rpm and
         // 39 degrees hood angle
-        drive.setPosition(6, 7, 0, 1, 4); // towards center line
+        drive.setPosition(6, 7, 0, 1, 4); // towards center line*/
     }
 
     @Override
