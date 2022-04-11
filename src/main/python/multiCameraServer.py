@@ -11,10 +11,84 @@ import cv2
 import numpy as np
 import math
 import threading
+import serial
+
 
 from cscore import CameraServer, VideoSource, UsbCamera, MjpegServer
 from networktables import NetworkTablesInstance, NetworkTables
 from enum import Enum
+
+DebugLevel = "info"# debug info warn except
+
+def debug(level, printText):
+    global DebugLevel
+    if DebugLevel == 'debug' and (level == 'debug' or level == 'info' or level == 'warn' or level == 'except'):
+        print(str(time.time()) + ' [' + level + ']: ' + printText)
+    elif DebugLevel == 'info' and (level == 'info' or level == 'warn' or level == 'except'):
+        print(str(time.time()) + ' [' + level + ']: ' + printText)
+    elif DebugLevel == 'warn' and (level == 'warn' or level == 'except'):
+        print(str(time.time()) + ' [' + level + ']: ' + printText)
+    elif DebugLevel == 'except' and level == 'except':
+        print(str(time.time()) + ' [' + level + ']: ' + printText)
+        
+class DriverCam(threading.Thread):
+    def __init__(self):
+        threading.Thread.__init__(self)
+        debug('info', "Driver Cam Start")
+        self.running = True
+        
+    def run(self):
+        global inst
+        inst = CameraServer.getInstance()
+        cap = cv2.VideoCapture(3)
+        cap.set(cv2.CAP_PROP_FRAME_WIDTH, 320)
+        cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 240)
+        output_stream = inst.putVideo(name='Processed', height = 320, width=240)
+        redOffsetX = 30
+        redOffsetY = 30
+        yelOffsetX = 10
+        yelOffsetY = 10
+        while self.running:
+            ret, frame = cap.read()
+            frame = cv2.rotate(frame, cv2.ROTATE_180)
+            frame = cv2.line(frame, (160, 0), (160,250), (0,255,0), 1)
+            frame = cv2.line(frame, (0, 90), (320,90), (0,255,0), 1)
+            
+            frame = cv2.line(frame, (160+yelOffsetY , 0), (160+yelOffsetY,250), (0,255,255), 1)
+            frame = cv2.line(frame, (160-yelOffsetY, 0), (160-yelOffsetY,250), (0,255,255), 1)
+            
+            frame = cv2.line(frame, (0, 90+yelOffsetX), (320,90+yelOffsetX), (0,255,255), 1)
+            frame = cv2.line(frame, (0, 90-yelOffsetX), (320,90-yelOffsetX), (0,255,255), 1)
+            
+            frame = cv2.line(frame, (160+redOffsetY , 0), (160+redOffsetY,250), (0,0,255), 1)
+            frame = cv2.line(frame, (160-redOffsetY, 0), (160-redOffsetY,250), (0,0,255), 1)
+            
+            frame = cv2.line(frame, (0, 90+redOffsetX), (320,90+redOffsetX), (0,0,255), 1)
+            frame = cv2.line(frame, (0, 90-redOffsetX), (320,90-redOffsetX), (0,0,255), 1)
+            
+            output_stream.putFrame(frame)
+
+class Lidar(threading.Thread):
+    def __init__(self, ntinst):
+        threading.Thread.__init__(self)
+        debug('info', "lidar start")
+        self.ntinst = ntinst
+        self.table = NetworkTables.getTable('lidar')
+        self.running = True
+        self.ser = serial.Serial("/dev/ttyS0", 115200, timeout=0)  # mini UART serial device
+        
+    def run(self):
+        while self.running:
+            if self.ser.in_waiting > 8:
+                raw = self.ser.read(9)
+                self.ser.reset_input_buffer()
+                if raw[0] == 0x59 and raw[1] == 0x59:
+
+                    distance = raw[2] + raw[3]*256
+                    debug('debug', "LIDAR RAW: " + str(distance))
+                    self.table.putNumber('distance', distance)
+            time.sleep(0.001)
+        self.ser.close()
 
 class CameraConfig: pass
 
@@ -621,9 +695,11 @@ class findTarget (threading.Thread):
             else:
                 ret = None
             if ret:
+                rawimg = img
                 cv2.rectangle(img,(0,400),(640,480),(0,0,0),-1) # draws a black box over the webcam reflection
                 target_proc.process(img)
                 extra_target_processing(target_proc)
+                #output_stream.putFrame(rawimg)
 
 class findCargo (threading.Thread):
     def __init__(self, camera):
@@ -701,10 +777,19 @@ if __name__ == "__main__":
         ntinst.startClientTeam(team)
         ntinst.startDSClient()
 
+    lidarThread = Lidar(ntinst)
+    lidarThread.start()
+    
+    dcamThread = DriverCam()
+    dcamThread.start()
+    
+
     # start cameras
     for config in cameraConfigs:
         camera = startCamera(config)
         cameras.append(camera)
+
+
         path=camera.getPath()
         if (path=="/dev/video0"):
             threadTarget = findTarget(camera)
