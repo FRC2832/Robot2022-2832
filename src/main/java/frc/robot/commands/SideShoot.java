@@ -5,12 +5,12 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Ingestor;
 import frc.robot.Shooter;
 
-public class ManualShoot extends CommandBase {
+public class SideShoot extends CommandBase {
     private static final double SPEED = 2300.0;
     private final Shooter shooter;
     private final Ingestor ingestor;
 
-    public ManualShoot(Shooter shooter, Ingestor ingestor) {
+    public SideShoot(Shooter shooter, Ingestor ingestor) {
         this.shooter = shooter;
         this.ingestor = ingestor;
         addRequirements(shooter);

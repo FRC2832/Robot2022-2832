@@ -286,13 +286,13 @@ public class Ingestor extends SubsystemBase {
         stage2Conveyor.set(STAGE_2_SPEED);
     }
 
-    /*public void runStage1In() {
+    public void runStage1In() {
         stage1Conveyor.set(STAGE_1_SPEED);
     }
 
     public void runStage2In() {
         stage2Conveyor.set(STAGE_2_SPEED);
-    } */
+    }
 
     public void stopStage1() {
         stage1Conveyor.set(0.0);

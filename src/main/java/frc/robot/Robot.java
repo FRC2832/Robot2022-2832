@@ -15,13 +15,14 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.AutoShoot;
+import frc.robot.commands.AutonCenterSearch;
 import frc.robot.commands.AutonThreeBall;
 import frc.robot.commands.AutonTwoBall;
 import frc.robot.commands.CenterToCargo;
 import frc.robot.commands.CenterToHub;
 import frc.robot.commands.DriveStickSlew;
 import frc.robot.commands.HubShoot;
-import frc.robot.commands.ManualShoot;
+import frc.robot.commands.SideShoot;
 import frc.robot.commands.RunClimber;
 import frc.robot.commands.SafeZoneShoot;
 import frc.robot.commands.ShooterBackwards;
@@ -71,7 +72,7 @@ public class Robot extends TimedRobot {
         //swerve.setDefaultCommand(new TurtleMode(swerve, driverController));
 
         JoystickButton selectButton = new JoystickButton(OPERATOR_CONTROLLER, 7);
-        selectButton.whileActiveContinuous(new ManualShoot(shooter, ingestor));
+        selectButton.whileActiveContinuous(new SideShoot(shooter, ingestor));
         JoystickButton startButton = new JoystickButton(OPERATOR_CONTROLLER, 8);
         startButton.whileActiveContinuous(new SafeZoneShoot(shooter, ingestor, false));
 
@@ -90,8 +91,8 @@ public class Robot extends TimedRobot {
         JoystickButton driverStartButton = new JoystickButton(DRIVER_CONTROLLER, 8);
         driverStartButton.whileActiveContinuous(new ShooterBackwards(shooter, ingestor));
 
-        // JoystickButton xButton = new JoystickButton(DRIVER_CONTROLLER, 3);
-        // xButton.whileActiveContinuous(new CenterToHub(swerve));
+        JoystickButton xButton = new JoystickButton(DRIVER_CONTROLLER, 3);
+        xButton.whileActiveContinuous(new CenterToHub(swerve));
 
         JoystickButton yButton = new JoystickButton(DRIVER_CONTROLLER, 4);
         yButton.whileActiveContinuous(new CenterToCargo(swerve));
@@ -130,7 +131,7 @@ public class Robot extends TimedRobot {
         Shooter.setCoast(false);
         swerve.setBrakeMode(false);
         climber.setUnlocked(false);
-        Shuffleboard.stopRecording();
+        // Shuffleboard.stopRecording();
     }
 
     @Override
@@ -148,8 +149,10 @@ public class Robot extends TimedRobot {
             autonCom = new AutonThreeBall(swerve, shooter, ingestor);
         }
 
+        autonCom = new AutonCenterSearch(swerve, shooter, ingestor);
+
         CommandScheduler.getInstance().schedule(autonCom);
-        Shuffleboard.startRecording();
+        // Shuffleboard.startRecording();
         //ranAuton = true;
     }
 
@@ -157,7 +160,7 @@ public class Robot extends TimedRobot {
     public void teleopInit() {
         CommandScheduler.getInstance().cancelAll();
         AutonTwoBall.resetAutonShoot();
-        Shuffleboard.startRecording();
+        // Shuffleboard.startRecording();
         /*if (!ranAuton) {
             // CommandScheduler.getInstance().schedule(new HomeHood(shooter));
         }*/
@@ -218,7 +221,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void testInit() {
-        Shuffleboard.startRecording();
+        // Shuffleboard.startRecording();
     }
 
     public static Command shotCaller(Drivetrain drive, Shooter shooter, Ingestor ingestor, XboxController driverController, XboxController operatorController) {

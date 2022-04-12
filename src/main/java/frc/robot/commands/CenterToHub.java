@@ -13,9 +13,9 @@ public class CenterToHub extends CommandBase {
     public CenterToHub(Drivetrain drive) {
         this.drive = drive;
         // addRequirements(drive);
-        pid = new PIDController(0.35, 0.0, 0.0); // values from tyros last year were 0.35, 0.05, 0.8
+        pid = new PIDController(0.5, 0.0, 0.0); // values from tyros last year were 0.35, 0.05, 0.8
         pid.setSetpoint(320.0);
-        pid.setTolerance(17.0); // tolerance of 10 pixels
+        pid.setTolerance(20.0); // tolerance of 20 pixels
     }
 
     @Override

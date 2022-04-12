@@ -25,7 +25,7 @@ public class SafeZoneShoot extends CommandBase {
         shooter.setShooterRpm(SPEED);
 
         if (changeHood) {
-            shooter.setHoodAngle(33.0); // knob 4.5
+            shooter.setHoodAngle(53.0); // knob 4.5
         }
         double shooterVel = shooter.getShooterVelocity();
         if (SPEED - 30 < shooterVel && shooterVel < SPEED + 30) {

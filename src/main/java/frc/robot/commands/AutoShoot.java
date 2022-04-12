@@ -143,7 +143,9 @@ public class AutoShoot extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        // System.out.println("AutoShoot is finished");
+        if (cargoSentToShooter) {
+            System.out.println("AutoShoot is finished");
+        }
         return cargoSentToShooter;
     }
 }

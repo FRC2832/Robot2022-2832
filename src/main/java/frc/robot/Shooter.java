@@ -134,12 +134,12 @@ public class Shooter extends SubsystemBase {
 
         if (!operatorController.getStartButton()) {
             if (driveController.getLeftBumper()) {
-                hoodMotorSpeed = 0.25;
+                hoodMotorSpeed = 0.35;
             } else if (driveController.getRightBumper()) {
                 if (isHomed && hoodMotor.isRevLimitSwitchClosed() > 0) {
                     hoodMotorSpeed = 0.0;
                 } else {
-                    hoodMotorSpeed = -0.25;
+                    hoodMotorSpeed = -0.35;
                 }
             } else {
                 hoodMotorSpeed = 0.0;
