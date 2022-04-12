@@ -61,7 +61,7 @@ public class AutoShoot extends CommandBase {
             error = String.join(error, "RPM ");
         }
 
-        // check if PI saw target
+        // check if PI saw target (minimum shot distance 2.1-ish meters)
         if (Pi.getTargetCenterX() > 0.0) {
             if (operatorController != null && driverController != null) {
                 Robot.stopControllerRumble(operatorController);

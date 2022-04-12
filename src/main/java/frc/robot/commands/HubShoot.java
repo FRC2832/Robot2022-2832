@@ -10,10 +10,12 @@ public class HubShoot extends CommandBase {
     private final double angle;
     private final Shooter shooter;
     private final Ingestor ingestor;
+    private final boolean isUpper;
 
     public HubShoot(Shooter shooter, Ingestor ingestor, boolean isUpper) {
         this.shooter = shooter;
         this.ingestor = ingestor;
+        this.isUpper = isUpper;
         addRequirements(shooter);
         if (isUpper) {
             speed = 2150.0; // Upper hub
@@ -32,7 +34,14 @@ public class HubShoot extends CommandBase {
         double shooterVel = shooter.getShooterVelocity();
         // if target rpm is within range (+- 50)
         if (speed - 50 < shooterVel && shooterVel < speed + 50) {
-            ingestor.sendCargoToShooter();
+            if (isUpper) {
+                double shooterAngle = shooter.getHoodAngle();
+                if (angle - 3.0 < shooterAngle && shooterAngle < angle + 3.0) {
+                    ingestor.sendCargoToShooter();
+                }
+            } else {
+                ingestor.sendCargoToShooter();
+            }
         }
     }
 
