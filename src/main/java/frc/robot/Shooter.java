@@ -6,34 +6,34 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.TalonSRXConfiguration;
-
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.ColorSensor.CargoColor;
 import frc.robot.commands.DribbleShoot;
 
 public class Shooter extends SubsystemBase {
-    private final double SENSOR_UNITS_TO_RPM = 3.414;
-    private TalonFX shooterFx;
-    private TalonSRX hoodMotor;
+    private static final double SENSOR_UNITS_TO_RPM = 3.414;
+    // private static final int HOOD_SENSOR_ACTIVE = 700;
+    private static final int MAX_ANGLE_COUNTS = 400;
+    private static final int MIN_ANGLE = 20;
+    private static final int MAX_ANGLE = 70;
+    private static boolean coastMotor;
+    private final TalonFX shooterFx;
+    private final TalonSRX hoodMotor;
+    private final XboxController driveController;
+    private final XboxController operatorController;
+    private final Ingestor ingestor;
     private boolean isHomed; // report if hood has been homed
     private boolean lastHomed;
-    //private double hoodSensorOffset;
+    // private double hoodSensorOffset;
     private double distance;
     private double targetHoodAngle;
     private double targetRpm;
-    private XboxController driveController;
-    private XboxController operatorController;
-    private static boolean coastMotor = false;
-    final int HOOD_SENSOR_ACTIVE = 700;
-    final int MAX_ANGLE_COUNTS = 400;
-    final int MIN_ANGLE = 20;
-    final int MAX_ANGLE = 70;
-    private String currentCargoColor;
-    private Ingestor ingestor;
+    private CargoColor currentCargoColor;
 
     // TODO: write home hood method
     // Distance to Target
@@ -45,7 +45,7 @@ public class Shooter extends SubsystemBase {
         this.driveController = driveController;
         this.operatorController = operatorController;
         this.ingestor = ingestor;
-        currentCargoColor = "none";
+        currentCargoColor = CargoColor.Unknown;
         isHomed = false;
         hoodMotor = new TalonSRX(CanIDConstants.HOOD_MOTOR);
         hoodMotor.setNeutralMode(NeutralMode.Brake);
@@ -77,28 +77,37 @@ public class Shooter extends SubsystemBase {
         hoodMotor.configAllSettings(hoodConfig);
     }
 
+    public static boolean getCoast() {
+        return coastMotor;
+    }
+
+    /*
+     * public void setShootPct(double percent) {
+     * shooterFx.set(ControlMode.PercentOutput, percent);
+     * }
+     */
+
+    public static void setCoast(boolean coast) {
+        coastMotor = coast;
+    }
+
     @Override
     public void periodic() {
         currentCargoColor = ColorSensor.getCargoColor();
 
-        //System.out.println("currentCargoColor: " + currentCargoColor);
+        // System.out.println("currentCargoColor: " + currentCargoColor);
 
-        String allianceString;
+        CargoColor allianceColor = CargoColor.Blue;
         Alliance alliance = DriverStation.getAlliance();
-        if(alliance == Alliance.Red) {
-            allianceString = "Red";
-        } else {
-            allianceString = "Blue";
+        if (alliance == Alliance.Red) {
+            allianceColor = CargoColor.Red;
         }
 
-        if(currentCargoColor.equals("Unknown")){
+        if (currentCargoColor == CargoColor.Unknown) {
             // no ball detected, so don't shoot
-        }
-        // if detected color != alliance color 
-        else if(!(currentCargoColor.equalsIgnoreCase(allianceString))){
+        } else if (currentCargoColor != allianceColor) {
             CommandScheduler.getInstance().schedule(new DribbleShoot(this, ingestor));
-        }
-        else{
+        } else {
             // call Autoshoot (TODO)
             // print "AUTOSHOOTING!!!"
         }
@@ -109,28 +118,28 @@ public class Shooter extends SubsystemBase {
         SmartDashboard.putNumber("Calc RPM", getTargetRpm());
         SmartDashboard.putNumber("Calc Hood Angle", getTargetHoodAngle());
         // if the limit switch is pressed, reset the hood angle position
-        //when we exit the home position, save the zero position
-        if (lastHomed == true && !hoodBottom()){
+        // when we exit the home position, save the zero position
+        if (lastHomed && !hoodBottom()) {
             hoodMotor.setSelectedSensorPosition(0);
             isHomed = true;
         }
         // if (hoodMotor.isRevLimitSwitchClosed() > 0) {
-        //     hoodMotor.setSelectedSensorPosition(0);
-        //     isHomed = true;
-        //     System.out.println("isHomed = true");
+        // hoodMotor.setSelectedSensorPosition(0);
+        // isHomed = true;
+        // System.out.println("isHomed = true");
         // }
         lastHomed = hoodBottom();
         double hoodMotorSpeed = hoodMotor.getMotorOutputPercent();
-        NeutralMode mode;
+        NeutralMode mode = NeutralMode.Brake;
 
         if (!operatorController.getStartButton()) {
             if (driveController.getLeftBumper()) {
-                hoodMotorSpeed = 0.25;
+                hoodMotorSpeed = 0.35;
             } else if (driveController.getRightBumper()) {
                 if (isHomed && hoodMotor.isRevLimitSwitchClosed() > 0) {
                     hoodMotorSpeed = 0.0;
                 } else {
-                    hoodMotorSpeed = -0.25;
+                    hoodMotorSpeed = -0.35;
                 }
             } else {
                 hoodMotorSpeed = 0.0;
@@ -139,28 +148,14 @@ public class Shooter extends SubsystemBase {
 
         if (DriverStation.isDisabled()) {
             mode = NeutralMode.Coast;
-        } else {
-            mode = NeutralMode.Brake;
         }
         hoodMotor.set(ControlMode.PercentOutput, hoodMotorSpeed);
         hoodMotor.setNeutralMode(mode);
     }
 
-    public void setShootPct(double percent) {
-        shooterFx.set(ControlMode.PercentOutput, percent);
-    }
-
-    public void setShooterRpm(double rpm) {
-        shooterFx.set(ControlMode.Velocity, rpm * SENSOR_UNITS_TO_RPM);
-    }
-
-    public boolean isHoodHomed() {
-        return isHomed;
-    }
-
     /**
      * Get shooter speed in RPM
-     * 
+     *
      * @return RPM
      */
     public double getShooterVelocity() {
@@ -169,46 +164,16 @@ public class Shooter extends SubsystemBase {
 
     public double getHoodAngle() {
         double sensor = hoodMotor.getSelectedSensorPosition();
-        return (sensor/MAX_ANGLE_COUNTS)*(MAX_ANGLE-MIN_ANGLE) + MIN_ANGLE;
-    }
-
-    public void setHoodSpeedPct(double pct) {
-        // allow control if homed or only down if not homed
-        double percentage;
-        if(hoodBottom()) {
-            if(pct > 0.1) {
-                //if driving down, stop at home
-                percentage = 0.0;
-            } else {
-                //slowly drive out to get accurate home
-                percentage = 0.18;
-            }
-        }
-        else if(hoodMotor.getSelectedSensorPosition() > MAX_ANGLE_COUNTS && pct > 0){
-            percentage = 0.0;
-        }
-        else {
-            percentage = pct;
-        }
-        hoodMotor.set(ControlMode.PercentOutput, percentage);
-    }
-
-    public boolean hoodBottom() {
-        return hoodMotor.isRevLimitSwitchClosed() > 0;
+        return (sensor / MAX_ANGLE_COUNTS) * (MAX_ANGLE - MIN_ANGLE) + MIN_ANGLE;
     }
 
     public void setHoodAngle(double position) {
-        double value = (position-MIN_ANGLE) * MAX_ANGLE_COUNTS/ (MAX_ANGLE-MIN_ANGLE);
+        double value = (position - MIN_ANGLE) * MAX_ANGLE_COUNTS / (MAX_ANGLE - MIN_ANGLE);
         hoodMotor.set(ControlMode.Position, value);
     }
 
-    public void calcShot() {
-        // first, calculate distance to target
-        double centerY = Pi.getTargetCenterY();
-        distance = Pi.LinearInterp(ShooterConstants.VISION_DIST_TABLE, centerY);
-
-        targetHoodAngle = Pi.LinearInterp(ShooterConstants.DIST_HOOD_TABLE, distance);
-        targetRpm = Pi.LinearInterp(ShooterConstants.DIST_RPM_TABLE, distance);
+    public double getShotDist() {
+        return distance;
     }
 
     public double getTargetRpm() {
@@ -219,19 +184,88 @@ public class Shooter extends SubsystemBase {
         return targetHoodAngle;
     }
 
-    public double getShotDist() {
-        return distance;
+    public boolean hoodBottom() {
+        return hoodMotor.isRevLimitSwitchClosed() > 0;
     }
 
-    public static void setCoast(boolean coast) {
-        coastMotor = coast;
+    public void setShooterRpm(double rpm) {
+        shooterFx.set(ControlMode.Velocity, rpm * SENSOR_UNITS_TO_RPM);
     }
 
-    public static boolean getCoast() {
-        return coastMotor;
+    public boolean isHoodHomed() {
+        return isHomed;
     }
 
-    public String getCurrentCargoColor(){
-        return currentCargoColor;
+    public void setHoodSpeedPct(double pct) {
+        // allow control if homed or only down if not homed
+        double percentage = pct;
+        if (hoodBottom()) {
+            if (pct > 0.1) {
+                // if driving down, stop at home
+                percentage = 0.0;
+            } else {
+                // slowly drive out to get accurate home
+                percentage = 0.18;
+            }
+        } else if (hoodMotor.getSelectedSensorPosition() > MAX_ANGLE_COUNTS && pct > 0) {
+            percentage = 0.0;
+        }
+        hoodMotor.set(ControlMode.PercentOutput, percentage);
     }
+
+    public void calcShot(boolean useRunningAvg) {
+        double lidarDistance;
+        double visionDistance;
+        // first, calculate distance to target
+        if (useRunningAvg) {
+            lidarDistance = Lidar.getRunningAvg() * 39.3701; // inches
+        } else {
+            lidarDistance = Lidar.getDistanceToTarget() * 39.3701;
+        }
+        SmartDashboard.putNumber("Lidar distance", lidarDistance);
+        double centerY = Pi.getTargetCenterY();
+        visionDistance = Pi.LinearInterp(ShooterConstants.VISION_DIST_TABLE, centerY); // inches
+        SmartDashboard.putNumber("Vision distance", visionDistance);
+        if (Math.abs(lidarDistance - visionDistance) > 40) { // TODO: change this on the practice field to account for lower hub wall in a different position
+            distance = visionDistance;
+            SmartDashboard.putBoolean("Using Lidar", false);
+            targetHoodAngle = Pi.LinearInterp(ShooterConstants.DIST_HOOD_TABLE, distance);
+            targetRpm = Pi.LinearInterp(ShooterConstants.DIST_RPM_TABLE, distance);
+        } else {
+            distance = lidarDistance;
+            SmartDashboard.putBoolean("Using Lidar", true);
+            targetHoodAngle = Lidar.calculateTargetAngle(distance);
+            targetRpm = Pi.LinearInterp(ShooterConstants.LIDAR_DIST_TABLE, distance / 39.3701); // table takes meters
+        }
+        // TODO: only for tuning purposes!
+        // boolean forceLidar = SmartDashboard.getBoolean("Force use lidar", true);
+        // if (forceLidar) {
+        //     distance = lidarDistance;
+        //     SmartDashboard.putBoolean("Using Lidar", true);
+        //     targetHoodAngle = Lidar.calculateTargetAngle(distance);
+        //     targetRpm = Pi.LinearInterp(ShooterConstants.LIDAR_DIST_TABLE, distance / 39.3701); // table takes meters
+        // } else {
+        //     distance = visionDistance;
+        //     SmartDashboard.putBoolean("Using Lidar", false);
+        //     targetHoodAngle = Pi.LinearInterp(ShooterConstants.DIST_HOOD_TABLE, distance);
+        //     targetRpm = Pi.LinearInterp(ShooterConstants.DIST_RPM_TABLE, distance);
+        // }
+        
+        // if (Lidar.getIsConnected()) {
+        //     targetHoodAngle = Lidar.calculateTargetAngle(distance);
+        // } else {
+        //     targetHoodAngle = Pi.LinearInterp(ShooterConstants.DIST_HOOD_TABLE, distance);
+        // }
+        // targetRpm = Pi.LinearInterp(ShooterConstants.LIDAR_DIST_TABLE, distance / 39.3701); // table takes meters
+    }
+
+    public double getShooterTemperature() {
+        return shooterFx.getTemperature() * 1.8 + 32;
+    }
+
+    /*
+     * public CargoColor getCurrentCargoColor() {
+     * return currentCargoColor;
+     * }
+     */
 }

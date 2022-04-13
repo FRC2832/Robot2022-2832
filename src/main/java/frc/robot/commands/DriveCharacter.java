@@ -1,7 +1,5 @@
 package frc.robot.commands;
 
-import java.util.ArrayList;
-
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.RobotController;
@@ -9,40 +7,44 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Drivetrain;
+import frc.robot.SwerveModule;
+
+import java.util.ArrayList;
 
 public class DriveCharacter extends CommandBase {
-    private Drivetrain drive;
-    private TimedRobot robot;
+    private final Drivetrain drive;
+    private final NetworkTableEntry autoSpeedEntry = NetworkTableInstance.getDefault().getEntry("/robot/autospeed");
+    private final NetworkTableEntry telemetryEntry = NetworkTableInstance.getDefault().getEntry("/robot/telemetry");
+    private final NetworkTableEntry rotateEntry = NetworkTableInstance.getDefault().getEntry("/robot/rotate");
+    private final double[] numberArray = new double[10];
+    private final ArrayList<Double> entries = new ArrayList<>();
+    private final TimedRobot robot;
+    //private int counter = 0;
+    //private double startTime = 0;
+    private double priorAutospeed;
+    private String data = "";
+    private boolean isRunning;
 
-    NetworkTableEntry autoSpeedEntry = NetworkTableInstance.getDefault().getEntry("/robot/autospeed");
-    NetworkTableEntry telemetryEntry = NetworkTableInstance.getDefault().getEntry("/robot/telemetry");
-    NetworkTableEntry rotateEntry = NetworkTableInstance.getDefault().getEntry("/robot/rotate");
-    double[] numberArray = new double[10];
-    ArrayList<Double> entries = new ArrayList<Double>();
-    int counter = 0;
-    double startTime = 0;
-    double priorAutospeed = 0;
-    String data = "";
-    boolean running = false;
-    
     public DriveCharacter(TimedRobot robot, Drivetrain drive) {
         this.drive = drive;
         this.robot = robot;
         addRequirements(drive);
     }
 
+    @Override
     public void initialize() {
-        startTime = Timer.getFPGATimestamp();
-        counter = 0;
-        running = true;
+        //startTime = Timer.getFPGATimestamp();
+        //counter = 0;
+        isRunning = true;
         robot.addPeriodic(this::runCommand, 0.005);
     }
 
+    @Override
     public void end(boolean interrupted) {
-        running = false;
-        double elapsedTime = Timer.getFPGATimestamp() - startTime;
-        System.out.println("Robot disabled");
-        var modules = drive.getModules();
+        isRunning = false;
+        //double elapsedTime = Timer.getFPGATimestamp() - startTime;
+        //System.out.println("Robot disabled");
+        SwerveModule[] modules = drive.getModules();
         modules[Drivetrain.FL].setDrive(0);
         modules[Drivetrain.RL].setDrive(0);
         modules[Drivetrain.FR].setDrive(0);
@@ -53,14 +55,15 @@ public class DriveCharacter extends CommandBase {
         data = data.substring(1, data.length() - 1) + ", ";
         telemetryEntry.setString(data);
         entries.clear();
-        System.out.println("Robot disabled");
-        System.out.println("Collected : " + counter + " in " + elapsedTime + " seconds");
+        //System.out.println("Robot disabled");
+        //System.out.println("Collected : " + counter + " in " + elapsedTime + " seconds");
         data = "";
     }
 
     public void runCommand() {
-        if(!running) return;
-        var modules = drive.getModules();
+        if (!isRunning)
+            return;
+        SwerveModule[] modules = drive.getModules();
 
         // Retrieve values to send back before telling the motors to do something
         double now = Timer.getFPGATimestamp();
@@ -86,7 +89,8 @@ public class DriveCharacter extends CommandBase {
         modules[Drivetrain.RL].setDrive((rotateEntry.getBoolean(false) ? -1 : 1) * autospeed);
         modules[Drivetrain.FR].setDrive(autospeed);
         modules[Drivetrain.RR].setDrive(autospeed);
-        //drive.tankDrive((rotateEntry.getBoolean(false) ? -1 : 1) * autospeed, autospeed, false);
+        // drive.tankDrive((rotateEntry.getBoolean(false) ? -1 : 1) * autospeed,
+        // autospeed, false);
 
         numberArray[0] = now;
         numberArray[1] = battery;
@@ -103,6 +107,6 @@ public class DriveCharacter extends CommandBase {
         for (double num : numberArray) {
             entries.add(num);
         }
-        counter++;
+        //counter++;
     }
 }

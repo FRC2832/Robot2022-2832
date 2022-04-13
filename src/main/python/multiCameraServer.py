@@ -11,10 +11,88 @@ import cv2
 import numpy as np
 import math
 import threading
+import serial
+
 
 from cscore import CameraServer, VideoSource, UsbCamera, MjpegServer
 from networktables import NetworkTablesInstance, NetworkTables
 from enum import Enum
+
+DebugLevel = "info"# debug info warn except
+
+def debug(level, printText):
+    global DebugLevel
+    if DebugLevel == 'debug' and (level == 'debug' or level == 'info' or level == 'warn' or level == 'except'):
+        print(str(time.time()) + ' [' + level + ']: ' + printText)
+    elif DebugLevel == 'info' and (level == 'info' or level == 'warn' or level == 'except'):
+        print(str(time.time()) + ' [' + level + ']: ' + printText)
+    elif DebugLevel == 'warn' and (level == 'warn' or level == 'except'):
+        print(str(time.time()) + ' [' + level + ']: ' + printText)
+    elif DebugLevel == 'except' and level == 'except':
+        print(str(time.time()) + ' [' + level + ']: ' + printText)
+        
+class DriverCam(threading.Thread):
+    def __init__(self):
+        threading.Thread.__init__(self)
+        debug('info', "Driver Cam Start")
+        self.running = True
+   
+        
+    def run(self):
+        global inst
+        inst = CameraServer.getInstance()
+        cap = cv2.VideoCapture(3)
+        cap.set(cv2.CAP_PROP_FRAME_WIDTH, 320)
+        cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 240)
+        output_stream = inst.putVideo(name='Processed', height = 320, width=240)
+        redOffsetY = 35
+        yelOffsetY = 28
+        fps = 15
+        last = time.time()
+        while self.running:
+            ret, frame = cap.read()
+            #frame = cv2.rotate(frame, cv2.ROTATE_180)
+            frame = cv2.line(frame, (149, 0), (149,250), (0,255,0), 1)
+            frame = cv2.line(frame, (0, 58), (320,58), (0,255,0), 1)
+            
+            frame = cv2.line(frame, (149+yelOffsetY , 0), (149+yelOffsetY,250), (0,255,255), 1)
+            frame = cv2.line(frame, (149-yelOffsetY, 0), (149-yelOffsetY,250), (0,255,255), 1)
+            
+            frame = cv2.line(frame, (0, 69), (320,69), (0,255,255), 1)
+            frame = cv2.line(frame, (0, 52 ), (320,52), (0,255,255), 1)
+            
+            frame = cv2.line(frame, (149+redOffsetY , 0), (149+redOffsetY,250), (0,0,255), 1)
+            frame = cv2.line(frame, (149-redOffsetY, 0), (149-redOffsetY,250), (0,0,255), 1)
+            
+            frame = cv2.line(frame, (0, 49), (320,49), (0,0,255), 1)
+            frame = cv2.line(frame, (0, 76 ), (320,76), (0,0,255), 1)
+
+            output_stream.putFrame(frame)
+            
+            time.sleep(abs((last + (1/fps)) - time.time())   )
+            last = time.time()
+
+class Lidar(threading.Thread):
+    def __init__(self, ntinst):
+        threading.Thread.__init__(self)
+        debug('info', "lidar start")
+        self.ntinst = ntinst
+        self.table = NetworkTables.getTable('lidar')
+        self.running = True
+        self.ser = serial.Serial("/dev/ttyS0", 115200, timeout=0)  # mini UART serial device
+        
+    def run(self):
+        while self.running:
+            if self.ser.in_waiting > 8:
+                raw = self.ser.read(9)
+                self.ser.reset_input_buffer()
+                if raw[0] == 0x59 and raw[1] == 0x59:
+
+                    distance = raw[2] + raw[3]*256
+                    debug('debug', "LIDAR RAW: " + str(distance))
+                    self.table.putNumber('distance', distance)
+            time.sleep(0.001)
+        self.ser.close()
 
 class CameraConfig: pass
 
@@ -621,9 +699,11 @@ class findTarget (threading.Thread):
             else:
                 ret = None
             if ret:
+                rawimg = img
                 cv2.rectangle(img,(0,400),(640,480),(0,0,0),-1) # draws a black box over the webcam reflection
                 target_proc.process(img)
                 extra_target_processing(target_proc)
+                #output_stream.putFrame(rawimg)
 
 class findCargo (threading.Thread):
     def __init__(self, camera):
@@ -632,25 +712,25 @@ class findCargo (threading.Thread):
 
     def run(self):
         red_pipeline = {
-            'rgb_red': [218.50282485875704, 255.0], 
-            'rgb_green': [0.0, 255.0], 
+            'rgb_red': [220.90395480225988, 255.0], 
+            'rgb_green': [0.0, 152.72727272727275], 
             'rgb_blue': [0.0, 255.0], 
-            'hsv_hue': [0.0, 14.266576622971181], 
-            'hsv_sat': [54.60411331951388, 255.0], 
-            'hsv_value': [152.56244157216597, 255.0], 
-            'hsl_hue': [141.8942811852213, 180.0], 
-            'hsl_sat': [36.04286062675284, 255.0], 
-            'hsl_lum': [66.82569198878186, 255.0]
+            'hsv_hue': [0.0, 6.73796791443851], 
+            'hsv_sat': [23.38942405397715, 255.0], 
+            'hsv_value': [0.0, 255.0], 
+            'hsl_hue': [131.72478965979764, 180.0], 
+            'hsl_sat': [16.80790960451977, 255.0], 
+            'hsl_lum': [0.0, 255.0]
         }
         blue_pipeline = {
-            'rgb_red': [0.0, 184.54545454545456], 
+            'rgb_red': [0.0, 132.27272727272728], 
             'rgb_green': [0.0, 255.0], 
-            'rgb_blue': [177.68361581920905, 255.0], 
-            'hsv_hue': [86.4406779661017, 121.75320763901397], 
-            'hsv_sat': [42.598463601999754, 255.0], 
+            'rgb_blue': [194.49152542372883, 255.0], 
+            'hsv_hue': [84.74576271186442, 115.33609533954873], 
+            'hsv_sat': [129.03914156810146, 255.0], 
             'hsv_value': [0.0, 255.0], 
-            'hsl_hue': [79.18241677844163, 138.28877005347593], 
-            'hsl_sat': [88.86771938381499, 255.0], 
+            'hsl_hue': [97.82648457505178, 127.05882352941175], 
+            'hsl_sat': [86.46658944031215, 255.0], 
             'hsl_lum': [0.0, 255.0]
         }
         table = NetworkTables.getTable('datatable')
@@ -701,10 +781,19 @@ if __name__ == "__main__":
         ntinst.startClientTeam(team)
         ntinst.startDSClient()
 
+    lidarThread = Lidar(ntinst)
+    lidarThread.start()
+    
+    dcamThread = DriverCam()
+    dcamThread.start()
+    
+
     # start cameras
     for config in cameraConfigs:
         camera = startCamera(config)
         cameras.append(camera)
+
+
         path=camera.getPath()
         if (path=="/dev/video0"):
             threadTarget = findTarget(camera)

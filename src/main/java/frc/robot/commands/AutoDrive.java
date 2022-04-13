@@ -4,8 +4,9 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Drivetrain;
 
 public class AutoDrive extends CommandBase {
-    private Drivetrain drive;
-    private double xSpeed, ySpeed;
+    private final Drivetrain drive;
+    private final double xSpeed;
+    private final double ySpeed;
 
     public AutoDrive(Drivetrain drive, double xSpeed, double ySpeed) {
         this.drive = drive;
@@ -14,8 +15,9 @@ public class AutoDrive extends CommandBase {
         addRequirements(drive);
     }
 
+    @Override
     public void execute() {
         // ask the drivetrain to run
-        drive.drive(xSpeed, ySpeed, 0, true);
+        drive.swerveDrive(xSpeed, ySpeed, 0.0, true);
     }
 }

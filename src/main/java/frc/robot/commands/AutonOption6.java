@@ -5,51 +5,48 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Drivetrain;
 
 public class AutonOption6 extends CommandBase {
-    private Drivetrain drive;
-    private Timer timer;
+    private final Drivetrain drive;
+    private final Timer timer;
 
-    public AutonOption6(Drivetrain drive){
+    public AutonOption6(Drivetrain drive) {
         timer = new Timer();
-        this.drive = drive; 
+        this.drive = drive;
         addRequirements(drive);
         timer.start();
     }
-    private void stop(){
-        drive.drive(0, 0, 0, true);
+
+    private void stop() {
+        drive.swerveDrive(0, 0, 0, true);
     }
 
-    public void execute(){
-        if(timer.get() < 2 ){
-            drive.drive(.75, 0, 0, false);
+    @Override
+    public void execute() {
+        double timerVal = timer.get();
+        if (timerVal < 2) {
+            drive.swerveDrive(.75, 0, 0, false);
             System.out.println("Getting ball 1");
-            
-        } else if (timer.get()>2 && timer.get()<3){
+        } else if (timerVal > 2 && timerVal < 3) {
             stop();
             System.out.println("SHOOTING!!!!");
         }
-        //pick up ball and shoot x2
-        else if(timer.get()>3 && timer.get()< 4){
-            drive.drive(0, 0, -3*Math.PI/4, false);
-        }
-        else if(timer.get()>4 && timer.get()<7){
-            drive.drive(1, 0, 0, false);
+        // pick up ball and shoot x2
+        else if (timerVal > 3 && timerVal < 4) {
+            drive.swerveDrive(0, 0, -3 * Math.PI / 4, false);
+        } else if (timerVal > 4 && timerVal < 7) {
+            drive.swerveDrive(1, 0, 0, false);
             System.out.println("Getting ball 2");
-        }
-        else if(timer.get()>8 && timer.get()< 9){
-            drive.drive(0, 0, Math.PI/2.5, false);
-        } else if(timer.get()>9 && timer.get()<12){
-            drive.drive(1.5, 0, 0, false);
-        }
-        else if(timer.get()>12 && timer.get()<13 ){
-            drive.drive(0, 0, Math.PI, false);
-        } else if(timer.get()>13 && timer.get()<14){
-            drive.drive(2, 0, 0, false);
-        } else{
+        } else if (timerVal > 8 && timerVal < 9) {
+            drive.swerveDrive(0, 0, Math.PI / 2.5, false);
+        } else if (timerVal > 9 && timerVal < 12) {
+            drive.swerveDrive(1.5, 0, 0, false);
+        } else if (timerVal > 12 && timerVal < 13) {
+            drive.swerveDrive(0, 0, Math.PI, false);
+        } else if (timerVal > 13 && timerVal < 14) {
+            drive.swerveDrive(2, 0, 0, false);
+        } else {
             stop();
             System.out.println("SHOOTING!!!!");
         }
     }
-        //Now we shoot!!!!!
+    // Now we shoot!!!!!
 }
-    
-

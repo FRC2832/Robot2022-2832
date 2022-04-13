@@ -7,20 +7,21 @@ import frc.robot.Drivetrain;
  * Command to run one-shot to reset our orientation.
  */
 public class ResetOrientation extends CommandBase {
-    Drivetrain drive;
+    private final Drivetrain drive;
 
     public ResetOrientation(Drivetrain drive) {
         this.drive = drive;
         addRequirements(drive);
     }
 
+    @Override
     public void execute() {
         drive.resetRobot();
     }
 
     @Override
-    public boolean isFinished() { 
-        //always return true so it only runs 1 loop.
+    public boolean isFinished() {
+        // always return true so it only runs 1 loop.
         return true;
     }
 }

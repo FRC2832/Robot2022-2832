@@ -4,7 +4,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Shooter;
 
 public class ShooterOff extends CommandBase {
-    private Shooter shooter;
+    private final Shooter shooter;
 
     public ShooterOff(Shooter shooter) {
         this.shooter = shooter;
@@ -13,10 +13,10 @@ public class ShooterOff extends CommandBase {
 
     @Override
     public void execute() {
+        double rpm = 0.0;
         if (Shooter.getCoast()) {
-            shooter.setShooterRpm(1000);
-        } else {
-            shooter.setShooterRpm(0);
+            rpm = 2300.0;
         }
+        shooter.setShooterRpm(rpm);
     }
 }

@@ -4,46 +4,33 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.*;
-//import frc.robot.Snapshot;
+import frc.robot.Drivetrain;
+import frc.robot.Ingestor;
+import frc.robot.Pi;
+import frc.robot.Robot;
+import frc.robot.Shooter;
 
-public class AutoShoot extends CommandBase {
-    private final Drivetrain drive;
+public class HybridShootNoLidar extends CommandBase {
     private final Shooter shooter;
+    private final Ingestor ingestor;
+    private final Drivetrain drive;
     private final XboxController operatorController;
     private final XboxController driverController;
-    private final Ingestor ingestor;
     private final CenterToHub centerToHub;
-    private boolean cargoSentToShooter;
+    private boolean centerScheduled;
     private boolean isUsingControllers;
-    // private boolean autonShootFinished;
-    // private boolean lastShot;
-    private boolean snapshotTaken;
-    private boolean centerScheduled; // TODO: Might need to make this static for it to work properly.
+    private boolean cargoSentToShooter;
 
-    public AutoShoot(Drivetrain drive, Shooter shooter, Ingestor ingestor, XboxController operatorController,
+    public HybridShootNoLidar(Shooter shooter, Ingestor ingestor, Drivetrain drive, XboxController operatorController,
             XboxController driverController) {
-        this.drive = drive;
         this.shooter = shooter;
+        this.ingestor = ingestor;
+        this.drive = drive;
         this.operatorController = operatorController;
         this.driverController = driverController;
         isUsingControllers = operatorController != null && driverController != null;
-        this.ingestor = ingestor;
-        centerToHub = new CenterToHub(drive);
-        cargoSentToShooter = false;
-        // autonShootFinished = false;
-        // lastShot = false;
-        snapshotTaken = false;
-        centerScheduled = false;
-
-        addRequirements(shooter); // adding drive as a requirement messes with auton
-    }
-
-    @Override
-    public void initialize() {
-        cargoSentToShooter = false;
-        // TODO: Maybe add centerScheduled = false? Probably depends on whether the same
-        // AutoShoot object is sccheduled > 1 time.
+        this.centerToHub = new CenterToHub(drive);
+        addRequirements(drive, shooter);
     }
 
     @Override
@@ -65,7 +52,7 @@ public class AutoShoot extends CommandBase {
             error = String.join(error, "RPM ");
         }
 
-        // check if PI saw target (minimum shot distance 2.1-ish meters)
+        // check if PI saw target
         if (Pi.getTargetCenterX() > 0.0) {
             if (isUsingControllers) {
                 Robot.stopControllerRumble(operatorController);
@@ -119,38 +106,18 @@ public class AutoShoot extends CommandBase {
              * }
              */
             // lastShot = true;
-            SmartDashboard.putBoolean("auto shot shooting", true);
+            SmartDashboard.putBoolean("hybrid shot shooting", true);
         } else {
             // lastShot = false;
-            SmartDashboard.putBoolean("auto shot shooting", false);
+            SmartDashboard.putBoolean("hybrid shot shooting", false);
         }
-        SmartDashboard.putString("Auto Shoot Error", error);
+        SmartDashboard.putString("Hybrid Shoot Error", error);
         // System.out.println("Auto Shoot Error: " + error);
-
-        if (!snapshotTaken) {
-            // Snapshot.TakeSnapshot("START");
-            snapshotTaken = true;
-        }
-    }
-
-    @Override
-    public void end(boolean interrupted) {
-        if (isUsingControllers) {
-            Robot.stopControllerRumble(operatorController);
-            Robot.stopControllerRumble(driverController);
-        }
-        Shooter.setCoast(true);
-        // System.out.println("AutoShoot end");
-        cargoSentToShooter = false;
-        centerScheduled = false;
     }
 
     @Override
     public boolean isFinished() {
-        if (cargoSentToShooter) {
-            // System.out.println("AutoShoot is finished");
-            Robot.setIsAutoShootFinished(true);
-        }
+        // System.out.println("AutoShoot is finished");
         return cargoSentToShooter;
     }
 }
