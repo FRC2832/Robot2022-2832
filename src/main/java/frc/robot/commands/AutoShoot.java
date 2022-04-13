@@ -15,10 +15,11 @@ public class AutoShoot extends CommandBase {
     private final Ingestor ingestor;
     private final CenterToHub centerToHub;
     private boolean cargoSentToShooter;
+    private boolean isUsingControllers;
     // private boolean autonShootFinished;
     // private boolean lastShot;
     private boolean snapshotTaken;
-    private boolean centerScheduled;
+    private boolean centerScheduled; // TODO: Might need to make this static for it to work properly.
 
     public AutoShoot(Drivetrain drive, Shooter shooter, Ingestor ingestor, XboxController operatorController,
             XboxController driverController) {
@@ -26,6 +27,7 @@ public class AutoShoot extends CommandBase {
         this.shooter = shooter;
         this.operatorController = operatorController;
         this.driverController = driverController;
+        isUsingControllers = operatorController != null && driverController != null;
         this.ingestor = ingestor;
         centerToHub = new CenterToHub(drive);
         cargoSentToShooter = false;
@@ -40,6 +42,8 @@ public class AutoShoot extends CommandBase {
     @Override
     public void initialize() {
         cargoSentToShooter = false;
+        // TODO: Maybe add centerScheduled = false? Probably depends on whether the same
+        // AutoShoot object is sccheduled > 1 time.
     }
 
     @Override
@@ -63,7 +67,7 @@ public class AutoShoot extends CommandBase {
 
         // check if PI saw target (minimum shot distance 2.1-ish meters)
         if (Pi.getTargetCenterX() > 0.0) {
-            if (operatorController != null && driverController != null) {
+            if (isUsingControllers) {
                 Robot.stopControllerRumble(operatorController);
                 Robot.stopControllerRumble(driverController);
             }
@@ -88,7 +92,7 @@ public class AutoShoot extends CommandBase {
             // }
         } else {
             // pi is not seeing hub
-            if (operatorController != null && driverController != null) {
+            if (isUsingControllers) {
                 Robot.rumbleController(operatorController, 1.0);
                 Robot.rumbleController(driverController, 1.0);
             }
@@ -104,7 +108,7 @@ public class AutoShoot extends CommandBase {
 
         if (error.isEmpty()) {
             // error = "SHOOT!!!";
-            //System.out.println("You need to shoot!");
+            // System.out.println("You need to shoot!");
             if (ingestor.sendCargoToShooter()) { // sends cargo to shooter and returns true once it finishes sending
                 // cargo
                 cargoSentToShooter = true;
@@ -131,7 +135,7 @@ public class AutoShoot extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-        if (operatorController != null && driverController != null) {
+        if (isUsingControllers) {
             Robot.stopControllerRumble(operatorController);
             Robot.stopControllerRumble(driverController);
         }
