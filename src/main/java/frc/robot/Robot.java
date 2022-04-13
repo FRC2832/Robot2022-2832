@@ -41,6 +41,7 @@ public class Robot extends TimedRobot {
     //private boolean ranAuton = false;
 
     private boolean lastEnabled;
+    private static boolean isAutoShootFinished = false;
     // Odometry odometry;
 
     //private String m_autoSelected;
@@ -54,7 +55,7 @@ public class Robot extends TimedRobot {
         Configuration.SetPersistentKeys();
         GitVersion vers = GitVersion.loadVersion();
         vers.printVersions();
-        DataLogManager.start();
+        // DataLogManager.start();
         // Snapshot.start("http://10.28.32.22:1181/stream.mjpg");
 
         ShooterConstants.LoadConstants();
@@ -109,6 +110,8 @@ public class Robot extends TimedRobot {
         SmartDashboard.putBoolean("Two/Three Ball Auton", false);
         SmartDashboard.putBoolean("Skip Reverse Auton Drive", false);
         SmartDashboard.putNumber("Angle Difference", 0.0);
+        SmartDashboard.putBoolean("Using Lidar", true);
+        SmartDashboard.putBoolean("Force use lidar", false);
 
         /*
          * m_chooser.setDefaultOption("Auton1", auton1);
@@ -132,6 +135,7 @@ public class Robot extends TimedRobot {
         swerve.setBrakeMode(false);
         climber.setUnlocked(false);
         // Shuffleboard.stopRecording();
+        setIsAutoShootFinished(false);
     }
 
     @Override
@@ -143,13 +147,11 @@ public class Robot extends TimedRobot {
 
         // CommandScheduler.getInstance().schedule(new HomeHood(shooter));
         Command autonCom;
-        if (SmartDashboard.getBoolean("Two/Three Ball Auton", false)) {
+        if (SmartDashboard.getBoolean("Two ball (true) / center search (false) Auton", true)) {
             autonCom = new AutonTwoBall(swerve, shooter, ingestor);
         } else {
-            autonCom = new AutonThreeBall(swerve, shooter, ingestor);
+            autonCom = new AutonCenterSearch(swerve, shooter, ingestor);
         }
-
-        autonCom = new AutonCenterSearch(swerve, shooter, ingestor);
 
         CommandScheduler.getInstance().schedule(autonCom);
         // Shuffleboard.startRecording();
@@ -228,5 +230,13 @@ public class Robot extends TimedRobot {
         /*if (Pi.getIsTargetCamConnected() && Pi.getIsCargoCamConnected()) {
         }*/ //TODO: Add logic to pick between auto shot and hybrid
         return new AutoShoot(drive, shooter, ingestor, operatorController, driverController);
+    }
+
+    public static void setIsAutoShootFinished(boolean finished) {
+        isAutoShootFinished = finished;
+    }
+
+    public static boolean getIsAutoShootFinished() {
+        return isAutoShootFinished;
     }
 }

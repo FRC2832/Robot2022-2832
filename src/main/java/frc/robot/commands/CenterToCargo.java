@@ -12,10 +12,10 @@ public class CenterToCargo extends CommandBase {
 
     public CenterToCargo(Drivetrain drive) {
         this.drive = drive;
-        addRequirements(drive); // TODO: This is commented out on CenterToHub. Interesting. May be worth investigating if we need it here.
-        pid = new PIDController(0.35, 0.0, 0.0); // values from tyros last year were 0.35, 0.05, 0.8
-        pid.setSetpoint(381.0);
-        pid.setTolerance(13.0); // tolerance of 10 pixels
+        // addRequirements(drive); // TODO: This is commented out on CenterToHub. Interesting. May be worth investigating if we need it here.
+        pid = new PIDController(0.6, 0.0, 0.0);
+        pid.setSetpoint(375.0);
+        pid.setTolerance(15.0);
     }
 
     @Override
@@ -23,6 +23,8 @@ public class CenterToCargo extends CommandBase {
         double pidVal = pid.calculate(Pi.getCargoCenterX());
         if (Math.abs(pidVal) > 60) {
             pidVal = Math.signum(pidVal) * 60;
+        } else if (Math.abs(pidVal) < 28) {
+            pidVal = Math.signum(pidVal) * 28;
         }
 
         drive.swerveDrive(0.0, 0.0, Math.toRadians(-pidVal), false);

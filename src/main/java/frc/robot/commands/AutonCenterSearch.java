@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Drivetrain;
 import frc.robot.Ingestor;
 import frc.robot.Pi;
+import frc.robot.Robot;
 import frc.robot.Shooter;
 import frc.robot.SwerveModule;
 
@@ -19,6 +20,7 @@ public class AutonCenterSearch extends CommandBase{
     private boolean isCargoScheduled;
     private boolean isAutoShootScheduled;
     private boolean autoShootFinished; // (move this variable to robot.java) set this variable from autoshoot instead of calling autoShoot.isFinished() (im wondering if thats calling a different object than what is schedule for some weird reason)
+    private boolean firstTurn;
     private double startAngle;
     private double startEncoderCount;
     private int direction;
@@ -38,6 +40,7 @@ public class AutonCenterSearch extends CommandBase{
         drive.resetCurrentStep();
         isCargoScheduled = false;
         isAutoShootScheduled = false;
+        firstTurn = true;
         startAngle = drive.getAngle() % 360;
         startEncoderCount = frontLeft.getDistance();
         direction = 1;
@@ -48,7 +51,7 @@ public class AutonCenterSearch extends CommandBase{
     @Override
     public void execute() {
         double distance;
-        System.out.println("Drive Step: " + drive.getCurrentStep());
+        // System.out.println("Drive Step: " + drive.getCurrentStep());
         switch (drive.getCurrentStep()) {
             case 0: // back up off the tarmac
                 drive.swerveDrive(Drivetrain.kMaxSpeed / 4, 0.0, 0.0, false);
@@ -63,17 +66,30 @@ public class AutonCenterSearch extends CommandBase{
                     CommandScheduler.getInstance().schedule(autoShoot);
                     isAutoShootScheduled = true;
                 }
-                if (autoShoot.isFinished()) {
+                if (Robot.getIsAutoShootFinished()) {
+                    // System.out.println("is auto shoot finished = true, incrementing drive step");
                     drive.incrementCurrentStep();
                     isAutoShootScheduled = false;
+                    Robot.setIsAutoShootFinished(false);
+                    timer.reset();
+                    startAngle = drive.getAngle() % 360;
                 }
                 break;
             case 2: // spin right then left until we see a ball
-                if (drive.getAngle() > startAngle + 20) {
-                    direction = -1;
-                } else if (drive.getAngle() < startAngle - 20) {
-                    direction = 1;
+                // if (drive.getAngle() > startAngle + 20) {
+                //     direction = -1;
+                // } else if (drive.getAngle() < startAngle - 20) {
+                //     direction = 1;
+                // }
+                if (timer.get() > 2 && firstTurn) {
+                    direction *= -1;
+                    timer.reset();
+                    firstTurn = false;
+                } else if (timer.get() > 4 && !firstTurn) {
+                    direction *= -1;
+                    timer.reset();
                 }
+                // System.out.println("Start angle: " + startAngle + "\tCurrent angle: " + drive.getAngle());
                 drive.swerveDrive(0.0, 0.0, direction * Math.toRadians(40), false);
                 ingestor.liftIngestor();
                 if (Pi.getCargoCenterY() > 0.0) { // TODO: check max y distance we can look at without going too far
@@ -96,7 +112,7 @@ public class AutonCenterSearch extends CommandBase{
                 ingestor.threeBallAutonIngest();
                 drive.swerveDrive(-Drivetrain.kMaxSpeed / 4, 0.0, 0.0, false);
                 // TODO: can we relate timer failsafe time to y distance of cargo?
-                if(ingestor.getStage1Proximity() || timer.get() > 2.5) { // TODO: check max time
+                if(ingestor.getStage1Proximity() || timer.get() > 1) { // TODO: check max time
                     drive.swerveDrive(0.0, 0.0, 0.0, false);
                     timer.reset();
                     drive.incrementCurrentStep();

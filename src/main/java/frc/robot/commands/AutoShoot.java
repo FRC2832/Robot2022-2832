@@ -34,7 +34,7 @@ public class AutoShoot extends CommandBase {
         snapshotTaken = false;
         centerScheduled = false;
 
-        addRequirements(drive, shooter);
+        addRequirements(shooter); // adding drive as a requirement messes with auton
     }
 
     @Override
@@ -121,7 +121,7 @@ public class AutoShoot extends CommandBase {
             SmartDashboard.putBoolean("auto shot shooting", false);
         }
         SmartDashboard.putString("Auto Shoot Error", error);
-        System.out.println("Auto Shoot Error: " + error);
+        // System.out.println("Auto Shoot Error: " + error);
 
         if (!snapshotTaken) {
             // Snapshot.TakeSnapshot("START");
@@ -144,7 +144,8 @@ public class AutoShoot extends CommandBase {
     @Override
     public boolean isFinished() {
         if (cargoSentToShooter) {
-            System.out.println("AutoShoot is finished");
+            // System.out.println("AutoShoot is finished");
+            Robot.setIsAutoShootFinished(true);
         }
         return cargoSentToShooter;
     }
