@@ -57,14 +57,15 @@ public class Lidar extends SubsystemBase {
     
     public static double calculateTargetAngle(double distance) {
         // distance is in meters.
-        double angle = 20.0;
-        double targetY = Pi.getTargetCenterY();
-        if (distance >= 4.25 && targetY >= 286.0) {
+        double angle;
+        double LIDAR_OFFSET = 0.0;
+        //double targetY = Pi.getTargetCenterY(); 2.81 m
+        if (distance >= 3.9 + LIDAR_OFFSET) { // && targetY >= 286.0) {
             angle = 51.375;
-        } else if (distance >= 3.5 && targetY >= 220) {
+        } else if (distance >= 3.0 + LIDAR_OFFSET) { // && targetY >= 220) {
             angle = 41.125;
-        } else if (distance >= 3.086 && targetY >= 158.5) {
-            angle = 25.0;
+        } else {
+            angle = 20.0;
         }
         return angle;
     }

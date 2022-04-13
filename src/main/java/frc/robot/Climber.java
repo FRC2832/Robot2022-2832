@@ -35,6 +35,7 @@ public class Climber extends SubsystemBase {
         }
     }
 
+    
     public void armCounterclockwise(boolean slow) {
         if (slow) {
             motorA.set(CLIMBER_SLOW_SPEED);

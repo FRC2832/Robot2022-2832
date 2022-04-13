@@ -9,6 +9,7 @@ public class ShooterConstants {
     public static final ArrayList<Pair<Double, Double>> LIDAR_DIST_TABLE = new ArrayList<>(8);
     public static final ArrayList<Pair<Double, Double>> DIST_RPM_TABLE = new ArrayList<>(15);
     public static final ArrayList<Pair<Double, Double>> DIST_HOOD_TABLE = new ArrayList<>(15);
+    private static final double LIDAR_OFFSET = 0.0;
 
     public static void LoadConstants() {
         // table is input: pixel Y, output: in from target
@@ -30,15 +31,20 @@ public class ShooterConstants {
         VISION_DIST_TABLE.add(new Pair<>(406.5, 228d));
 
         // table is input: distance in m, output: rpm
-        LIDAR_DIST_TABLE.add(new Pair<>(1.06, 2070.0)); // At hub, zero degrees on hood
-        LIDAR_DIST_TABLE.add(new Pair<>(1.65, 2070.0)); // 2 ft away, zero degrees on hood
-        LIDAR_DIST_TABLE.add(new Pair<>(2.32, 2320.0)); // 4 ft away, zero degrees on hood
-        LIDAR_DIST_TABLE.add(new Pair<>(4.54, 2480.0)); // 6 ft away, zero degrees on hood (TODO: May need to verify hood angle)
-        LIDAR_DIST_TABLE.add(new Pair<>(3.5, 2320.0)); // 8 ft away, 41.125 degrees on hood
-        LIDAR_DIST_TABLE.add(new Pair<>(4.25, 2470.0)); // 10 ft away, 51.375 degrees on hood
-        LIDAR_DIST_TABLE.add(new Pair<>(6.22, 2570.0)); // 12 ft away, 51.375 degrees on hood
-        LIDAR_DIST_TABLE.add(new Pair<>(8.68, 2690.0)); // 13 ft away, 51.375 degrees on hood
-        LIDAR_DIST_TABLE.add(new Pair<>(2.54, 2370.0));
+        // minimum shot distance 2.1-ish meters)
+        LIDAR_DIST_TABLE.add(new Pair<>(0.97 + LIDAR_OFFSET, 2220.0)); // At hub, zero degrees on hood
+        LIDAR_DIST_TABLE.add(new Pair<>(1.57 + LIDAR_OFFSET, 2220.0)); // 2 ft away, zero degrees on hood
+        LIDAR_DIST_TABLE.add(new Pair<>(2.21 + LIDAR_OFFSET, 2470.0)); // 4 ft away, zero degrees on hood
+        LIDAR_DIST_TABLE.add(new Pair<>(2.84 + LIDAR_OFFSET, 2640.0)); // 6 ft away, zero degrees on hood (TODO: May need to verify hood angle)
+        LIDAR_DIST_TABLE.add(new Pair<>(3.44 + LIDAR_OFFSET, 2470.0)); // 8 ft away, 41.125 degrees on hood
+        LIDAR_DIST_TABLE.add(new Pair<>(4.03 + LIDAR_OFFSET, 2600.0)); // 10 ft away, 51.375 degrees on hood
+        LIDAR_DIST_TABLE.add(new Pair<>(4.59 + LIDAR_OFFSET, 2720.0)); // 12 ft away, 51.375 degrees on hood
+        LIDAR_DIST_TABLE.add(new Pair<>(4.81 + LIDAR_OFFSET, 2840.0)); // 13 ft away, 51.375 degrees on hood
+        LIDAR_DIST_TABLE.add(new Pair<>(5.15 + LIDAR_OFFSET, 2840.0)); // 14 ft away, 51.375 degrees on hood (for now)
+        LIDAR_DIST_TABLE.add(new Pair<>(5.85 + LIDAR_OFFSET, 2840.0)); // 16 ft away, 51.375 degrees on hood (for now)
+        LIDAR_DIST_TABLE.add(new Pair<>(6.43 + LIDAR_OFFSET, 2840.0)); // 18 ft away, 51.375 degrees on hood (for now)
+        LIDAR_DIST_TABLE.add(new Pair<>(7.04 + LIDAR_OFFSET, 2840.0)); // 20 ft away, 51.375 degrees on hood (for now)
+        LIDAR_DIST_TABLE.add(new Pair<>(7.52 + LIDAR_OFFSET, 2840.0)); // 21.5 ft away, 51.375 degrees on hood (for now)
 
 
 
