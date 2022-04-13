@@ -47,8 +47,8 @@ public class Pi extends SubsystemBase {
     private Number[] targetAreaArray;
 	private static int targetLostCounter;
     private PIDController pid;
-    private double turnMotorVal;
-    private double scaledTurnMotorVal;
+    //private double turnMotorVal;
+    //private double scaledTurnMotorVal;
 
     public Pi() {
         //NetworkTableInstance netTableInstance = NetworkTableInstance.getDefault();

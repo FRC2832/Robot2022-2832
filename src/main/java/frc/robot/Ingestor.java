@@ -9,7 +9,6 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxAlternateEncoder;
 import com.revrobotics.SparkMaxPIDController;
 
-import edu.wpi.first.wpilibj.Counter;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
@@ -37,7 +36,7 @@ public class Ingestor extends SubsystemBase {
     private final Timer sendTimer;
     private final Timer stageTimer;
     private final DigitalInput stage1ProxSensor;
-    private final Counter counter;
+    //private final Counter counter;
     private boolean sendTimerStarted;
     private boolean stageTimerStarted;
     private boolean hasCargo;
@@ -64,7 +63,7 @@ public class Ingestor extends SubsystemBase {
         // Port port = Port.kOnboard; // TODO: Need to verify this.
         // stage1ProxSensor = new DigitalInput(0);
         stage1ProxSensor = new DigitalInput(0);
-        counter = new Counter(stage1ProxSensor);
+        //counter = new Counter(stage1ProxSensor);
         totalBalls = 0;
         // ballAtColorSensor = false;
 

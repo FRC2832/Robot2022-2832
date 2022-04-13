@@ -27,7 +27,7 @@ public class Climber extends SubsystemBase {
 
     @Override
     public void periodic() {
-        if(controller.getRightStickButton()) {
+        if (controller.getRightStickButton()) {
             Robot.rumbleController(controller, 1);
             unlocked = true;
         } else {
@@ -35,7 +35,6 @@ public class Climber extends SubsystemBase {
         }
     }
 
-    
     public void armCounterclockwise(boolean slow) {
         if (slow) {
             motorA.set(CLIMBER_SLOW_SPEED);

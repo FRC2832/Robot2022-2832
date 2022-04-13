@@ -14,7 +14,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.AutoShoot;
-import frc.robot.commands.AutonCenterSearch;
 import frc.robot.commands.AutonThreeBall;
 import frc.robot.commands.AutonTwoBall;
 import frc.robot.commands.CenterToCargo;
@@ -36,10 +35,10 @@ public class Robot extends TimedRobot {
     private Drivetrain swerve;
     private Ingestor ingestor;
     private Shooter shooter;
-    private Climber climber;
+    private ClimberOld climber;
     //private boolean ranAuton = false;
 
-    private boolean lastEnabled;
+    //private boolean lastEnabled;
     // Odometry odometry;
 
     //private String m_autoSelected;
@@ -60,14 +59,14 @@ public class Robot extends TimedRobot {
         CommandScheduler.getInstance().registerSubsystem(pi, lidar);
         shooter = new Shooter(DRIVER_CONTROLLER, OPERATOR_CONTROLLER, ingestor);
 
-        climber = new Climber(ingestor, OPERATOR_CONTROLLER);
+        climber = new ClimberOld();
 
         //turtleMode = new TurtleMode(swerve, driverController);
 
         CommandScheduler.getInstance().registerSubsystem(swerve, colorSensor);
         swerve.setDefaultCommand(new DriveStickSlew(swerve, DRIVER_CONTROLLER));
         shooter.setDefaultCommand(new ShooterOff(shooter));
-        climber.setDefaultCommand(new RunClimber(climber, OPERATOR_CONTROLLER));
+        climber.setDefaultCommand(new RunClimber(climber, OPERATOR_CONTROLLER, shooter));
         //swerve.setDefaultCommand(new TurtleMode(swerve, driverController));
 
         JoystickButton selectButton = new JoystickButton(OPERATOR_CONTROLLER, 7);
@@ -129,7 +128,7 @@ public class Robot extends TimedRobot {
         stopControllerRumble(OPERATOR_CONTROLLER);
         Shooter.setCoast(false);
         swerve.setBrakeMode(false);
-        climber.setUnlocked(false);
+        //climber.setUnlocked(false);
         // Shuffleboard.stopRecording();
     }
 
@@ -148,7 +147,7 @@ public class Robot extends TimedRobot {
             autonCom = new AutonThreeBall(swerve, shooter, ingestor);
         }
 
-        autonCom = new AutonCenterSearch(swerve, shooter, ingestor);
+        //autonCom = new AutonCenterSearch(swerve, shooter, ingestor);
 
         CommandScheduler.getInstance().schedule(autonCom);
         // Shuffleboard.startRecording();

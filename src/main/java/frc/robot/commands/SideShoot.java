@@ -7,6 +7,7 @@ import frc.robot.Shooter;
 
 public class SideShoot extends CommandBase {
     private static final double SPEED = 2300.0;
+    private static final double ANGLE = 31.0;
     private final Shooter shooter;
     private final Ingestor ingestor;
 
@@ -19,13 +20,16 @@ public class SideShoot extends CommandBase {
 
     @Override
     public void execute() {
-        //SPEED = SmartDashboard.getNumber("Target RPM", 2300.0);
+        //SPEED = SmartDashboard.getNumber("Target RPM", 2300.0); // Do not uncomment unless calibrating hood.
         shooter.setShooterRpm(SPEED);
-        shooter.setHoodAngle(31.0); // knob 2.5
+        shooter.setHoodAngle(ANGLE); // knob 2.5
         double shooterVel = shooter.getShooterVelocity();
         // if target rpm is within range (+- 50)
         if (SPEED - 50 < shooterVel && shooterVel < SPEED + 50) {
-            ingestor.sendCargoToShooter();
+            double hoodAngle = shooter.getHoodAngle();
+            if (ANGLE - 3.0 < hoodAngle && hoodAngle < ANGLE + 3.0) {
+                ingestor.sendCargoToShooter();
+            }
         }
     }
 
