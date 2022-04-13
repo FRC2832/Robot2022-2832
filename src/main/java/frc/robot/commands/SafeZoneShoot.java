@@ -7,6 +7,7 @@ import frc.robot.Shooter;
 
 public class SafeZoneShoot extends CommandBase {
     private static final double SPEED = 2650.0;
+    private static final double ANGLE = 53.0;
     private final Shooter shooter;
     private final Ingestor ingestor;
     private final boolean changeHood;
@@ -29,6 +30,12 @@ public class SafeZoneShoot extends CommandBase {
         }
         double shooterVel = shooter.getShooterVelocity();
         if (SPEED - 30 < shooterVel && shooterVel < SPEED + 30) {
+            if (changeHood) { // If we don't need to change the hood, skip the angle check.
+                double hoodAngle = shooter.getHoodAngle();
+                if (ANGLE - 3 >= hoodAngle || hoodAngle >= ANGLE + 3) {
+                    return; // Hood is not angled correctly yet, don't shoot.
+                }
+            }
             ingestor.sendCargoToShooter();
         }
     }

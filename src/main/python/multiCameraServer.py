@@ -36,6 +36,7 @@ class DriverCam(threading.Thread):
         threading.Thread.__init__(self)
         debug('info', "Driver Cam Start")
         self.running = True
+   
         
     def run(self):
         global inst
@@ -44,29 +45,32 @@ class DriverCam(threading.Thread):
         cap.set(cv2.CAP_PROP_FRAME_WIDTH, 320)
         cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 240)
         output_stream = inst.putVideo(name='Processed', height = 320, width=240)
-        redOffsetX = 25
-        redOffsetY = 36
-        yelOffsetX = 19
-        yelOffsetY = 30
+        redOffsetY = 35
+        yelOffsetY = 28
+        fps = 15
+        last = time.time()
         while self.running:
             ret, frame = cap.read()
-            frame = cv2.rotate(frame, cv2.ROTATE_180)
-            frame = cv2.line(frame, (160, 0), (160,250), (0,255,0), 1)
-            frame = cv2.line(frame, (0, 90), (320,90), (0,255,0), 1)
+            #frame = cv2.rotate(frame, cv2.ROTATE_180)
+            frame = cv2.line(frame, (149, 0), (149,250), (0,255,0), 1)
+            frame = cv2.line(frame, (0, 58), (320,58), (0,255,0), 1)
             
-            frame = cv2.line(frame, (160+yelOffsetY , 0), (160+yelOffsetY,250), (0,255,255), 1)
-            frame = cv2.line(frame, (160-yelOffsetY, 0), (160-yelOffsetY,250), (0,255,255), 1)
+            frame = cv2.line(frame, (149+yelOffsetY , 0), (149+yelOffsetY,250), (0,255,255), 1)
+            frame = cv2.line(frame, (149-yelOffsetY, 0), (149-yelOffsetY,250), (0,255,255), 1)
             
-            frame = cv2.line(frame, (0, 90+yelOffsetX -15), (320,90+yelOffsetX-15), (0,255,255), 1)
-            frame = cv2.line(frame, (0, 90-yelOffsetX ), (320,90-yelOffsetX), (0,255,255), 1)
+            frame = cv2.line(frame, (0, 69), (320,69), (0,255,255), 1)
+            frame = cv2.line(frame, (0, 52 ), (320,52), (0,255,255), 1)
             
-            frame = cv2.line(frame, (160+redOffsetY , 0), (160+redOffsetY,250), (0,0,255), 1)
-            frame = cv2.line(frame, (160-redOffsetY, 0), (160-redOffsetY,250), (0,0,255), 1)
+            frame = cv2.line(frame, (149+redOffsetY , 0), (149+redOffsetY,250), (0,0,255), 1)
+            frame = cv2.line(frame, (149-redOffsetY, 0), (149-redOffsetY,250), (0,0,255), 1)
             
-            frame = cv2.line(frame, (0, 90+redOffsetX -15), (320,90+redOffsetX-15), (0,0,255), 1)
-            frame = cv2.line(frame, (0, 90-redOffsetX ), (320,90-redOffsetX), (0,0,255), 1)
-            
+            frame = cv2.line(frame, (0, 49), (320,49), (0,0,255), 1)
+            frame = cv2.line(frame, (0, 76 ), (320,76), (0,0,255), 1)
+
             output_stream.putFrame(frame)
+            
+            time.sleep(abs((last + (1/fps)) - time.time())   )
+            last = time.time()
 
 class Lidar(threading.Thread):
     def __init__(self, ntinst):

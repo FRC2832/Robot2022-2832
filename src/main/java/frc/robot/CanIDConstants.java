@@ -25,5 +25,6 @@ public class CanIDConstants {
     public static final int CLIMB_A = 34;
 
     public static final int HOOD_MOTOR = 26;
+    public static final int RUNG_1_2_WINCH = 13;
 
 }

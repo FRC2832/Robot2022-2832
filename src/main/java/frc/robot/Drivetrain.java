@@ -21,7 +21,6 @@ import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.simulation.ADXRS450_GyroSim;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -42,7 +41,7 @@ public class Drivetrain extends SubsystemBase {
     private static int loops;
     private final SwerveModule[] MODULES = new SwerveModule[4];
     private final SwerveConstants[] CONSTANTS = new SwerveConstants[4];
-    private final Pose2d[] modulePoses = new Pose2d[4];
+    //private final Pose2d[] modulePoses = new Pose2d[4];
     // private final AnalogGyro gyro = new AnalogGyro(0);
     private final PigeonIMU pigeon;
     private final SwerveDriveKinematics kinematics;
@@ -53,14 +52,14 @@ public class Drivetrain extends SubsystemBase {
     private XboxController driverController;
     private Translation2d[] redBalls;
     private Translation2d[] blueBalls;
-    private ADXRS450_GyroSim gyroSim;
+    //private ADXRS450_GyroSim gyroSim;
     private ADXRS450_Gyro gyroBase;
 
     public Drivetrain(XboxController driverController) {
         this.driverController = driverController;
         if (Robot.isSimulation()) {
             gyroBase = new ADXRS450_Gyro();
-            gyroSim = new ADXRS450_GyroSim(gyroBase);
+            //gyroSim = new ADXRS450_GyroSim(gyroBase);
 
             redBalls = new Translation2d[8];
             redBalls[0] = new Translation2d(8.57, 7.53);
@@ -316,9 +315,9 @@ public class Drivetrain extends SubsystemBase {
         }
 
         // calculate the robot's speed and angle (we only care about angle here)
-        double omega = kinematics.toChassisSpeeds(states).omegaRadiansPerSecond;
+        //double omega = kinematics.toChassisSpeeds(states).omegaRadiansPerSecond;
         // set the IMU to the calculated robot rotation
-        double angle = Math.toDegrees(omega * rate);
+        //double angle = Math.toDegrees(omega * rate);
         // gyroSim.setAngle(odometry.getPoseMeters().getRotation().getDegrees() +
         // angle);
     }
