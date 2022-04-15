@@ -38,9 +38,9 @@ public class Robot extends TimedRobot {
     private Ingestor ingestor;
     private Shooter shooter;
     private ClimberOld climber;
-    private final Command autonTwoBall = new AutonTwoBall(swerve, shooter, ingestor);
-    private final Command autonCenterSearch = new AutonCenterSearch(swerve, shooter, ingestor);
-    private final Command autonThreeBall = new AutonThreeBall(swerve, shooter, ingestor);
+    private Command autonTwoBall;
+    private Command autonCenterSearch;
+    private Command autonThreeBall;
     private SendableChooser<Command> autonChooser = new SendableChooser<>();
     //private boolean ranAuton = false;
 
@@ -55,7 +55,7 @@ public class Robot extends TimedRobot {
     public void robotInit() {
         colorSensor = new ColorSensor();
         swerve = new Drivetrain(DRIVER_CONTROLLER);
-        ingestor = new Ingestor(colorSensor, OPERATOR_CONTROLLER);
+        ingestor = new Ingestor(colorSensor, OPERATOR_CONTROLLER, DRIVER_CONTROLLER);
         Configuration.SetPersistentKeys();
         GitVersion vers = GitVersion.loadVersion();
         vers.printVersions();
@@ -115,8 +115,14 @@ public class Robot extends TimedRobot {
         SmartDashboard.putBoolean("Skip Reverse Auton Drive", false);
         SmartDashboard.putNumber("Angle Difference", 0.0);
         SmartDashboard.putBoolean("Using Lidar", true);
+        SmartDashboard.putNumber("Lidar distance", 0.0);
+        SmartDashboard.putNumber("Vision distance", 0.0);
         SmartDashboard.putBoolean("Force use lidar", false);
         SmartDashboard.putBoolean("Two ball (true) / center search (false) Auton", true);
+
+        autonTwoBall = new AutonTwoBall(swerve, shooter, ingestor);
+        autonCenterSearch = new AutonCenterSearch(swerve, shooter, ingestor);
+        autonThreeBall = new AutonThreeBall(swerve, shooter, ingestor);
 
         autonChooser.setDefaultOption("Two ball (anywhere)", autonTwoBall);
         autonChooser.addOption("Search (center, faces hub)", autonCenterSearch);

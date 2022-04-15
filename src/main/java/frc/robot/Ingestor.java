@@ -33,6 +33,7 @@ public class Ingestor extends SubsystemBase {
     private final SparkMaxPIDController liftPidController;
     // private XboxController driverController;
     private final XboxController operatorController;
+    private final XboxController driverController;
     private final Timer sendTimer;
     private final Timer stageTimer;
     private final DigitalInput stage1ProxSensor;
@@ -48,7 +49,7 @@ public class Ingestor extends SubsystemBase {
     private double liftRotations;
     //private static final double INGESTOR_LIFT_SPEED = 0.25;
 
-    public Ingestor(ColorSensor colorSensor, XboxController controller) {
+    public Ingestor(ColorSensor colorSensor, XboxController operatorController, XboxController driverController) {
         ingestorWheels = new WPI_TalonSRX(CanIDConstants.INTAKE_WHEELS);
         // ingestorGate = new WPI_TalonSRX(2);
         stage1Conveyor = new WPI_TalonSRX(CanIDConstants.STAGE_1);
@@ -57,7 +58,8 @@ public class Ingestor extends SubsystemBase {
         ingestorLift = new CANSparkMax(CanIDConstants.INTAKE_LIFT, BRUSHLESS);
         altEncoder = ingestorLift.getAlternateEncoder(SparkMaxAlternateEncoder.Type.kQuadrature, 8192);
         // driverController = new XboxController(0);
-        operatorController = controller;
+        this.operatorController = operatorController;
+        this.driverController = driverController;
         sendTimer = new Timer();
         stageTimer = new Timer();
         // Port port = Port.kOnboard; // TODO: Need to verify this.
@@ -164,7 +166,7 @@ public class Ingestor extends SubsystemBase {
         double stage2ConveyorSpeed = 0.0;
         // double ingestorLiftSpeed = 0.0;
         
-        if (operatorController.getRightTriggerAxis() >= TRIGGER_SENSITIVITY) { // ingestor down and in
+        if (operatorController.getRightTriggerAxis() >= TRIGGER_SENSITIVITY || driverController.getLeftTriggerAxis() >= TRIGGER_SENSITIVITY) { // ingestor down and in
             ingestorWheelSpeed = -INGESTOR_SPEED;
             stage1ConveyorSpeed = STAGE_1_SPEED;
             lowerIngestor();
