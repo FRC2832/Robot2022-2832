@@ -19,7 +19,6 @@ public class AutonCenterSearch extends CommandBase{
     private final SwerveModule frontLeft;
     private boolean isCargoScheduled;
     private boolean isAutoShootScheduled;
-    private boolean autoShootFinished; // (move this variable to robot.java) set this variable from autoshoot instead of calling autoShoot.isFinished() (im wondering if thats calling a different object than what is schedule for some weird reason)
     private boolean firstTurn;
     private double startAngle;
     private double startEncoderCount;

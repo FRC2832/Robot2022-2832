@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.*;
-//import frc.robot.Snapshot;
+import frc.robot.Snapshot;
 
 public class AutoShoot extends CommandBase {
     private final Drivetrain drive;
@@ -17,7 +17,7 @@ public class AutoShoot extends CommandBase {
     private boolean cargoSentToShooter;
     private boolean isUsingControllers;
     // private boolean autonShootFinished;
-    // private boolean lastShot;
+    private boolean lastShot;
     private boolean snapshotTaken;
     private boolean centerScheduled; // TODO: Might need to make this static for it to work properly.
 
@@ -32,7 +32,7 @@ public class AutoShoot extends CommandBase {
         centerToHub = new CenterToHub(drive);
         cargoSentToShooter = false;
         // autonShootFinished = false;
-        // lastShot = false;
+        lastShot = false;
         snapshotTaken = false;
         centerScheduled = false;
 
@@ -71,25 +71,25 @@ public class AutoShoot extends CommandBase {
                 Robot.stopControllerRumble(operatorController);
                 Robot.stopControllerRumble(driverController);
             }
-            if (!centerScheduled) {
-                CommandScheduler.getInstance().schedule(centerToHub);
-                centerScheduled = true;
-            }
-            if (!centerToHub.isFinished()) {
-                error = String.join(error, "Centering");
-            }
-            // double rotationSpeed = Math.toRadians(50.0);
-            // if (Pi.getTargetMoveLeft()) {
-            // error = String.join(error, "TurnL ");
-            // // left is positive turn
-            // drive.swerveDrive(0.0, 0.0, -rotationSpeed, false);
-            // } else if (Pi.getTargetMoveRight()) {
-            // error = String.join(error, "TurnR ");
-            // drive.swerveDrive(0.0, 0.0, rotationSpeed, false);
-            // } else {
-            // // robot centered, stop driving
-            // drive.swerveDrive(0.0, 0.0, 0.0, false);
+            // if (!centerScheduled) {
+            //     CommandScheduler.getInstance().schedule(centerToHub);
+            //     centerScheduled = true;
             // }
+            // if (!centerToHub.isFinished()) {
+            //     error = String.join(error, "Centering");
+            // }
+            double rotationSpeed = Math.toRadians(50.0);
+            if (Pi.getTargetMoveLeft()) {
+                error = String.join(error, "TurnL ");
+                // left is positive turn
+                drive.swerveDrive(0.0, 0.0, -rotationSpeed, false);
+            } else if (Pi.getTargetMoveRight()) {
+                error = String.join(error, "TurnR ");
+                drive.swerveDrive(0.0, 0.0, rotationSpeed, false);
+            } else {
+                // robot centered, stop driving
+                drive.swerveDrive(0.0, 0.0, 0.0, false);
+            }
         } else {
             // pi is not seeing hub
             if (isUsingControllers) {
@@ -113,15 +113,13 @@ public class AutoShoot extends CommandBase {
                 // cargo
                 cargoSentToShooter = true;
             }
-            /*
-             * if (!lastShot) {
-             * // Snapshot.TakeSnapshot("SHOT");
-             * }
-             */
-            // lastShot = true;
+            if (!lastShot) {
+                // Snapshot.TakeSnapshot("SHOT");
+            }
+            lastShot = true;
             SmartDashboard.putBoolean("auto shot shooting", true);
         } else {
-            // lastShot = false;
+            lastShot = false;
             SmartDashboard.putBoolean("auto shot shooting", false);
         }
         SmartDashboard.putString("Auto Shoot Error", error);
