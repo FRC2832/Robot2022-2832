@@ -151,7 +151,6 @@ public class Shooter extends SubsystemBase {
         }
         hoodMotor.set(ControlMode.PercentOutput, hoodMotorSpeed);
         hoodMotor.setNeutralMode(mode);
-        // System.out.println(hoodMotorSpeed);
     }
 
     /**
@@ -218,33 +217,26 @@ public class Shooter extends SubsystemBase {
         double lidarDistance;
         double visionDistance;
         // first, calculate distance to target
-        // if (useRunningAvg) {
-        //     lidarDistance = Lidar.getRunningAvg() * 39.3701; // inches
-        // } else {
-        //     lidarDistance = Lidar.getDistanceToTarget() * 39.3701;
-        // }
-        // SmartDashboard.putNumber("Lidar distance", lidarDistance);
-        // double centerY = Pi.getTargetCenterY();
-        // visionDistance = Pi.LinearInterp(ShooterConstants.VISION_DIST_TABLE, centerY); // inches
-        // SmartDashboard.putNumber("Vision distance", visionDistance);
-        // if (Math.abs(lidarDistance - visionDistance) > 40) { // TODO: change this on the practice field to account for lower hub wall in a different position
-        //     distance = visionDistance;
-        //     SmartDashboard.putBoolean("Using Lidar", false);
-        //     targetHoodAngle = Pi.LinearInterp(ShooterConstants.DIST_HOOD_TABLE, distance);
-        //     targetRpm = Pi.LinearInterp(ShooterConstants.DIST_RPM_TABLE, distance);
-        // } else {
-        //     distance = lidarDistance;
-        //     SmartDashboard.putBoolean("Using Lidar", true);
-        //     targetHoodAngle = Lidar.calculateTargetAngle(distance);
-        //     targetRpm = Pi.LinearInterp(ShooterConstants.LIDAR_DIST_TABLE, distance / 39.3701); // table takes meters
-        // }
-
+        if (useRunningAvg) {
+            lidarDistance = Lidar.getRunningAvg() * 39.3701; // inches
+        } else {
+            lidarDistance = Lidar.getDistanceToTarget() * 39.3701;
+        }
+        SmartDashboard.putNumber("Lidar distance", lidarDistance);
         double centerY = Pi.getTargetCenterY();
-        distance = Pi.LinearInterp(ShooterConstants.VISION_DIST_TABLE, centerY);
-        SmartDashboard.putBoolean("Using Lidar", false);
-        targetHoodAngle = Pi.LinearInterp(ShooterConstants.DIST_HOOD_TABLE, distance);
-        targetRpm = Pi.LinearInterp(ShooterConstants.DIST_RPM_TABLE, distance);
-
+        visionDistance = Pi.LinearInterp(ShooterConstants.VISION_DIST_TABLE, centerY); // inches
+        SmartDashboard.putNumber("Vision distance", visionDistance);
+        if (Math.abs(lidarDistance - visionDistance) > 40) { // TODO: change this on the practice field to account for lower hub wall in a different position
+            distance = visionDistance;
+            SmartDashboard.putBoolean("Using Lidar", false);
+            targetHoodAngle = Pi.LinearInterp(ShooterConstants.DIST_HOOD_TABLE, distance);
+            targetRpm = Pi.LinearInterp(ShooterConstants.DIST_RPM_TABLE, distance);
+        } else {
+            distance = lidarDistance;
+            SmartDashboard.putBoolean("Using Lidar", true);
+            targetHoodAngle = Lidar.calculateTargetAngle(distance);
+            targetRpm = Pi.LinearInterp(ShooterConstants.LIDAR_DIST_TABLE, distance / 39.3701); // table takes meters
+        }
         // TODO: only for tuning purposes!
         // boolean forceLidar = SmartDashboard.getBoolean("Force use lidar", true);
         // if (forceLidar) {

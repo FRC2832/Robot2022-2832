@@ -13,7 +13,7 @@ public class CenterToHub extends CommandBase {
     public CenterToHub(Drivetrain drive) {
         this.drive = drive;
         // addRequirements(drive);
-        pid = new PIDController(0.65, 0.0, 0.0);
+        pid = new PIDController(0.6, 0.0, 0.0);
         pid.setSetpoint(320.0);
         pid.setTolerance(20.0);
     }
@@ -23,8 +23,8 @@ public class CenterToHub extends CommandBase {
         double pidVal = pid.calculate(Pi.getTargetCenterX());
         if (Math.abs(pidVal) > 60) {
             pidVal = Math.signum(pidVal) * 60;
-        } else if (Math.abs(pidVal) < 30) {
-            pidVal = Math.signum(pidVal) * 30;
+        } else if (Math.abs(pidVal) < 28) {
+            pidVal = Math.signum(pidVal) * 28;
         }
 
         drive.swerveDrive(0.0, 0.0, Math.toRadians(-pidVal), false);

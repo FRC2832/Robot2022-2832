@@ -14,25 +14,24 @@ import frc.robot.SwerveModule;
 
 public class AutonThreeBall extends CommandBase {
     private final Drivetrain drive;
+    private final Shooter shooter;
     private final Ingestor ingestor;
     private final SwerveModule frontLeft;
     private final AutoShoot autoShoot;
-    private final CenterToCargo centerToCargo;
     private static final Timer TIMER = new Timer();
     //private boolean sentTToShooter;
     private boolean isAutoShootScheduled;
-    private boolean isCargoScheduled;
     private double startEncoderCount;
     private double startAngle;
 
     public AutonThreeBall(Drivetrain drive, Shooter shooter, Ingestor ingestor) {
         this.drive = drive;
+        this.shooter = shooter;
         this.ingestor = ingestor;
         //sentToShooter = false;
         frontLeft = drive.getModules()[0];
         autoShoot = new AutoShoot(drive, shooter, ingestor, null, null);
-        centerToCargo = new CenterToCargo(drive);
-        addRequirements(drive, ingestor);
+        addRequirements(drive, shooter, ingestor);
         drive.resetCurrentStep();
     }
 
@@ -44,7 +43,6 @@ public class AutonThreeBall extends CommandBase {
         startAngle = drive.getAngle() % 360;
         startEncoderCount = frontLeft.getDistance();
         isAutoShootScheduled = false;
-        isCargoScheduled = false;
         TIMER.reset();
         TIMER.start();
         // System.out.println("Start X, Y: " + startPose.getX() + ", " +
@@ -67,7 +65,7 @@ public class AutonThreeBall extends CommandBase {
                 drive.swerveDrive(0.0, 0.0, 0.0, false);
                 ingestor.lowerIngestor();
                 ingestor.threeBallAutonIngest();
-                // shooter.setShooterRpm(2300.0);
+                shooter.setShooterRpm(2300.0);
                 if (TIMER.get() >= 0.5) {
                     drive.incrementCurrentStep();
                     TIMER.reset();
@@ -79,7 +77,7 @@ public class AutonThreeBall extends CommandBase {
                 drive.swerveDrive(-Drivetrain.kMaxSpeed / 3, 0.0, 0.0, false);
                 ingestor.lowerIngestor();
                 ingestor.threeBallAutonIngest();
-                // shooter.setShooterRpm(2300.0);
+                shooter.setShooterRpm(2300.0);
                 distance = Math.abs(frontLeft.getDistance() - startEncoderCount);
                 if (distance >= 1.5) {// timer.get() >= 3.0) {// || ingestor.getStage1Proximity()){
                     drive.incrementCurrentStep();
@@ -102,7 +100,7 @@ public class AutonThreeBall extends CommandBase {
                 drive.swerveDrive(Drivetrain.kMaxSpeed / 3, 0.0, 0.0, false);
                 ingestor.lowerIngestor();
                 ingestor.threeBallAutonIngest();
-                // shooter.setShooterRpm(2300.0);
+                shooter.setShooterRpm(2300.0);
                 distance = Math.abs(frontLeft.getDistance() - startEncoderCount);
                 if (distance >= 0.5) {
                     drive.incrementCurrentStep();
@@ -116,7 +114,7 @@ public class AutonThreeBall extends CommandBase {
                 drive.swerveDrive(0.0, 0.0, Math.PI / 2, false);
                 ingestor.threeBallAutonIngest();
                 ingestor.liftIngestor();
-                // shooter.setShooterRpm(2300.0);
+                shooter.setShooterRpm(2300.0);
                 angleDifference = Math.abs(drive.getAngle() % 360 - startAngle);
                 if (angleDifference >= 170.0) {
                     drive.incrementCurrentStep();
@@ -127,7 +125,6 @@ public class AutonThreeBall extends CommandBase {
                 break;
             case 4: // Shoot 2 balls using AutoShoot 
                 drive.swerveDrive(0.0, 0.0, 0.0, false);
-                ingestor.liftIngestor();
                 // double speed = 2300.0;
                 // // TODO: Might be able to schedule AutoLShoot later.
                 // // TODO add in hood angle code when working
@@ -152,9 +149,9 @@ public class AutonThreeBall extends CommandBase {
                 break;
             case 5: // Rotate 90 degrees left.
                 angleDifference = Math.abs(drive.getAngle() % 360 - startAngle);
-                ingestor.liftIngestor();
+                ingestor.lowerIngestor();
                 ingestor.threeBallAutonIngest();
-                // shooter.setShooterRpm(2300.0);
+                shooter.setShooterRpm(2300.0);
                 if (angleDifference >= 90.0) { // TODO: Might need to account for no seen cargo.
                     drive.incrementCurrentStep();
                     drive.swerveDrive(0.0, 0.0, 0.0, false);
@@ -163,40 +160,31 @@ public class AutonThreeBall extends CommandBase {
                 }
                 break;
             case 6: // Rotate towards third cargo.
-                // shooter.setShooterRpm(2300.0);
-                ingestor.liftIngestor();
+                shooter.setShooterRpm(2300.0);
+                ingestor.lowerIngestor();
                 ingestor.threeBallAutonIngest();
                 if (Pi.getCargoCenterX() > -1.0 && Pi.getCargoCenterY() > -1.0) {
-                    if (!isCargoScheduled) {
-                        CommandScheduler.getInstance().schedule(centerToCargo);
-                        isCargoScheduled = true;
-                    }
-                    if (centerToCargo.isFinished()) {
-                        TIMER.reset();
-                        startEncoderCount = frontLeft.getDistance();
+                    byte speedMultiplier = 0;
+                    if (Pi.getCargoMoveLeft()) {
+                        speedMultiplier = -1;
+                    } else if (Pi.getCargoMoveRight()) {
+                        speedMultiplier = 1;
+                    } else {
                         drive.incrementCurrentStep();
+                        startEncoderCount = frontLeft.getDistance();
+                        TIMER.reset();
                     }
-                    // byte speedMultiplier = 0;
-                    // if (Pi.getCargoMoveLeft()) {
-                    //     speedMultiplier = -1;
-                    // } else if (Pi.getCargoMoveRight()) {
-                    //     speedMultiplier = 1;
-                    // } else {
-                    //     drive.incrementCurrentStep();
-                    //     startEncoderCount = frontLeft.getDistance();
-                    //     TIMER.reset();
-                    // }
-                    // drive.swerveDrive(0.0, 0.0, speedMultiplier * (Math.PI / 2), false);
+                    drive.swerveDrive(0.0, 0.0, speedMultiplier * (Math.PI / 2), false);
                 } else {
                     drive.swerveDrive(0.0, 0.0, 0.0, false); // TODO: May need to add more logic here.
                 }
                 break;
             case 7: // Move towards cargo and ingest.
-                // shooter.setShooterRpm(2300.0);
+                shooter.setShooterRpm(2300.0);
                 ingestor.lowerIngestor();
                 ingestor.threeBallAutonIngest();
                 distance = Math.abs(frontLeft.getDistance() - startEncoderCount);
-                if (distance >= 2.0) {
+                if (distance >= 3.0) {
                     drive.swerveDrive(0.0, 0.0, 0.0, false);
                     drive.incrementCurrentStep();
                     TIMER.reset();
@@ -206,7 +194,7 @@ public class AutonThreeBall extends CommandBase {
                 }
                 break;
             case 8: // Rotate right towards hub.
-                // shooter.setShooterRpm(2300.0);
+                shooter.setShooterRpm(2300.0);
                 ingestor.liftIngestor();
                 ingestor.threeBallAutonIngest();
                 angleDifference = Math.abs(drive.getAngle() % 360 - startAngle);
@@ -232,7 +220,7 @@ public class AutonThreeBall extends CommandBase {
                 break;
             default:
                 drive.swerveDrive(0.0, 0.0, 0.0, false);
-                // shooter.setShooterRpm(2300.0);
+                shooter.setShooterRpm(2300.0);
                 ingestor.liftIngestor();
 
                 break;
@@ -271,7 +259,7 @@ public class AutonThreeBall extends CommandBase {
     public void end(boolean interrupted) {
         TIMER.stop();
         drive.swerveDrive(0.0, 0.0, 0.0, false);
-        // shooter.setShooterRpm(1000.0);
+        shooter.setShooterRpm(1000.0);
         Shooter.setCoast(true);
         ingestor.liftIngestor();
         ingestor.getStage1Conveyor().set(ControlMode.PercentOutput, 0);

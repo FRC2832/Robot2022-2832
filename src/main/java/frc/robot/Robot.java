@@ -5,18 +5,15 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
-import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.AutoShoot;
 import frc.robot.commands.AutonCenterSearch;
-import frc.robot.commands.AutonThreeBall;
 import frc.robot.commands.AutonTwoBall;
 import frc.robot.commands.CenterToCargo;
 import frc.robot.commands.CenterToHub;
@@ -38,10 +35,6 @@ public class Robot extends TimedRobot {
     private Ingestor ingestor;
     private Shooter shooter;
     private ClimberOld climber;
-    private Command autonTwoBall;
-    private Command autonCenterSearch;
-    private Command autonThreeBall;
-    private SendableChooser<Command> autonChooser = new SendableChooser<>();
     //private boolean ranAuton = false;
 
     private boolean lastEnabled;
@@ -55,11 +48,11 @@ public class Robot extends TimedRobot {
     public void robotInit() {
         colorSensor = new ColorSensor();
         swerve = new Drivetrain(DRIVER_CONTROLLER);
-        ingestor = new Ingestor(colorSensor, OPERATOR_CONTROLLER, DRIVER_CONTROLLER);
+        ingestor = new Ingestor(colorSensor, OPERATOR_CONTROLLER);
         Configuration.SetPersistentKeys();
         GitVersion vers = GitVersion.loadVersion();
         vers.printVersions();
-        DataLogManager.start();
+        // DataLogManager.start();
         // Snapshot.start("http://10.28.32.22:1181/stream.mjpg");
 
         ShooterConstants.LoadConstants();
@@ -115,19 +108,16 @@ public class Robot extends TimedRobot {
         SmartDashboard.putBoolean("Skip Reverse Auton Drive", false);
         SmartDashboard.putNumber("Angle Difference", 0.0);
         SmartDashboard.putBoolean("Using Lidar", true);
-        SmartDashboard.putNumber("Lidar distance", 0.0);
-        SmartDashboard.putNumber("Vision distance", 0.0);
         SmartDashboard.putBoolean("Force use lidar", false);
-        SmartDashboard.putBoolean("Two ball (true) / center search (false) Auton", true);
 
-        autonTwoBall = new AutonTwoBall(swerve, shooter, ingestor);
-        autonCenterSearch = new AutonCenterSearch(swerve, shooter, ingestor);
-        autonThreeBall = new AutonThreeBall(swerve, shooter, ingestor);
-
-        autonChooser.setDefaultOption("Two ball (anywhere)", autonTwoBall);
-        autonChooser.addOption("Search (center, faces hub)", autonCenterSearch);
-        autonChooser.addOption("Three ball (right side)", autonThreeBall);
-        SmartDashboard.putData(autonChooser);
+        /*
+         * m_chooser.setDefaultOption("Auton1", auton1);
+         * m_chooser.addOption("Auton2", auton2);
+         * m_chooser.addOption("Auton3", auton3);
+         * m_chooser.addOption("Auton4", auton4);
+         * m_chooser.addOption("Auton5", auton5);
+         * SmartDashboard.putData(m_chooser);
+         */
 
         //SmartDashboard.putNumber("Shooting delay", 0.0);
     }
@@ -149,17 +139,20 @@ public class Robot extends TimedRobot {
     public void autonomousInit() {
         // AutonTwoBall.resetAutonShoot();
         CommandScheduler.getInstance().cancelAll();
+        //m_selectedAuton = CHOOSER.getSelected();
+        //System.out.println("Auton Selected: " + m_selectedAuton);
 
-        Command autonCom = autonChooser.getSelected();
-        // if (SmartDashboard.getBoolean("Two ball (true) / center search (false) Auton", true)) {
-        //     autonCom = new AutonTwoBall(swerve, shooter, ingestor);
-        // } else {
-        //     autonCom = new AutonCenterSearch(swerve, shooter, ingestor);
-        // }
-
-        if (autonCom != null) {
-            CommandScheduler.getInstance().schedule(autonCom);
+        // CommandScheduler.getInstance().schedule(new HomeHood(shooter));
+        Command autonCom;
+        if (SmartDashboard.getBoolean("Two ball (true) / center search (false) Auton", true)) {
+            autonCom = new AutonTwoBall(swerve, shooter, ingestor);
+        } else {
+            autonCom = new AutonCenterSearch(swerve, shooter, ingestor);
         }
+
+        //autonCom = new AutonCenterSearch(swerve, shooter, ingestor);
+
+        CommandScheduler.getInstance().schedule(autonCom);
         // Shuffleboard.startRecording();
         //ranAuton = true;
     }

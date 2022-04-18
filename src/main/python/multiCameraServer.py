@@ -337,8 +337,8 @@ class TargetPipeline:
         """
 
         self.__hsv_threshold_hue = [40.46762589928056, 86.31399317406144]
-        self.__hsv_threshold_saturation = [142.17625899280574, 255.0]
-        self.__hsv_threshold_value = [43.57014388489208, 255.0]
+        self.__hsv_threshold_saturation = [149.05575539568343, 255.0]
+        self.__hsv_threshold_value = [48.156474820143885, 255.0]
 
         self.hsv_threshold_output = None
 
