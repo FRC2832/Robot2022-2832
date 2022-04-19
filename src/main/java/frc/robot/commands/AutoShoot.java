@@ -71,25 +71,25 @@ public class AutoShoot extends CommandBase {
                 Robot.stopControllerRumble(operatorController);
                 Robot.stopControllerRumble(driverController);
             }
-            // if (!centerScheduled) {
-            //     CommandScheduler.getInstance().schedule(centerToHub);
-            //     centerScheduled = true;
-            // }
-            // if (!centerToHub.isFinished()) {
-            //     error = String.join(error, "Centering");
-            // }
-            double rotationSpeed = Math.toRadians(50.0);
-            if (Pi.getTargetMoveLeft()) {
-                error = String.join(error, "TurnL ");
-                // left is positive turn
-                drive.swerveDrive(0.0, 0.0, -rotationSpeed, false);
-            } else if (Pi.getTargetMoveRight()) {
-                error = String.join(error, "TurnR ");
-                drive.swerveDrive(0.0, 0.0, rotationSpeed, false);
-            } else {
-                // robot centered, stop driving
-                drive.swerveDrive(0.0, 0.0, 0.0, false);
+            if (!centerScheduled) {
+                CommandScheduler.getInstance().schedule(centerToHub);
+                centerScheduled = true;
             }
+            if (!centerToHub.isFinished()) {
+                error = String.join(error, "Centering");
+            }
+            // double rotationSpeed = Math.toRadians(50.0);
+            // if (Pi.getTargetMoveLeft()) {
+            //     error = String.join(error, "TurnL ");
+            //     // left is positive turn
+            //     drive.swerveDrive(0.0, 0.0, -rotationSpeed, false);
+            // } else if (Pi.getTargetMoveRight()) {
+            //     error = String.join(error, "TurnR ");
+            //     drive.swerveDrive(0.0, 0.0, rotationSpeed, false);
+            // } else {
+            //     // robot centered, stop driving
+            //     drive.swerveDrive(0.0, 0.0, 0.0, false);
+            // }
         } else {
             // pi is not seeing hub
             if (isUsingControllers) {
