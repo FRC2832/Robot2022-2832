@@ -327,7 +327,7 @@ public class Drivetrain extends SubsystemBase {
         double absVal = Math.abs(value);
 
         if (absVal > deadband) {
-            return Math.signum(value) * (deadband + ((0.52) * absVal * absVal)); // TODO: change to 1 - x(deadband)
+            return Math.signum(value) * (deadband + ((0.47) * absVal * absVal)); // TODO: change to 1 - x(deadband)
         }
         return 0.0;
     }

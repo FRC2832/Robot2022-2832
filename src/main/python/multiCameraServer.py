@@ -86,7 +86,7 @@ class Lidar(threading.Thread):
             if self.ser.in_waiting > 8:
                 raw = self.ser.read(9)
                 self.ser.reset_input_buffer()
-                if raw[0] == 0x59 and raw[1] == 0x59:
+                if (raw[0] == 0x59 and raw[1] == 0x59) or True:
 
                     distance = raw[2] + raw[3]*256
                     debug('debug', "LIDAR RAW: " + str(distance))
@@ -336,9 +336,9 @@ class TargetPipeline:
         """initializes all values to presets or None if need to be set
         """
 
-        self.__hsv_threshold_hue = [40.46762589928056, 86.31399317406144]
-        self.__hsv_threshold_saturation = [142.17625899280574, 255.0]
-        self.__hsv_threshold_value = [43.57014388489208, 255.0]
+        self.__hsv_threshold_hue = [46.942446043165454, 83.24232081911263]
+        self.__hsv_threshold_saturation = [128.41726618705036, 255.0]
+        self.__hsv_threshold_value = [32.10431654676259, 255.0]
 
         self.hsv_threshold_output = None
 
