@@ -69,7 +69,7 @@ public class Shooter extends SubsystemBase {
         TalonSRXConfiguration hoodConfig = new TalonSRXConfiguration();
         hoodMotor.getAllConfigs(hoodConfig);
         hoodConfig.slot0.kP = 9;
-        hoodConfig.slot0.kI = 0.1;
+        hoodConfig.slot0.kI = 0.2;
         hoodConfig.slot0.kD = 90;
         hoodConfig.slot0.integralZone = 30;
         hoodConfig.slot0.allowableClosedloopError = 2;

@@ -54,7 +54,7 @@ public class AutoShoot extends CommandBase {
         // check hood angle is more than 3* off
         double targetHoodAngle = shooter.getTargetHoodAngle();
         shooter.setHoodAngle(targetHoodAngle);
-        if (Math.abs(shooter.getHoodAngle() - targetHoodAngle) > 0.5) {
+        if (Math.abs(shooter.getHoodAngle() - targetHoodAngle) > 1.0) {
             error = String.join(error, "Hood ");
         }
 
