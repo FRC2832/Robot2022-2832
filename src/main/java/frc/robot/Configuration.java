@@ -4,31 +4,34 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
-public class Configuration {
+class Configuration {
     private static final String[] WHEEL_IDS = { "FL", "FR", "RL", "RR" };
     private static final String SHOOTER_KEY = "Shooter CanId";
     private static final String DRIVEMOTOR_KEY = "DriveMotor CanId ";
     private static final String TURNMOTOR_KEY = "TurnMotor CanId ";
     private static final String CANCODER_KEY = "CanCoder CanId ";
     private static final String ZEROANGLE_KEY = "ZeroAngle ";
-    private static NetworkTable table;
 
-    public static void SetPersistentKeys() {
+    static void SetPersistentKeys() {
         loadTable();
 
-        makePersistent(table.getEntry(SHOOTER_KEY), 24);
+        makePersistent(TableHolder.table.getEntry(SHOOTER_KEY), 24);
         for (byte i = 0; i < 4; i++) {
             String id = GetWheelName(i);
-            makePersistent(table.getEntry(DRIVEMOTOR_KEY + id), i);
-            makePersistent(table.getEntry(TURNMOTOR_KEY + id), i + 10);
-            makePersistent(table.getEntry(CANCODER_KEY + id), i + 20);
-            makePersistent(table.getEntry(ZEROANGLE_KEY + id), 0);
+            makePersistent(TableHolder.table.getEntry(DRIVEMOTOR_KEY + id), i);
+            makePersistent(TableHolder.table.getEntry(TURNMOTOR_KEY + id), i + 10);
+            makePersistent(TableHolder.table.getEntry(CANCODER_KEY + id), i + 20);
+            makePersistent(TableHolder.table.getEntry(ZEROANGLE_KEY + id), 0);
         }
     }
 
     private static void loadTable() {
-        if (table == null) {
-            table = NetworkTableInstance.getDefault().getTable("Config");
+    }
+
+    private static void makePersistent(NetworkTableEntry entry, Number value) {
+        if (!entry.isPersistent()) {
+            entry.setNumber(value);
+            entry.setPersistent();
         }
     }
 
@@ -57,17 +60,14 @@ public class Configuration {
         return (int) table.getEntry(SHOOTER_KEY).getDouble(0);
     } */
 
-    private static void makePersistent(NetworkTableEntry entry, Number value) {
-        if (!entry.isPersistent()) {
-            entry.setNumber(value);
-            entry.setPersistent();
-        }
-    }
-
-    public static String GetWheelName(byte whl) {
+    private static String GetWheelName(byte whl) {
         if (whl < 0 || whl > 3)
             return "";
         return WHEEL_IDS[whl];
+    }
+
+    private static final class TableHolder {
+        private static final NetworkTable table = NetworkTableInstance.getDefault().getTable("Config");
     }
 
     /*

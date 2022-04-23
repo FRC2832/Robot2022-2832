@@ -2,17 +2,18 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Ingestor;
+import frc.robot.subsystems.Ingestor;
 
 public class Ingest extends CommandBase {
     private static final double INGESTOR_SPEED = 0.75; // 1000.0;
     private static final double STAGE_1_SPEED = 0.75;// 1000.0;
     private static final double STAGE_2_SPEED = 0.75; // 1000.0;
-    private final Ingestor ingestor;
     private static final Timer TIMER = new Timer();
+    private final Ingestor ingestor;
     // private static final double INGESTOR_LIFT_SPEED = 0.25;
 
     public Ingest(Ingestor ingestor) {
+        super();
         this.ingestor = ingestor;
         addRequirements(ingestor);
     }
@@ -32,13 +33,13 @@ public class Ingest extends CommandBase {
     }
 
     @Override
-    public boolean isFinished() {
-        return (TIMER.get() > 5 || ingestor.getStage1Proximity());
+    public void end(boolean interrupted) {
+        TIMER.stop();
     }
 
     @Override
-    public void end(boolean interrupted) {
-        TIMER.stop();
+    public boolean isFinished() {
+        return (TIMER.get() > 5 || ingestor.getStage1Proximity());
     }
 
 }

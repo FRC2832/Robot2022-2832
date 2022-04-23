@@ -2,15 +2,16 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.ClimberOld;
-import frc.robot.Shooter;
+import frc.robot.subsystems.Climber;
+import frc.robot.subsystems.Shooter;
 
 public class RunClimber extends CommandBase {
-    private final ClimberOld climber;
+    private final Climber climber;
     private final Shooter shooter;
     private final XboxController controller;
 
-    public RunClimber(ClimberOld climber, XboxController controller, Shooter shooter) {
+    public RunClimber(Climber climber, XboxController controller, Shooter shooter) {
+        super();
         this.climber = climber;
         this.shooter = shooter;
         this.controller = controller;

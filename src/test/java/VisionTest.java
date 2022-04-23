@@ -2,7 +2,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import edu.wpi.first.math.geometry.*;
-import frc.robot.Drivetrain;
+import frc.robot.subsystems.Drivetrain;
 
 public class VisionTest {
 

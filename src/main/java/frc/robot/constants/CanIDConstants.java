@@ -1,0 +1,41 @@
+package frc.robot.constants;
+
+public class CanIDConstants {
+
+    // only for comp bot
+    // swerve order: "FL", "FR", "RL", "RR"
+
+    // intake and slipstream
+    public static final int INTAKE_WHEELS = 27;
+    public static final int INTAKE_LIFT = 31;
+    public static final int STAGE_1 = 25;
+    public static final int STAGE_2 = 23;
+    // shooter
+    public static final int SHOOTER_DRIVE = 24;
+    // climber
+    public static final int CLIMB_B = 33;
+    public static final int CLIMB_A = 34;
+    public static final int HOOD_MOTOR = 26;
+    public static final int RUNG_1_2_WINCH = 13;
+    // swerve motors
+    private static final byte[] SWERVE_DRIVES = { 32, 28, 38, 21 };
+    private static final byte[] SWERVE_ROTS = { 30, 29, 39, 20 };
+    private static final byte[] SWERVE_ROT_SENSORS = { 50, 49, 59, 40 };
+    private static final double[] SWERVE_ZEROS = { 18.720703, -7.382812, 16.962891, -90.615234 };
+
+    public static byte[] getSwerveDrives() {
+        return SWERVE_DRIVES;
+    }
+
+    public static byte[] getSwerveRots() {
+        return SWERVE_ROTS;
+    }
+
+    public static byte[] getSwerveRotSensors() {
+        return SWERVE_ROT_SENSORS;
+    }
+
+    public static double[] getSwerveZeros() {
+        return SWERVE_ZEROS;
+    }
+}

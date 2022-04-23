@@ -1,12 +1,13 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Shooter;
+import frc.robot.subsystems.Shooter;
 
 public class HomeHood extends CommandBase {
     private final Shooter shooter;
 
     public HomeHood(Shooter shooter) {
+        super();
         this.shooter = shooter;
         addRequirements(shooter);
     }
@@ -18,13 +19,13 @@ public class HomeHood extends CommandBase {
     }
 
     @Override
-    public boolean isFinished() {
-        return shooter.isHoodHomed();
+    public void end(boolean interrupted) {
+        shooter.setHoodSpeedPct(0.0);
+        System.out.println("hood stopped!");
     }
 
     @Override
-    public void end(boolean interrupted) {
-        shooter.setHoodSpeedPct(0);
-        System.out.println("hood stopped!");
+    public boolean isFinished() {
+        return shooter.isHoodHomed();
     }
 }

@@ -1,0 +1,65 @@
+package frc.robot.commands.auton;
+
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.subsystems.Drivetrain;
+
+public class Option5Auton extends CommandBase {
+    private final Timer timer;
+    private final Drivetrain drive;
+
+    public Option5Auton(Drivetrain drive) {
+        super();
+        timer = new Timer();
+        this.drive = drive;
+        addRequirements(drive);
+    }
+
+    @Override
+    public void initialize() {
+        timer.reset();
+        timer.start();
+    }
+
+    @Override
+    public void execute() {
+        // timer.start();
+        double timerVal = timer.get();
+        if (timerVal < 2) {
+            System.out.println("Moving Back");
+            drive.swerveDrive(-1, 0, 0, false);
+        } else if (timerVal > 2 && timerVal < 3) {
+            System.out.println("Stopping");
+            stop();
+        }
+        // INGEST BALL
+        // SHOOT TWO BALLS
+        else if (timerVal > 3 && timerVal < 7) {
+            System.out.println("Moving Back Towards Terminal");
+            drive.swerveDrive(-1, 0, 0, false);
+        } else if (timerVal > 7 && timerVal < 8) {
+            System.out.println("Stopping");
+            stop();
+        }
+        // INGEST BALL
+        // INGEST BALL FED FROM HUMAN PLAYER
+        else if (timerVal > 8 && timerVal < 11) {
+            System.out.println("Moving towards Central Hub");
+            drive.swerveDrive(1, 0, 0, false);
+        } else if (timerVal > 11 && timerVal < 12) {
+            System.out.println("Stopping");
+            stop();
+        }
+        // SHOOT TWO BALLS
+        else {
+            System.out.println("Stopping");
+            stop();
+        }
+        // timer.stop();
+        // timer.reset();
+    }
+
+    private void stop() {
+        drive.swerveDrive(0, 0, 0, true);
+    }
+}

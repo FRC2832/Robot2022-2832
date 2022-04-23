@@ -19,10 +19,13 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.EncoderSim;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.constants.CanIDConstants;
+import frc.robot.constants.SwerveConstants;
 
 public class SwerveModule {
     // private static final double kWheelRadius = 0.0508;
@@ -61,14 +64,12 @@ public class SwerveModule {
     /**
      * Constructs a SwerveModule.
      *
-     * @param driveMotorChannel   ID for the drive motor.
-     * @param turningMotorChannel ID for the turning motor.
-     * @param canCoderID          ID for the CANCoder (mounted to turning motor.)
+     * @param cornerConstants Swerve constants for the swerve module
      */
     public SwerveModule(SwerveConstants cornerConstants) {
         constants = cornerConstants;
-        driveMotor = new WPI_TalonFX(CanIDConstants.SWERVE_DRIVES[constants.Id]);
-        turningMotor = new CANSparkMax(CanIDConstants.SWERVE_ROTS[constants.Id], MotorType.kBrushless);
+        driveMotor = new WPI_TalonFX(CanIDConstants.getSwerveDrives()[constants.Id]);
+        turningMotor = new CANSparkMax(CanIDConstants.getSwerveRots()[constants.Id], MotorType.kBrushless);
         turningEncoder = turningMotor.getEncoder();
         turningEncoder.setPositionConversionFactor(6.82);
         driveMotor.setNeutralMode(NeutralMode.Brake);
@@ -92,10 +93,10 @@ public class SwerveModule {
          * pidController.setOutputRange(min, max);
          */
 
-        absEncoder = new CANCoder(CanIDConstants.SWERVE_ROT_SENSORS[constants.Id]);
+        absEncoder = new CANCoder(CanIDConstants.getSwerveRotSensors()[constants.Id]);
         absEncoder.setPositionToAbsolute();
         absEncoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180, 0);
-        zeroAngle = CanIDConstants.SWERVE_ZEROS[constants.Id];
+        zeroAngle = CanIDConstants.getSwerveZeros()[constants.Id];
 
         // Limit the PID Controller's input range between -pi and pi and set the input
         // to be continuous.
@@ -103,7 +104,7 @@ public class SwerveModule {
 
         driveFeedForward = new SimpleMotorFeedforward(0.0, constants.DriveMotorKv, constants.DriveMotorKa);
 
-        if (Robot.isSimulation()) {
+        if (RobotBase.isSimulation()) {
             turnMotorSim =
                     new FlywheelSim(LinearSystemId.identifyVelocitySystem(constants.TurnMotorKv, constants.TurnMotorKa),
                                     constants.TurnMotor, constants.TurnMotorGearRatio);
@@ -129,22 +130,25 @@ public class SwerveModule {
      * @return The current state of the module.
      */
     public SwerveModuleState getState() {
-        return new SwerveModuleState(getVelocity(), getRotation());
+        double velocity = getVelocity();
+        Rotation2d rotation = getRotation();
+        return new SwerveModuleState(velocity, rotation);
     }
 
     public double getVelocity() {
-        if (Robot.isReal()) {
+        if (RobotBase.isReal()) {
             return driveMotor.getSelectedSensorVelocity() / DRIVE_SCALE_FACTOR;
         }
         return driveEncoderSim.getRate();
     }
 
-    public Rotation2d getRotation() {
-        return new Rotation2d(Math.toRadians(getAbsoluteAngle()));
+    private Rotation2d getRotation() {
+        double absoluteAngle = getAbsoluteAngle();
+        return new Rotation2d(Math.toRadians(absoluteAngle));
     }
 
-    public double getAbsoluteAngle() {
-        if (Robot.isReal()) {
+    private double getAbsoluteAngle() {
+        if (RobotBase.isReal()) {
             return -absEncoder.getAbsolutePosition() + zeroAngle;
         }
         return turnEncoderSim.getDistance();
@@ -157,9 +161,11 @@ public class SwerveModule {
      */
     public void setDesiredState(SwerveModuleState desiredState) {
         // Optimize the reference state to avoid spinning further than 90 degrees
-        SwerveModuleState state = SwerveModuleState.optimize(desiredState, getRotation());
+        Rotation2d rotation = getRotation();
+        SwerveModuleState state = SwerveModuleState.optimize(desiredState, rotation);
         // Calculate the drive output from the drive PID controller.
-        final double driveOutput = drivePIDController.calculate(getVelocity(), state.speedMetersPerSecond);
+        double velocity = getVelocity();
+        final double driveOutput = drivePIDController.calculate(velocity, state.speedMetersPerSecond);
         final double driveFeedforward = driveFeedForward.calculate(state.speedMetersPerSecond);
 
         // Calculate the turning motor output from the turning PID controller.
@@ -168,8 +174,9 @@ public class SwerveModule {
         // }
         // double newTurnAngle = (1 - 0.4) * oldTurnAngle + 0.4 *
         // Math.toRadians(getAbsoluteAngle());
-        final double turnOutput =
-                turningPIDController.calculate(Math.toRadians(getAbsoluteAngle()), state.angle.getRadians());
+        double radians = state.angle.getRadians();
+        double absoluteAngle = getAbsoluteAngle();
+        final double turnOutput = turningPIDController.calculate(Math.toRadians(absoluteAngle), radians);
         // oldTurnAngle = Math.toRadians(getAbsoluteAngle());
 
         turnVoltCommand = -turnOutput;
@@ -211,27 +218,35 @@ public class SwerveModule {
 
         // Calculate distance traveled using RPM * dt
         double dist = turnEncoderSim.getDistance();
-        dist -= Math.toDegrees(turnMotorSim.getAngularVelocityRadPerSec() * rate);
+        double turnEncoderAngleVel = turnMotorSim.getAngularVelocityRadPerSec();
+        dist -= Math.toDegrees(turnEncoderAngleVel * rate);
         turnEncoderSim.setDistance(dist);
 
         dist = driveEncoderSim.getDistance();
-        dist += driveMotorSim.getAngularVelocityRadPerSec() * rate;
+        double driveEncoderAngleVel = driveMotorSim.getAngularVelocityRadPerSec();
+        dist += driveEncoderAngleVel * rate;
         driveEncoderSim.setDistance(dist);
-        driveEncoderSim.setRate(driveMotorSim.getAngularVelocityRadPerSec());
+        driveEncoderSim.setRate(driveEncoderAngleVel);
     }
 
     public void putSmartDashboard() {
-        SmartDashboard.putNumber(constants.Name + "/driveEncoderRaw", getDistance());
-        SmartDashboard.putNumber(constants.Name + "/driveVelocity", getVelocity());
-        SmartDashboard.putNumber(constants.Name + "/absEncoderZeroed", getAbsoluteAngle());
-        SmartDashboard.putNumber(constants.Name + "/absEncoderRaw", absEncoder.getAbsolutePosition());
-        SmartDashboard.putNumber(constants.Name + "/turnEncoderRaw", turningEncoder.getPosition());
+        double distance = getDistance();
+        double velocity = getVelocity();
+        double absoluteAngle = getAbsoluteAngle();
+        double absolutePosition = absEncoder.getAbsolutePosition();
+        double turningEncoderPos = turningEncoder.getPosition();
+
+        SmartDashboard.putNumber(constants.Name + "/driveEncoderRaw", distance);
+        SmartDashboard.putNumber(constants.Name + "/driveVelocity", velocity);
+        SmartDashboard.putNumber(constants.Name + "/absEncoderZeroed", absoluteAngle);
+        SmartDashboard.putNumber(constants.Name + "/absEncoderRaw", absolutePosition);
+        SmartDashboard.putNumber(constants.Name + "/turnEncoderRaw", turningEncoderPos);
         SmartDashboard.putNumber(constants.Name + "/turnVoltCommand", turnVoltCommand);
         SmartDashboard.putNumber(constants.Name + "/driveVoltCommand", driveVoltCommand);
     }
 
     public double getDistance() {
-        if (Robot.isReal()) {
+        if (RobotBase.isReal()) {
             return driveMotor.getSelectedSensorPosition() / DRIVE_SCALE_FACTOR;
         }
         return driveEncoderSim.getDistance();

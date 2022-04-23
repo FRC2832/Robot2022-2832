@@ -4,8 +4,8 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
@@ -14,48 +14,59 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.commands.AutoShoot;
-import frc.robot.commands.AutonCenterSearch;
-import frc.robot.commands.AutonThreeBall;
-import frc.robot.commands.AutonTwoBall;
-import frc.robot.commands.CenterToCargo;
-import frc.robot.commands.CenterToHub;
-import frc.robot.commands.DriveStickSlew;
-import frc.robot.commands.HubShoot;
-import frc.robot.commands.SideShoot;
 import frc.robot.commands.RunClimber;
-import frc.robot.commands.SafeZoneShoot;
-import frc.robot.commands.ShooterBackwards;
-import frc.robot.commands.ShooterOff;
+import frc.robot.commands.auton.CenterSearchAuton;
+import frc.robot.commands.auton.ThreeBallAuton;
+import frc.robot.commands.auton.TwoBallAuton;
+import frc.robot.commands.driving.CenterToCargo;
+import frc.robot.commands.driving.CenterToHub;
+import frc.robot.commands.driving.DriveStickSlew;
+import frc.robot.commands.shooting.*;
+import frc.robot.constants.ShooterConstants;
+import frc.robot.subsystems.*;
 
 public class Robot extends TimedRobot {
-    private final XboxController DRIVER_CONTROLLER = new XboxController(0);
-    private final XboxController OPERATOR_CONTROLLER = new XboxController(2);
+    private static boolean isAutoShootFinished;
+    private final XboxController driverController = new XboxController(0);
+    private final XboxController operatorController = new XboxController(2);
     private final Pi pi = new Pi();
     private final Lidar lidar = new Lidar();
     private ColorSensor colorSensor;
     private Drivetrain swerve;
     private Ingestor ingestor;
     private Shooter shooter;
-    private ClimberOld climber;
+    private Climber climber;
     private Command autonTwoBall;
     private Command autonCenterSearch;
     private Command autonThreeBall;
-    private SendableChooser<Command> autonChooser = new SendableChooser<>();
     //private boolean ranAuton = false;
-
-    private boolean lastEnabled;
-    private static boolean isAutoShootFinished = false;
+    private final SendableChooser<Command> autonChooser = new SendableChooser<>();
+    //private boolean lastEnabled;
     // Odometry odometry;
 
     //private String m_autoSelected;
     //private final SendableChooser<String> CHOOSER = new SendableChooser<>();
 
+    public static Command shotCaller(Drivetrain drive, Shooter shooter, Ingestor ingestor,
+                                     XboxController driverController, XboxController operatorController) {
+        /*if (Pi.getIsTargetCamConnected() && Pi.getIsCargoCamConnected()) {
+        }*/ //TODO: Add logic to pick between auto shot and hybrid
+        return new AutoShoot(drive, shooter, ingestor, operatorController, driverController);
+    }
+
+    public static boolean getIsAutoShootFinished() {
+        return isAutoShootFinished;
+    }
+
+    public static void setIsAutoShootFinished(boolean finished) {
+        isAutoShootFinished = finished;
+    }
+
     @Override
     public void robotInit() {
         colorSensor = new ColorSensor();
-        swerve = new Drivetrain(DRIVER_CONTROLLER);
-        ingestor = new Ingestor(colorSensor, OPERATOR_CONTROLLER, DRIVER_CONTROLLER);
+        swerve = new Drivetrain(driverController);
+        ingestor = new Ingestor(colorSensor, operatorController, driverController);
         Configuration.SetPersistentKeys();
         GitVersion vers = GitVersion.loadVersion();
         vers.printVersions();
@@ -64,42 +75,43 @@ public class Robot extends TimedRobot {
 
         ShooterConstants.LoadConstants();
         CommandScheduler.getInstance().registerSubsystem(pi, lidar);
-        shooter = new Shooter(DRIVER_CONTROLLER, OPERATOR_CONTROLLER, ingestor);
+        shooter = new Shooter(driverController, operatorController, ingestor);
 
-        climber = new ClimberOld();
+        climber = new Climber();
 
         //turtleMode = new TurtleMode(swerve, driverController);
 
         CommandScheduler.getInstance().registerSubsystem(swerve, colorSensor);
-        swerve.setDefaultCommand(new DriveStickSlew(swerve, DRIVER_CONTROLLER));
+        swerve.setDefaultCommand(new DriveStickSlew(swerve, driverController));
         shooter.setDefaultCommand(new ShooterOff(shooter));
-        climber.setDefaultCommand(new RunClimber(climber, OPERATOR_CONTROLLER, shooter));
+        climber.setDefaultCommand(new RunClimber(climber, operatorController, shooter));
         //swerve.setDefaultCommand(new TurtleMode(swerve, driverController));
 
-        JoystickButton selectButton = new JoystickButton(OPERATOR_CONTROLLER, 7);
+        JoystickButton selectButton = new JoystickButton(operatorController, 7);
         selectButton.whileActiveContinuous(new SideShoot(shooter, ingestor));
-        JoystickButton startButton = new JoystickButton(OPERATOR_CONTROLLER, 8);
+        JoystickButton startButton = new JoystickButton(operatorController, 8);
         startButton.whileActiveContinuous(new SafeZoneShoot(shooter, ingestor, false));
 
-        JoystickButton rightBumper = new JoystickButton(OPERATOR_CONTROLLER, 6);
-        rightBumper.whileActiveContinuous(new AutoShoot(swerve, shooter, ingestor, OPERATOR_CONTROLLER, DRIVER_CONTROLLER));
+        JoystickButton rightBumper = new JoystickButton(operatorController, 6);
+        rightBumper.whileActiveContinuous(
+                new AutoShoot(swerve, shooter, ingestor, operatorController, driverController));
 
-        JoystickButton leftBumper = new JoystickButton(OPERATOR_CONTROLLER, 5);
+        JoystickButton leftBumper = new JoystickButton(operatorController, 5);
         leftBumper.whileActiveContinuous(new SafeZoneShoot(shooter, ingestor, true));
 
-        JoystickButton aButton = new JoystickButton(DRIVER_CONTROLLER, 1);
+        JoystickButton aButton = new JoystickButton(driverController, 1);
         aButton.whileActiveContinuous(new HubShoot(shooter, ingestor, true));
 
-        JoystickButton bButton = new JoystickButton(DRIVER_CONTROLLER, 2);
+        JoystickButton bButton = new JoystickButton(driverController, 2);
         bButton.whileActiveContinuous(new HubShoot(shooter, ingestor, false));
 
-        JoystickButton driverStartButton = new JoystickButton(DRIVER_CONTROLLER, 8);
+        JoystickButton driverStartButton = new JoystickButton(driverController, 8);
         driverStartButton.whileActiveContinuous(new ShooterBackwards(shooter, ingestor));
 
-        JoystickButton xButton = new JoystickButton(DRIVER_CONTROLLER, 3);
+        JoystickButton xButton = new JoystickButton(driverController, 3);
         xButton.whileActiveContinuous(new CenterToHub(swerve));
 
-        JoystickButton yButton = new JoystickButton(DRIVER_CONTROLLER, 4);
+        JoystickButton yButton = new JoystickButton(driverController, 4);
         yButton.whileActiveContinuous(new CenterToCargo(swerve));
 
         // this.setNetworkTablesFlushEnabled(true); //turn off 20ms Dashboard update
@@ -120,9 +132,9 @@ public class Robot extends TimedRobot {
         SmartDashboard.putBoolean("Force use lidar", false);
         SmartDashboard.putBoolean("Two ball (true) / center search (false) Auton", true);
 
-        autonTwoBall = new AutonTwoBall(swerve, shooter, ingestor);
-        autonCenterSearch = new AutonCenterSearch(swerve, shooter, ingestor);
-        autonThreeBall = new AutonThreeBall(swerve, shooter, ingestor);
+        autonTwoBall = new TwoBallAuton(swerve, shooter, ingestor);
+        autonCenterSearch = new CenterSearchAuton(swerve, shooter, ingestor);
+        autonThreeBall = new ThreeBallAuton(swerve, shooter, ingestor);
 
         autonChooser.setDefaultOption("Two ball (anywhere)", autonTwoBall);
         autonChooser.addOption("Search (center, faces hub)", autonCenterSearch);
@@ -136,25 +148,25 @@ public class Robot extends TimedRobot {
     public void disabledInit() {
         //ranAuton = false;
         swerve.resetRobot();
-        stopControllerRumble(DRIVER_CONTROLLER);
-        stopControllerRumble(OPERATOR_CONTROLLER);
+        stopControllerRumble(driverController);
+        stopControllerRumble(operatorController);
         Shooter.setCoast(false);
         swerve.setBrakeMode(false);
         //climber.setUnlocked(false);
         // Shuffleboard.stopRecording();
-        setIsAutoShootFinished(false);
+        isAutoShootFinished = false;
     }
 
     @Override
     public void autonomousInit() {
-        // AutonTwoBall.resetAutonShoot();
+        // TwoBallAuton.resetAutonShoot();
         CommandScheduler.getInstance().cancelAll();
 
         Command autonCom = autonChooser.getSelected();
         // if (SmartDashboard.getBoolean("Two ball (true) / center search (false) Auton", true)) {
-        //     autonCom = new AutonTwoBall(swerve, shooter, ingestor);
+        //     autonCom = new TwoBallAuton(swerve, shooter, ingestor);
         // } else {
-        //     autonCom = new AutonCenterSearch(swerve, shooter, ingestor);
+        //     autonCom = new CenterSearchAuton(swerve, shooter, ingestor);
         // }
 
         if (autonCom != null) {
@@ -167,11 +179,16 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopInit() {
         CommandScheduler.getInstance().cancelAll();
-        AutonTwoBall.resetAutonShoot();
+        TwoBallAuton.resetAutonShoot();
         // Shuffleboard.startRecording();
         /*if (!ranAuton) {
             // CommandScheduler.getInstance().schedule(new HomeHood(shooter));
         }*/
+    }
+
+    @Override
+    public void testInit() {
+        // Shuffleboard.startRecording();
     }
 
     @Override
@@ -204,7 +221,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousPeriodic() {
-        // CommandScheduler.getInstance().schedule(new AutonOption0(swerve));
+        // CommandScheduler.getInstance().schedule(new Option0Auton(swerve));
         // Pose2d pos = swerve.odometry.getPoseMeters();
         // swerve.setPosition(10.85, 6.13, 0, 2);
         // swerve.setPosition(8.57, 7.53, 0, 1);
@@ -214,7 +231,7 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopPeriodic() {
         ingestor.runIngestor();
-        swerve.runTurtleMode(DRIVER_CONTROLLER);
+        swerve.runTurtleMode(driverController);
         SmartDashboard.putData(swerve);
     }
 
@@ -225,24 +242,5 @@ public class Robot extends TimedRobot {
     public static void rumbleController(XboxController controller, double rumbleSpeed) {
         controller.setRumble(RumbleType.kLeftRumble, rumbleSpeed);
         controller.setRumble(RumbleType.kRightRumble, rumbleSpeed);
-    }
-
-    @Override
-    public void testInit() {
-        // Shuffleboard.startRecording();
-    }
-
-    public static Command shotCaller(Drivetrain drive, Shooter shooter, Ingestor ingestor, XboxController driverController, XboxController operatorController) {
-        /*if (Pi.getIsTargetCamConnected() && Pi.getIsCargoCamConnected()) {
-        }*/ //TODO: Add logic to pick between auto shot and hybrid
-        return new AutoShoot(drive, shooter, ingestor, operatorController, driverController);
-    }
-
-    public static void setIsAutoShootFinished(boolean finished) {
-        isAutoShootFinished = finished;
-    }
-
-    public static boolean getIsAutoShootFinished() {
-        return isAutoShootFinished;
     }
 }

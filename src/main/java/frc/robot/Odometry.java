@@ -1,25 +1,26 @@
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.XboxController;
+import frc.robot.constants.SwerveConstants;
+import frc.robot.subsystems.Drivetrain;
 
 public class Odometry {
-    Drivetrain drivetrain; // = new Drivetrain();
-    SwerveConstants constants;
-    SwerveModule swerveModule;
-
-    Translation2d frontLeftLocation = new Translation2d(0.381, 0.381);
-    Translation2d frontRightLocation = new Translation2d(0.381, -0.381);
-    Translation2d backLeftLocation = new Translation2d(-0.381, 0.381);
-    Translation2d backRightLocation = new Translation2d(-0.381, -0.381);
-    SwerveDriveKinematics kinematics =
+    private final SwerveConstants constants;
+    private final SwerveModule swerveModule;
+    private final Translation2d frontLeftLocation = new Translation2d(0.381, 0.381);
+    private final Translation2d frontRightLocation = new Translation2d(0.381, -0.381);
+    private final Translation2d backLeftLocation = new Translation2d(-0.381, 0.381);
+    private final Translation2d backRightLocation = new Translation2d(-0.381, -0.381);
+    private final SwerveDriveKinematics kinematics =
             new SwerveDriveKinematics(frontLeftLocation, frontRightLocation, backLeftLocation, backRightLocation);
-
-    SwerveDriveOdometry swerveOdometry = new SwerveDriveOdometry(kinematics, drivetrain.getHeading());
+    private Drivetrain drivetrain; // = new Drivetrain();
+    private final SwerveDriveOdometry swerveOdometry = new SwerveDriveOdometry(kinematics, drivetrain.getHeading());
 
     public Odometry(XboxController controller) {
         constants = new SwerveConstants();
@@ -40,9 +41,10 @@ public class Odometry {
     }
 
     public void setPosition(double xPosition, double yPosition, double rotation, double time) {
-        double xPos = swerveOdometry.getPoseMeters().getX();
-        double yPos = swerveOdometry.getPoseMeters().getY();
-        double rot = swerveOdometry.getPoseMeters().getRotation().getRadians();
+        Pose2d odometryPoseMeters = swerveOdometry.getPoseMeters();
+        double xPos = odometryPoseMeters.getX();
+        double yPos = odometryPoseMeters.getY();
+        double rot = odometryPoseMeters.getRotation().getRadians();
         xPos = xPosition - xPos;
         yPos = yPosition - yPos;
         rot = rot % 2 * Math.PI;
