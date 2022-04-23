@@ -9,7 +9,7 @@ public class CanIDConstants {
     public static final byte[] SWERVE_DRIVES = { 32, 28, 38, 21 };
     public static final byte[] SWERVE_ROTS = { 30, 29, 39, 20 };
     public static final byte[] SWERVE_ROT_SENSORS = { 50, 49, 59, 40 };
-    public static final double[] SWERVE_ZEROS = { 18.720703, -7.382812, -163.037109, -90.615234 };
+    public static final double[] SWERVE_ZEROS = { 18.720703, -7.382812, 16.962891, -90.615234 };
 
     // intake and slipstream
     public static final int INTAKE_WHEELS = 27;

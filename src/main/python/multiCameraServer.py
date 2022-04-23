@@ -338,7 +338,7 @@ class TargetPipeline:
 
         self.__hsv_threshold_hue = [42.08633093525179, 80.17064846416386]
         self.__hsv_threshold_saturation = [137.58992805755395, 255.0]
-        self.__hsv_threshold_value = [41.276978417266186, 255.0]
+        self.__hsv_threshold_value = [22.93165467625899, 255.0]
 
         self.hsv_threshold_output = None
 
@@ -352,7 +352,7 @@ class TargetPipeline:
         self.__filter_contours_min_perimeter = 0.0
         self.__filter_contours_min_width = 0.0
         self.__filter_contours_max_width = 1000.0
-        self.__filter_contours_min_height = 6.0
+        self.__filter_contours_min_height = 4.0
         self.__filter_contours_max_height = 1000.0
         self.__filter_contours_solidity = [0.0, 100]
         self.__filter_contours_max_vertices = 1000000.0
