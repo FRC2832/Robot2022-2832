@@ -6,6 +6,7 @@ import com.revrobotics.*;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -101,7 +102,9 @@ public class Ingestor extends SubsystemBase {
 
 
     public void runIngestor() {
-
+        if (DriverStation.isTest()) {
+            return;
+        }
         SmartDashboard.putNumber("Ingestor motor applied output", ingestorLift.getAppliedOutput());
         SmartDashboard.putNumber("alt encoder velocity", altEncoder.getVelocity());
         SmartDashboard.putNumber("alt encoder position", altEncoder.getPosition());

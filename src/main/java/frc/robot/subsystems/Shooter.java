@@ -18,6 +18,7 @@ import frc.robot.commands.shooting.DribbleShoot;
 import frc.robot.constants.CanIDConstants;
 import frc.robot.constants.ShooterConstants;
 
+import java.sql.Driver;
 import java.util.ArrayList;
 
 public class Shooter extends SubsystemBase {
@@ -101,6 +102,9 @@ public class Shooter extends SubsystemBase {
 
     @Override
     public void periodic() {
+        if (DriverStation.isTest()) {
+            return;
+        }
         previousCargoColor = currentCargoColor;
         currentCargoColor = ColorSensor.getCargoColor();
 
@@ -183,6 +187,12 @@ public class Shooter extends SubsystemBase {
     public void setHoodAngle(double position) {
         double value = (position - MIN_ANGLE) * MAX_ANGLE_COUNTS / (MAX_ANGLE - MIN_ANGLE);
         hoodMotor.set(ControlMode.Position, value);
+    }
+
+    public void setHoodCoastMode(NeutralMode mode) {
+        if (DriverStation.isTest()) {
+            hoodMotor.setNeutralMode(mode);
+        }
     }
 
     private boolean hoodBottom() {

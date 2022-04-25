@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -188,7 +189,18 @@ public class Robot extends TimedRobot {
 
     @Override
     public void testInit() {
-        // Shuffleboard.startRecording();
+        Shuffleboard.startRecording();
+        
+    }
+
+    @Override
+    public void testPeriodic() {
+
+    }
+
+    @Override
+    public void testExit() {
+        Shuffleboard.stopRecording();
     }
 
     @Override
