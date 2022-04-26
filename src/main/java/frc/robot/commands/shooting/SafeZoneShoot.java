@@ -5,12 +5,13 @@ import frc.robot.subsystems.Ingestor;
 import frc.robot.subsystems.Shooter;
 
 public class SafeZoneShoot extends ShootCommand {
+    public static final double SAFE_ZONE_TGT_RPM = 2650.0;
     public static final double SAFE_ZONE_TGT_ANGLE = 53.0;
     private final Ingestor ingestor;
     private final boolean changeHood;
 
     public SafeZoneShoot(Shooter shooter, Ingestor ingestor, boolean changeHood) {
-        super(shooter, 2650.0, SAFE_ZONE_TGT_ANGLE);
+        super(shooter, SAFE_ZONE_TGT_RPM, SAFE_ZONE_TGT_ANGLE);
         this.ingestor = ingestor;
         this.changeHood = changeHood;
         SmartDashboard.putNumber("Target RPM", targetRpm); // 2650 = sweet spot based on '2022 shooter speed table'
