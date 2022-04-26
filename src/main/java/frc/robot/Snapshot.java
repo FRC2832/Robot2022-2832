@@ -4,10 +4,8 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
 
-import java.io.ByteArrayOutputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.file.Files;
@@ -89,7 +87,7 @@ public class Snapshot {
                         writer.close();
                         DriverStation.reportWarning("Wrote snapshot to: " + fileName, false);
                     }
-                } catch (Exception e) {
+                } catch (IOException | RuntimeException e) {
                     DriverStation.reportWarning("Unable to take snapshot!", false);
                     e.toString();
                 }

@@ -6,10 +6,11 @@ import frc.robot.subsystems.Ingestor;
 import frc.robot.subsystems.Shooter;
 
 public class DribbleShoot extends ShootCommand {
+    public static final double DRIBBLE_TARGET_ANGLE = 69.0;
     private final Ingestor ingestor;
 
     public DribbleShoot(Shooter shooter, Ingestor ingestor) {
-        super(shooter, 1000.0, 69.0);
+        super(shooter, 1000.0, DRIBBLE_TARGET_ANGLE);
         this.ingestor = ingestor;
         SmartDashboard.putNumber("Target RPM", 1000.0); // 1000 = dribble rpm
     }

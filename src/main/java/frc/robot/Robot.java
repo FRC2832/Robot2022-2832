@@ -23,6 +23,7 @@ import frc.robot.commands.driving.CenterToCargo;
 import frc.robot.commands.driving.CenterToHub;
 import frc.robot.commands.driving.DriveStickSlew;
 import frc.robot.commands.shooting.*;
+import frc.robot.commands.testing.TestHood;
 import frc.robot.constants.ShooterConstants;
 import frc.robot.subsystems.*;
 
@@ -190,7 +191,8 @@ public class Robot extends TimedRobot {
     @Override
     public void testInit() {
         Shuffleboard.startRecording();
-        
+        TestHood testHood = new TestHood(ingestor, shooter, swerve, climber, colorSensor, driverController, operatorController);
+        CommandScheduler.getInstance().schedule(testHood); // TODO: Add .andThen(nextTestCommand)
     }
 
     @Override

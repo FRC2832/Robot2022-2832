@@ -25,9 +25,7 @@ public class GitVersion implements Serializable {
             ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
             obj = (GitVersion) objectInputStream.readObject();
             objectInputStream.close();
-        } catch (Exception e) {
-            // generic catch is usually bad, but here we are using it to create a default
-            // whenever there is an issue loading it
+        } catch (IOException | ClassNotFoundException | RuntimeException e) {
             obj = new GitVersion();
             obj.buildDate = Instant.now();
             obj.isModified = false;
@@ -40,7 +38,7 @@ public class GitVersion implements Serializable {
     // this main function should only be called from Gradle
     public static void main(String[] args) {
         try {
-            // setup the commands to run
+            // set up the commands to run
             GitVersion result = new GitVersion();
             Runtime rt = Runtime.getRuntime();
             Process pr;
@@ -66,7 +64,7 @@ public class GitVersion implements Serializable {
 
             // write object file
             FileOutputStream fileOutputStream = new FileOutputStream("src/main/deploy/gitinfo.obj");
-            ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+            ObjectOutput objectOutputStream = new ObjectOutputStream(fileOutputStream);
             objectOutputStream.writeObject(result);
             objectOutputStream.flush();
             objectOutputStream.close();

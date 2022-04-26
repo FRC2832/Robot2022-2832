@@ -35,4 +35,8 @@ public abstract class ShootCommand extends CommandBase {
         shooter.setShooterRpm(targetRpm);
         shooter.setHoodAngle(targetHoodAngle);
     }
+
+    public double getTargetAngle() {
+        return targetHoodAngle;
+    }
 }

@@ -15,13 +15,13 @@ class Configuration {
     static void SetPersistentKeys() {
         loadTable();
 
-        makePersistent(TableHolder.table.getEntry(SHOOTER_KEY), 24);
+        makePersistent(TableHolder.TABLE.getEntry(SHOOTER_KEY), 24);
         for (byte i = 0; i < 4; i++) {
             String id = GetWheelName(i);
-            makePersistent(TableHolder.table.getEntry(DRIVEMOTOR_KEY + id), i);
-            makePersistent(TableHolder.table.getEntry(TURNMOTOR_KEY + id), i + 10);
-            makePersistent(TableHolder.table.getEntry(CANCODER_KEY + id), i + 20);
-            makePersistent(TableHolder.table.getEntry(ZEROANGLE_KEY + id), 0);
+            makePersistent(TableHolder.TABLE.getEntry(DRIVEMOTOR_KEY + id), i);
+            makePersistent(TableHolder.TABLE.getEntry(TURNMOTOR_KEY + id), i + 10);
+            makePersistent(TableHolder.TABLE.getEntry(CANCODER_KEY + id), i + 20);
+            makePersistent(TableHolder.TABLE.getEntry(ZEROANGLE_KEY + id), 0);
         }
     }
 
@@ -67,7 +67,7 @@ class Configuration {
     }
 
     private static final class TableHolder {
-        private static final NetworkTable table = NetworkTableInstance.getDefault().getTable("Config");
+        private static final NetworkTable TABLE = NetworkTableInstance.getDefault().getTable("Config");
     }
 
     /*

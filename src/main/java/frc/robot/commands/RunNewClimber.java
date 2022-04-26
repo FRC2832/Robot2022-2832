@@ -22,7 +22,7 @@ public class RunNewClimber extends CommandBase {
             return;
         }
 
-        if (controller.getRightX() > 0.2 && controller.getRightX() < 0.6) { // counter clockwise slow
+        if (controller.getRightX() > 0.2 && controller.getRightX() < 0.6) { // counterclockwise slow
             climberNew.armCounterclockwise(true);
         } else if (controller.getRightX() >= 0.6) { //counter fast
             climberNew.armCounterclockwise(false);

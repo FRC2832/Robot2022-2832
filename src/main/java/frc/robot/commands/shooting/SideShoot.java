@@ -5,10 +5,11 @@ import frc.robot.subsystems.Ingestor;
 import frc.robot.subsystems.Shooter;
 
 public class SideShoot extends ShootCommand {
+    public static final double SIDE_SHOOT_TGT_ANGLE = 31.0;
     private final Ingestor ingestor;
 
     public SideShoot(Shooter shooter, Ingestor ingestor) {
-        super(shooter, 2300.0, 31.0);
+        super(shooter, 2300.0, SIDE_SHOOT_TGT_ANGLE);
         this.ingestor = ingestor;
         SmartDashboard.putNumber("Target RPM", targetRpm); // 2300 = sweet spot based on '2022 shooter speed table'
     }

@@ -5,6 +5,8 @@ import frc.robot.subsystems.Ingestor;
 import frc.robot.subsystems.Shooter;
 
 public class HubShoot extends ShootCommand {
+    public static final double UPPER_HUB_TGT_ANGLE = 18.0;
+    public static final double LOWER_HUB_TGT_ANGLE = 69.0;
     private final Ingestor ingestor;
     private final boolean isUpper;
 
@@ -18,10 +20,10 @@ public class HubShoot extends ShootCommand {
     public void initialize() {
         if (isUpper) {
             targetRpm = 2150.0; // Upper hub
-            targetHoodAngle = 18.0;
+            targetHoodAngle = UPPER_HUB_TGT_ANGLE;
         } else {
             targetRpm = 1000.0; // Lower hub
-            targetHoodAngle = 69.0;
+            targetHoodAngle = LOWER_HUB_TGT_ANGLE;
         }
         SmartDashboard.putNumber("Target RPM", targetRpm);
     }

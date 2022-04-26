@@ -25,8 +25,8 @@ public class Shooter extends SubsystemBase {
     private static final double SENSOR_UNITS_TO_RPM = 3.414;
     // private static final int HOOD_SENSOR_ACTIVE = 700;
     private static final int MAX_ANGLE_COUNTS = 400;
-    private static final int MIN_ANGLE = 20;
-    private static final int MAX_ANGLE = 70;
+    public static final int MIN_ANGLE = 20;
+    public static final int MAX_ANGLE = 70;
     private static boolean coastMotor;
     private final TalonFX shooterFx;
     private final TalonSRX hoodMotor;

@@ -187,7 +187,7 @@ public class Drivetrain extends SubsystemBase {
      * Translation2d modulePositionFromChassis =
      * CONSTANTS[i].Location.rotateBy(getHeading()).plus(pose.getTranslation());
      *
-     * // Module's heading is it's angle relative to the chassis heading
+     * // Module's heading is its angle relative to the chassis heading
      * modulePoses[i] =
      * new Pose2d(modulePositionFromChassis,
      * MODULES[i].getState().angle.plus(pose.getRotation()));
