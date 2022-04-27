@@ -340,8 +340,8 @@ public class Drivetrain extends SubsystemBase {
         // angle);
     }
 
-    public void runTurtleMode(XboxController controller) {
-        driverController = controller;
+    public void runTurtleMode() {
+        //driverController;
         /*
          * if(driverController.getRightTriggerAxis() >= TRIGGER_SENSITIVITY){
          * driveStickSlew.setLimiters(1.5, 1.5, 1.5);

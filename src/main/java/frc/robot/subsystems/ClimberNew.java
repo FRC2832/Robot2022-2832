@@ -4,7 +4,6 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Robot;
 import frc.robot.constants.CanIDConstants;
 
 public class ClimberNew extends SubsystemBase {
@@ -30,10 +29,10 @@ public class ClimberNew extends SubsystemBase {
     @Override
     public void periodic() {
         if (controller.getRightStickButton()) {
-            Robot.rumbleController(controller, 1);
+            ControllerIO.getInstance().rumbleDriveController(1.0);
             unlocked = true;
         } else {
-            Robot.stopControllerRumble(controller);
+            ControllerIO.getInstance().rumbleDriveController(0.0);
         }
     }
 

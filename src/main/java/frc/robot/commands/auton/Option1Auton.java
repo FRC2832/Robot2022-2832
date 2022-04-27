@@ -23,7 +23,7 @@ public class Option1Auton extends CommandBase {
         this.drive = drive;
         delay = SmartDashboard.getNumber("Shooting delay", 0.0);
         addRequirements(drive, shooter);
-        autoShoot = new AutoShoot(drive, shooter, ingestor, null, null);
+        autoShoot = new AutoShoot(drive, shooter, ingestor, false);
     }
 
     @Override

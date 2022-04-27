@@ -29,7 +29,7 @@ public class CenterSearchAuton extends CommandBase {
         super();
         this.drive = drive;
         this.ingestor = ingestor;
-        autoShoot = new AutoShoot(drive, shooter, ingestor, null, null);
+        autoShoot = new AutoShoot(drive, shooter, ingestor, false);
         centerToCargo = new CenterToCargo(drive);
         timer = new Timer();
         frontLeft = drive.getModules()[0];

@@ -1,11 +1,14 @@
 package frc.robot.subsystems;
 
+import java.util.ArrayList;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.TalonSRXConfiguration;
+
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -13,13 +16,10 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.ColorSensor.CargoColor;
 import frc.robot.commands.shooting.DribbleShoot;
 import frc.robot.constants.CanIDConstants;
 import frc.robot.constants.ShooterConstants;
-
-import java.sql.Driver;
-import java.util.ArrayList;
+import frc.robot.subsystems.ColorSensor.CargoColor;
 
 public class Shooter extends SubsystemBase {
     private static final double SENSOR_UNITS_TO_RPM = 3.414;

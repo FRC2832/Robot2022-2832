@@ -4,7 +4,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.*;
+import frc.robot.SwerveModule;
 import frc.robot.commands.driving.CenterToCargo;
 import frc.robot.commands.shooting.AutoShoot;
 import frc.robot.subsystems.Drivetrain;
@@ -19,7 +19,7 @@ public class ThreeBallAuton extends CommandBase {
     private final SwerveModule frontLeft;
     private final AutoShoot autoShoot;
     private final CenterToCargo centerToCargo;
-    //private boolean sentTToShooter;
+    // private boolean sentTToShooter;
     private boolean isAutoShootScheduled;
     private boolean isCargoScheduled;
     private double startEncoderCount;
@@ -29,9 +29,9 @@ public class ThreeBallAuton extends CommandBase {
         super();
         this.drive = drive;
         this.ingestor = ingestor;
-        //sentToShooter = false;
+        // sentToShooter = false;
         frontLeft = drive.getModules()[0];
-        autoShoot = new AutoShoot(drive, shooter, ingestor, null, null);
+        autoShoot = new AutoShoot(drive, shooter, ingestor, false);
         centerToCargo = new CenterToCargo(drive);
         addRequirements(drive, ingestor);
         drive.resetCurrentStep();
@@ -50,12 +50,11 @@ public class ThreeBallAuton extends CommandBase {
         TIMER.start();
         // System.out.println("Start X, Y: " + startPose.getX() + ", " +
         // startPose.getY());
-        //System.out.println("Start encoder distance value: " + startEncoderCount);
-        //System.out.println("Start angle: " + startAngle + " degrees");
+        // System.out.println("Start encoder distance value: " + startEncoderCount);
+        // System.out.println("Start angle: " + startAngle + " degrees");
 
         // drive.currentStep++;
     }
-
 
     @Override
     public void execute() {
@@ -89,9 +88,11 @@ public class ThreeBallAuton extends CommandBase {
                     }
                     TIMER.reset();
                     startEncoderCount = frontLeft.getDistance();
-                } /*else {
-                    //System.out.println("Current distance (step 2): " + distance);
-                }*/
+                } /*
+                   * else {
+                   * //System.out.println("Current distance (step 2): " + distance);
+                   * }
+                   */
                 /*
                  * if (timer.get() >= 3.0) {
                  * drive.currentStep++;
@@ -109,9 +110,11 @@ public class ThreeBallAuton extends CommandBase {
                     drive.incrementCurrentStep();
                     TIMER.reset();
                     // nextStepStartPose = drive.getPose();
-                } /*else {
-                    System.out.println("Current distance (step 3): " + distance);
-                }*/
+                } /*
+                   * else {
+                   * System.out.println("Current distance (step 3): " + distance);
+                   * }
+                   */
                 break;
             case 3: // turn to hub. TODO: Maybe add vision?
                 drive.swerveDrive(0.0, 0.0, Math.PI / 2, false);
@@ -122,11 +125,14 @@ public class ThreeBallAuton extends CommandBase {
                 if (angleDifference >= 170.0) {
                     drive.incrementCurrentStep();
                     TIMER.reset();
-                } /*else {
-                    System.out.println("Current angle difference: " + angleDifference + " degrees");
-                }*/
+                } /*
+                   * else {
+                   * System.out.println("Current angle difference: " + angleDifference +
+                   * " degrees");
+                   * }
+                   */
                 break;
-            case 4: // Shoot 2 balls using AutoShoot 
+            case 4: // Shoot 2 balls using AutoShoot
                 drive.swerveDrive(0.0, 0.0, 0.0, false);
                 ingestor.liftIngestor();
                 // double speed = 2300.0;
@@ -179,13 +185,13 @@ public class ThreeBallAuton extends CommandBase {
                     }
                     // byte speedMultiplier = 0;
                     // if (Pi.getCargoMoveLeft()) {
-                    //     speedMultiplier = -1;
+                    // speedMultiplier = -1;
                     // } else if (Pi.getCargoMoveRight()) {
-                    //     speedMultiplier = 1;
+                    // speedMultiplier = 1;
                     // } else {
-                    //     drive.incrementCurrentStep();
-                    //     startEncoderCount = frontLeft.getDistance();
-                    //     TIMER.reset();
+                    // drive.incrementCurrentStep();
+                    // startEncoderCount = frontLeft.getDistance();
+                    // TIMER.reset();
                     // }
                     // drive.swerveDrive(0.0, 0.0, speedMultiplier * (Math.PI / 2), false);
                 } else {
@@ -223,7 +229,7 @@ public class ThreeBallAuton extends CommandBase {
                 drive.swerveDrive(0.0, 0.0, 0.0, false);
                 if (!isAutoShootScheduled) {
                     CommandScheduler.getInstance()
-                                    .schedule(autoShoot); // TODO: May need to set autoShoot to new AutoShoot again.
+                            .schedule(autoShoot); // TODO: May need to set autoShoot to new AutoShoot again.
                     isAutoShootScheduled = true;
                 }
                 if (autoShoot.isFinished()) {

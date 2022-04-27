@@ -1,10 +1,9 @@
 package frc.robot.commands.shooting;
 
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.*;
 import frc.robot.commands.driving.CenterToHub;
+import frc.robot.subsystems.ControllerIO;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Ingestor;
 import frc.robot.subsystems.Pi;
@@ -13,21 +12,16 @@ import frc.robot.subsystems.Shooter;
 public class HybridShootNoLidar extends ShootCommand {
     private final Ingestor ingestor;
     private final Drivetrain drive;
-    private final XboxController operatorController;
-    private final XboxController driverController;
     private final CenterToHub centerToHub;
     private boolean centerScheduled;
     private final boolean isUsingControllers;
     private boolean cargoSentToShooter;
 
-    public HybridShootNoLidar(Shooter shooter, Ingestor ingestor, Drivetrain drive, XboxController operatorController,
-                              XboxController driverController) {
+    public HybridShootNoLidar(Shooter shooter, Ingestor ingestor, Drivetrain drive, boolean isUsingControllers) {
         super(shooter);
         this.ingestor = ingestor;
         this.drive = drive;
-        this.operatorController = operatorController;
-        this.driverController = driverController;
-        isUsingControllers = operatorController != null && driverController != null;
+        this.isUsingControllers = isUsingControllers;
         this.centerToHub = new CenterToHub(drive);
     }
 
@@ -54,8 +48,7 @@ public class HybridShootNoLidar extends ShootCommand {
         // check if PI saw target
         if (Pi.getTargetCenterX() > 0.0) {
             if (isUsingControllers) {
-                Robot.stopControllerRumble(operatorController);
-                Robot.stopControllerRumble(driverController);
+                ControllerIO.getInstance().stopAllRumble();
             }
             if (!centerScheduled) {
                 CommandScheduler.getInstance().schedule(centerToHub);
@@ -79,8 +72,9 @@ public class HybridShootNoLidar extends ShootCommand {
         } else {
             // pi is not seeing hub
             if (isUsingControllers) {
-                Robot.rumbleController(operatorController, 1.0);
-                Robot.rumbleController(driverController, 1.0);
+                ControllerIO instance = ControllerIO.getInstance();
+                instance.rumbleDriveController(1.0);
+                instance.rumbleOpController(1.0);
             }
             error = String.join(error, "Vision ");
             drive.swerveDrive(0.0, 0.0, 0.0, false);

@@ -1,16 +1,20 @@
 package frc.robot.commands.testing;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Robot;
 import frc.robot.commands.shooting.DribbleShoot;
 import frc.robot.commands.shooting.HubShoot;
 import frc.robot.commands.shooting.SafeZoneShoot;
 import frc.robot.commands.shooting.SideShoot;
-import frc.robot.subsystems.*;
+import frc.robot.subsystems.Climber;
+import frc.robot.subsystems.ColorSensor;
+import frc.robot.subsystems.ControllerIO;
+import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.Ingestor;
+import frc.robot.subsystems.Shooter;
 
 public class TestHoodAndShooter extends CommandBase {
     private static final double ACCEPTABLE_RPM_MARGIN = 50.0;
@@ -20,8 +24,6 @@ public class TestHoodAndShooter extends CommandBase {
     private final Drivetrain drivetrain;
     private final Climber climber;
     private final ColorSensor colorSensor;
-    private final XboxController driverController;
-    private final XboxController operatorController;
     private final Timer commandTimer;
     private byte commandStep;
     private double currentTargetRpm;
@@ -29,17 +31,13 @@ public class TestHoodAndShooter extends CommandBase {
     private boolean isHolding;
     private boolean encounteredFailure;
 
-    public TestHoodAndShooter(Ingestor ingestor, Shooter shooter, Drivetrain drivetrain, Climber climber,
-            ColorSensor colorSensor,
-            XboxController driverController, XboxController operatorController) {
+    public TestHoodAndShooter(Ingestor ingestor, Shooter shooter, Drivetrain drivetrain, Climber climber, ColorSensor colorSensor) {
         super();
         this.ingestor = ingestor;
         this.shooter = shooter;
         this.drivetrain = drivetrain;
         this.climber = climber;
         this.colorSensor = colorSensor;
-        this.driverController = driverController;
-        this.operatorController = operatorController;
         addRequirements(ingestor, shooter, drivetrain, climber, colorSensor);
         commandTimer = new Timer();
     }
@@ -156,8 +154,9 @@ public class TestHoodAndShooter extends CommandBase {
                 encounteredFailure = true; // It shouldn't take this long. Something's probably wrong. Stop the test.
                 isHolding = true;
                 commandTimer.reset();
-                Robot.rumbleController(driverController, 0.5);
-                Robot.rumbleController(operatorController, 0.5);
+                ControllerIO instance = ControllerIO.getInstance();
+                instance.rumbleDriveController(0.5);
+                instance.rumbleOpController(0.5);
             } else {
                 shooter.setShooterRpm(currentTargetRpm);
                 shooter.setHoodAngle(currentTargetAngle);
@@ -171,8 +170,7 @@ public class TestHoodAndShooter extends CommandBase {
         drivetrain.swerveDrive(0.0, 0.0, 0.0, false);
         ingestor.stopAll();
         climber.arm1Hold();
-        Robot.stopControllerRumble(driverController);
-        Robot.stopControllerRumble(operatorController);
+        ControllerIO.getInstance().stopAllRumble();
         shooter.setHoodCoastMode(NeutralMode.Coast);
         shooter.setHoodSpeedPct(0.0);
         shooter.setShooterRpm(0.0);
@@ -180,7 +178,7 @@ public class TestHoodAndShooter extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        if (!driverController.isConnected())
+        if (!ControllerIO.getInstance().isDrivePadConnected())
             return true;
         return commandStep > 6;
     }

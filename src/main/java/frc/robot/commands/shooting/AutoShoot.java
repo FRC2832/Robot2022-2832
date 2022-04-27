@@ -1,10 +1,10 @@
 package frc.robot.commands.shooting;
 
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.*;
+import frc.robot.Robot;
 import frc.robot.commands.driving.CenterToHub;
+import frc.robot.subsystems.ControllerIO;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Ingestor;
 import frc.robot.subsystems.Pi;
@@ -12,8 +12,6 @@ import frc.robot.subsystems.Shooter;
 
 public class AutoShoot extends ShootCommand {
     private final Drivetrain drive;
-    private final XboxController operatorController;
-    private final XboxController driverController;
     private final Ingestor ingestor;
     private final CenterToHub centerToHub;
     private final boolean isUsingControllers;
@@ -23,13 +21,10 @@ public class AutoShoot extends ShootCommand {
     private boolean snapshotTaken;
     private boolean centerScheduled; // TODO: Might need to make this static for it to work properly.
 
-    public AutoShoot(Drivetrain drive, Shooter shooter, Ingestor ingestor, XboxController operatorController,
-                     XboxController driverController) {
+    public AutoShoot(Drivetrain drive, Shooter shooter, Ingestor ingestor, boolean isUsingControllers) {
         super(shooter);
         this.drive = drive;
-        this.operatorController = operatorController;
-        this.driverController = driverController;
-        isUsingControllers = operatorController != null && driverController != null;
+        this.isUsingControllers = isUsingControllers;
         this.ingestor = ingestor;
         centerToHub = new CenterToHub(drive);
         cargoSentToShooter = false;
@@ -50,8 +45,7 @@ public class AutoShoot extends ShootCommand {
     @Override
     public void end(boolean interrupted) {
         if (isUsingControllers) {
-            Robot.stopControllerRumble(operatorController);
-            Robot.stopControllerRumble(driverController);
+            ControllerIO.getInstance().stopAllRumble();
         }
         Shooter.setCoast(true);
         // System.out.println("AutoShoot end");
@@ -91,8 +85,7 @@ public class AutoShoot extends ShootCommand {
         // check if PI saw target (minimum shot distance 2.1-ish meters)
         if (Pi.getTargetCenterX() > 0.0) {
             if (isUsingControllers) {
-                Robot.stopControllerRumble(operatorController);
-                Robot.stopControllerRumble(driverController);
+                ControllerIO.getInstance().stopAllRumble();
             }
             if (!centerScheduled) {
                 CommandScheduler.getInstance().schedule(centerToHub);
@@ -116,8 +109,9 @@ public class AutoShoot extends ShootCommand {
         } else {
             // pi is not seeing hub
             if (isUsingControllers) {
-                Robot.rumbleController(operatorController, 1.0);
-                Robot.rumbleController(driverController, 1.0);
+                ControllerIO instance = ControllerIO.getInstance();
+                instance.rumbleDriveController(1.0);
+                instance.rumbleOpController(1.0);
             }
             error = String.join(error, "Vision ");
             drive.swerveDrive(0.0, 0.0, 0.0, false);

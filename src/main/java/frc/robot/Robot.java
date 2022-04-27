@@ -5,7 +5,6 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.DataLogManager;
-import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
@@ -23,14 +22,13 @@ import frc.robot.commands.driving.CenterToCargo;
 import frc.robot.commands.driving.CenterToHub;
 import frc.robot.commands.driving.DriveStickSlew;
 import frc.robot.commands.shooting.*;
-import frc.robot.commands.testing.TestHood;
+import frc.robot.commands.testing.TestHoodAndShooter;
 import frc.robot.constants.ShooterConstants;
 import frc.robot.subsystems.*;
 
 public class Robot extends TimedRobot {
     private static boolean isAutoShootFinished;
-    private final XboxController driverController = new XboxController(0);
-    private final XboxController operatorController = new XboxController(2);
+    private final ControllerIO controllerIO = ControllerIO.getInstance();
     private final Pi pi = new Pi();
     private final Lidar lidar = new Lidar();
     private ColorSensor colorSensor;
@@ -53,7 +51,7 @@ public class Robot extends TimedRobot {
                                      XboxController driverController, XboxController operatorController) {
         /*if (Pi.getIsTargetCamConnected() && Pi.getIsCargoCamConnected()) {
         }*/ //TODO: Add logic to pick between auto shot and hybrid
-        return new AutoShoot(drive, shooter, ingestor, operatorController, driverController);
+        return new AutoShoot(drive, shooter, ingestor, true);
     }
 
     public static boolean getIsAutoShootFinished() {
@@ -66,6 +64,8 @@ public class Robot extends TimedRobot {
 
     @Override
     public void robotInit() {
+        XboxController driverController = controllerIO.getDriverController();
+        XboxController operatorController = controllerIO.getOperatorController();
         colorSensor = new ColorSensor();
         swerve = new Drivetrain(driverController);
         ingestor = new Ingestor(colorSensor, operatorController, driverController);
@@ -95,8 +95,7 @@ public class Robot extends TimedRobot {
         startButton.whileActiveContinuous(new SafeZoneShoot(shooter, ingestor, false));
 
         JoystickButton rightBumper = new JoystickButton(operatorController, 6);
-        rightBumper.whileActiveContinuous(
-                new AutoShoot(swerve, shooter, ingestor, operatorController, driverController));
+        rightBumper.whileActiveContinuous(new AutoShoot(swerve, shooter, ingestor, true));
 
         JoystickButton leftBumper = new JoystickButton(operatorController, 5);
         leftBumper.whileActiveContinuous(new SafeZoneShoot(shooter, ingestor, true));
@@ -150,8 +149,7 @@ public class Robot extends TimedRobot {
     public void disabledInit() {
         //ranAuton = false;
         swerve.resetRobot();
-        stopControllerRumble(driverController);
-        stopControllerRumble(operatorController);
+        controllerIO.stopAllRumble();
         Shooter.setCoast(false);
         swerve.setBrakeMode(false);
         //climber.setUnlocked(false);
@@ -191,7 +189,7 @@ public class Robot extends TimedRobot {
     @Override
     public void testInit() {
         Shuffleboard.startRecording();
-        TestHood testHood = new TestHood(ingestor, shooter, swerve, climber, colorSensor, driverController, operatorController);
+        TestHoodAndShooter testHood = new TestHoodAndShooter(ingestor, shooter, swerve, climber, colorSensor);
         CommandScheduler.getInstance().schedule(testHood); // TODO: Add .andThen(nextTestCommand)
     }
 
@@ -245,16 +243,7 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopPeriodic() {
         ingestor.runIngestor();
-        swerve.runTurtleMode(driverController);
+        swerve.runTurtleMode();
         SmartDashboard.putData(swerve);
-    }
-
-    public static void stopControllerRumble(XboxController controller) {
-        rumbleController(controller, 0.0);
-    }
-
-    public static void rumbleController(XboxController controller, double rumbleSpeed) {
-        controller.setRumble(RumbleType.kLeftRumble, rumbleSpeed);
-        controller.setRumble(RumbleType.kRightRumble, rumbleSpeed);
     }
 }

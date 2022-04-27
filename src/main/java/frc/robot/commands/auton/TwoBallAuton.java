@@ -29,7 +29,7 @@ public class TwoBallAuton extends CommandBase {
         this.shooter = shooter;
         this.ingestor = ingestor;
         frontLeft = drive.getModules()[0];
-        autoShoot = new AutoShoot(drive, shooter, ingestor, null, null);
+        autoShoot = new AutoShoot(drive, shooter, ingestor, false);
         isAutoShootScheduled = false;
         addRequirements(drive, shooter, ingestor);
         drive.resetCurrentStep();
