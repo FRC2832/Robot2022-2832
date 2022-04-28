@@ -10,7 +10,6 @@ import frc.robot.commands.shooting.HubShoot;
 import frc.robot.commands.shooting.SafeZoneShoot;
 import frc.robot.commands.shooting.SideShoot;
 import frc.robot.subsystems.Climber;
-import frc.robot.subsystems.ColorSensor;
 import frc.robot.subsystems.ControllerIO;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Ingestor;
@@ -23,7 +22,6 @@ public class TestHoodAndShooter extends CommandBase {
     private final Shooter shooter;
     private final Drivetrain drivetrain;
     private final Climber climber;
-    private final ColorSensor colorSensor;
     private final Timer commandTimer;
     private byte commandStep;
     private double currentTargetRpm;
@@ -31,14 +29,13 @@ public class TestHoodAndShooter extends CommandBase {
     private boolean isHolding;
     private boolean encounteredFailure;
 
-    public TestHoodAndShooter(Ingestor ingestor, Shooter shooter, Drivetrain drivetrain, Climber climber, ColorSensor colorSensor) {
+    public TestHoodAndShooter(Ingestor ingestor, Shooter shooter, Drivetrain drivetrain, Climber climber) {
         super();
         this.ingestor = ingestor;
         this.shooter = shooter;
         this.drivetrain = drivetrain;
         this.climber = climber;
-        this.colorSensor = colorSensor;
-        addRequirements(ingestor, shooter, drivetrain, climber, colorSensor);
+        addRequirements(ingestor, shooter, drivetrain, climber);
         commandTimer = new Timer();
     }
 

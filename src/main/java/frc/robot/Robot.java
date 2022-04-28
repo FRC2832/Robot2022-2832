@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.RunClimber;
 import frc.robot.commands.auton.CenterSearchAuton;
@@ -22,6 +23,8 @@ import frc.robot.commands.driving.CenterToCargo;
 import frc.robot.commands.driving.CenterToHub;
 import frc.robot.commands.driving.DriveStickSlew;
 import frc.robot.commands.shooting.*;
+import frc.robot.commands.testing.AwaitControllerInput;
+import frc.robot.commands.testing.TestAutoShoot;
 import frc.robot.commands.testing.TestHoodAndShooter;
 import frc.robot.constants.ShooterConstants;
 import frc.robot.subsystems.*;
@@ -89,30 +92,30 @@ public class Robot extends TimedRobot {
         climber.setDefaultCommand(new RunClimber(climber, operatorController, shooter));
         //swerve.setDefaultCommand(new TurtleMode(swerve, driverController));
 
-        JoystickButton selectButton = new JoystickButton(operatorController, 7);
+        JoystickButton selectButton = new JoystickButton(operatorController, XboxController.Button.kBack.value);
         selectButton.whileActiveContinuous(new SideShoot(shooter, ingestor));
-        JoystickButton startButton = new JoystickButton(operatorController, 8);
+        JoystickButton startButton = new JoystickButton(operatorController, XboxController.Button.kStart.value);
         startButton.whileActiveContinuous(new SafeZoneShoot(shooter, ingestor, false));
 
-        JoystickButton rightBumper = new JoystickButton(operatorController, 6);
+        JoystickButton rightBumper = new JoystickButton(operatorController, XboxController.Button.kRightBumper.value);
         rightBumper.whileActiveContinuous(new AutoShoot(swerve, shooter, ingestor, true));
 
-        JoystickButton leftBumper = new JoystickButton(operatorController, 5);
+        JoystickButton leftBumper = new JoystickButton(operatorController, XboxController.Button.kLeftBumper.value);
         leftBumper.whileActiveContinuous(new SafeZoneShoot(shooter, ingestor, true));
 
-        JoystickButton aButton = new JoystickButton(driverController, 1);
+        JoystickButton aButton = new JoystickButton(driverController, XboxController.Button.kA.value);
         aButton.whileActiveContinuous(new HubShoot(shooter, ingestor, true));
 
-        JoystickButton bButton = new JoystickButton(driverController, 2);
+        JoystickButton bButton = new JoystickButton(driverController, XboxController.Button.kB.value);
         bButton.whileActiveContinuous(new HubShoot(shooter, ingestor, false));
 
-        JoystickButton driverStartButton = new JoystickButton(driverController, 8);
+        JoystickButton driverStartButton = new JoystickButton(driverController, XboxController.Button.kStart.value);
         driverStartButton.whileActiveContinuous(new ShooterBackwards(shooter, ingestor));
 
-        JoystickButton xButton = new JoystickButton(driverController, 3);
+        JoystickButton xButton = new JoystickButton(driverController, XboxController.Button.kX.value);
         xButton.whileActiveContinuous(new CenterToHub(swerve));
 
-        JoystickButton yButton = new JoystickButton(driverController, 4);
+        JoystickButton yButton = new JoystickButton(driverController, XboxController.Button.kY.value);
         yButton.whileActiveContinuous(new CenterToCargo(swerve));
 
         // this.setNetworkTablesFlushEnabled(true); //turn off 20ms Dashboard update
@@ -189,8 +192,13 @@ public class Robot extends TimedRobot {
     @Override
     public void testInit() {
         Shuffleboard.startRecording();
-        TestHoodAndShooter testHood = new TestHoodAndShooter(ingestor, shooter, swerve, climber, colorSensor);
-        CommandScheduler.getInstance().schedule(testHood); // TODO: Add .andThen(nextTestCommand)
+        TestHoodAndShooter testHood = new TestHoodAndShooter(ingestor, shooter, swerve, climber);
+        AwaitControllerInput awaitInput = new AwaitControllerInput(swerve, climber, ingestor, shooter);
+        TestHoodAndShooter testHoodAndShooter = new TestHoodAndShooter(ingestor, shooter, swerve, climber);
+        TestAutoShoot testAutoShoot = new TestAutoShoot(ingestor, shooter, swerve, climber);
+        // Despite the name, TestAutoShoot only checks the hood angle and shooter RPM values used by AutoShoot. It does not run the AutoShoot command.
+        SequentialCommandGroup testRoutine = new SequentialCommandGroup(testHood, awaitInput, testHoodAndShooter, awaitInput, testAutoShoot);
+        CommandScheduler.getInstance().schedule(testRoutine); // TODO: Add .andThen(nextTestCommand)
     }
 
     @Override
