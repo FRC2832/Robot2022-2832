@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.AutoShoot;
+import frc.robot.commands.AutonAlt;
 import frc.robot.commands.AutonCenterSearch;
 import frc.robot.commands.AutonThreeBall;
 import frc.robot.commands.AutonTwoBall;
@@ -41,6 +42,7 @@ public class Robot extends TimedRobot {
     private Command autonTwoBall;
     private Command autonCenterSearch;
     private Command autonThreeBall;
+    private Command autonAlt;
     private SendableChooser<Command> autonChooser = new SendableChooser<>();
     //private boolean ranAuton = false;
 
@@ -123,6 +125,7 @@ public class Robot extends TimedRobot {
         autonTwoBall = new AutonTwoBall(swerve, shooter, ingestor);
         autonCenterSearch = new AutonCenterSearch(swerve, shooter, ingestor);
         autonThreeBall = new AutonThreeBall(swerve, shooter, ingestor);
+        autonAlt = new AutonAlt(swerve, shooter, ingestor);
 
         autonChooser.setDefaultOption("Two ball (anywhere)", autonTwoBall);
         autonChooser.addOption("Search (center, faces hub)", autonCenterSearch);
@@ -156,6 +159,8 @@ public class Robot extends TimedRobot {
         // } else {
         //     autonCom = new AutonCenterSearch(swerve, shooter, ingestor);
         // }
+
+        autonCom = autonAlt;
 
         if (autonCom != null) {
             CommandScheduler.getInstance().schedule(autonCom);
