@@ -161,6 +161,7 @@ public class Pi extends SubsystemBase {
         if (size > 1) {
             index = (int) Math.ceil(size / 2.0);
         }
+        /*
         double targetX = targetCenterXArray[index].doubleValue(); // TODO: Is there less overhang with casting or calling
         // doubleValue()?
         targetCenterYOutput = targetCenterYArray[index].doubleValue();
@@ -170,10 +171,13 @@ public class Pi extends SubsystemBase {
             oldTargetY = targetCenterYOutput;
         }
         targetCenterXOutput = targetX;
-        if (targetX < ((CAM_X_RES / 2) - (CAM_X_RES * 0.05))) {
+        */
+        targetCenterXOutput = averageTargets(targetCenterXArray);
+        targetCenterYOutput = averageTargets(targetCenterYArray);
+        if (targetCenterXOutput < ((CAM_X_RES / 2) - (CAM_X_RES * 0.05))) {
             targetMoveRight = false;
             targetMoveLeft = true;
-        } else if (targetX > ((CAM_X_RES / 2) + (CAM_X_RES * 0.05))) {
+        } else if (targetCenterXOutput > ((CAM_X_RES / 2) + (CAM_X_RES * 0.05))) {
             targetMoveLeft = false;
             targetMoveRight = true;
         } else {
@@ -199,6 +203,17 @@ public class Pi extends SubsystemBase {
         SmartDashboard.putNumber("Centering PID error", pid.getPositionError());
         SmartDashboard.putNumber("Centering PID value", pidVal);
 
+    }
+
+    public double averageTargets(Number[] numbers) {
+        if(numbers.length == 0) {
+            return -1;
+        }
+        double total = 0;
+        for(int i=0; i<numbers.length; i++) {
+            total += numbers[i].doubleValue();
+        }
+        return total/numbers.length;
     }
 
     public void sortTargets() {
