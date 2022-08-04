@@ -336,9 +336,9 @@ class TargetPipeline:
         """initializes all values to presets or None if need to be set
         """
 
-        self.__hsv_threshold_hue = [42.08633093525179, 80.17064846416386]
-        self.__hsv_threshold_saturation = [137.58992805755395, 255.0]
-        self.__hsv_threshold_value = [22.93165467625899, 255.0]
+        self.__hsv_threshold_hue = [54.733974014817996, 69.44673212965898]
+        self.__hsv_threshold_saturation = [147.36155105766133, 255.0]
+        self.__hsv_threshold_value = [38.91536024911412, 255.0]
 
         self.hsv_threshold_output = None
 
