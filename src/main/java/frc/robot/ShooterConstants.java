@@ -72,8 +72,8 @@ public class ShooterConstants {
         // 36 degrees is when the hood is practically all the way up at knob 6
         // formula for measured angle conversion to angle in this table: 88 - measured
         // value + 20
-        DIST_HOOD_TABLE.add(new Pair<>(60d, 31d)); // hood 2.5
-        DIST_HOOD_TABLE.add(new Pair<>(72d, 31d)); // hood 2.5
+        DIST_HOOD_TABLE.add(new Pair<>(60d, 27d)); // hood 2.5
+        DIST_HOOD_TABLE.add(new Pair<>(72d, 29d)); // hood 2.5
         DIST_HOOD_TABLE.add(new Pair<>(84d, 33d)); // hood 2.75
         DIST_HOOD_TABLE.add(new Pair<>(96d, 38d)); // hood 3
         DIST_HOOD_TABLE.add(new Pair<>(108d, 42d)); // hood 3.75
