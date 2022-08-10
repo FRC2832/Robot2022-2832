@@ -177,6 +177,10 @@ public class Robot extends TimedRobot {
     @Override
     public void robotPeriodic() {
         CommandScheduler.getInstance().run();
+        SmartDashboard.putNumber("TargetX", Pi.getTargetCenterX());
+        SmartDashboard.putNumber("TargetY", Pi.getTargetCenterY());
+        SmartDashboard.putNumber("CargoX", Pi.getCargoCenterX());
+        SmartDashboard.putNumber("CargoY", Pi.getCargoCenterY());
         // have the field position constantly update
         //swerve.updateOdometry();
         // SmartDashboard.putNumber("XPosition", odometry.getXPosition());

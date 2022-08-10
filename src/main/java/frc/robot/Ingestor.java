@@ -232,7 +232,7 @@ public class Ingestor extends SubsystemBase {
 
     public boolean sendCargoToShooter() {
         // TODO: replace timer with prox/color sensor
-        if (!sendTimerStarted) {
+        if (sendTimer.get() < 0.001) {
             sendTimer.start();
             sendTimerStarted = true;
         }

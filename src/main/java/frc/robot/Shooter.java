@@ -17,7 +17,7 @@ import frc.robot.commands.DribbleShoot;
 
 public class Shooter extends SubsystemBase {
     private static final double SENSOR_UNITS_TO_RPM = 3.414;
-    // private static final int HOOD_SENSOR_ACTIVE = 700;
+    private static final int HOOD_SENSOR_ACTIVE = 700;
     private static final int MAX_ANGLE_COUNTS = 400;
     private static final int MIN_ANGLE = 20;
     private static final int MAX_ANGLE = 70;
@@ -117,10 +117,13 @@ public class Shooter extends SubsystemBase {
         SmartDashboard.putNumber("Shot Distance", getShotDist());
         SmartDashboard.putNumber("Calc RPM", getTargetRpm());
         SmartDashboard.putNumber("Calc Hood Angle", getTargetHoodAngle());
+        SmartDashboard.putBoolean("IsHomed", hoodBottom());
+        SmartDashboard.putNumber("Shooter Temperature", getShooterTemperature());
+
         // if the limit switch is pressed, reset the hood angle position
         // when we exit the home position, save the zero position
         if (lastHomed && !hoodBottom()) {
-            hoodMotor.setSelectedSensorPosition(0);
+            hoodMotor.setSelectedSensorPosition(20);
             isHomed = true;
         }
         // if (hoodMotor.isRevLimitSwitchClosed() > 0) {
@@ -186,7 +189,7 @@ public class Shooter extends SubsystemBase {
     }
 
     public boolean hoodBottom() {
-        return hoodMotor.isRevLimitSwitchClosed() > 0;
+        return hoodMotor.getSensorCollection().getAnalogInRaw() > HOOD_SENSOR_ACTIVE;
     }
 
     public void setShooterRpm(double rpm) {

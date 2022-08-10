@@ -44,7 +44,7 @@ public class AutonTwoBall extends CommandBase {
         // drive.odometry.resetPosition(new Pose2d(8.586, 6.05, new Rotation2d()), new
         // Rotation2d());
         drive.resetCurrentStep();
-        startAngle = drive.getAngle() % 360;
+        startAngle = drive.getAngle();
         startEncoderCount = frontLeft.getDistance();
         isAutoShootScheduled = false;
         timer.reset();
@@ -109,6 +109,8 @@ public class AutonTwoBall extends CommandBase {
                 if (distance >= 0.5) {
                     drive.incrementCurrentStep();
                     timer.reset();
+                    //during the first 2 steps, the robot drifts sideways, reset zero angle so that the turn is better
+                    startAngle = drive.getAngle();
                     // nextStepStartPose = drive.getPose();
                 } /*
                    * else {
@@ -121,7 +123,7 @@ public class AutonTwoBall extends CommandBase {
                 ingestor.threeBallAutonIngest();
                 ingestor.liftIngestor();
                 shooter.setShooterRpm(2300.0);
-                double angleDifference = Math.abs(drive.getAngle() % 360 - startAngle);
+                double angleDifference = Math.abs(drive.getAngle() - startAngle);
                 if (angleDifference >= 170.0) {
                     drive.incrementCurrentStep();
                     timer.reset();
