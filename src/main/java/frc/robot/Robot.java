@@ -72,7 +72,7 @@ public class Robot extends TimedRobot {
 
         CommandScheduler.getInstance().registerSubsystem(swerve, colorSensor);
         swerve.setDefaultCommand(new DriveStickSlew(swerve, DRIVER_CONTROLLER));
-        shooter.setDefaultCommand(new ShooterOff(shooter));
+        shooter.setDefaultCommand(new ShooterOff(shooter, OPERATOR_CONTROLLER));
         climber.setDefaultCommand(new RunClimber(climber, OPERATOR_CONTROLLER, shooter));
         //swerve.setDefaultCommand(new TurtleMode(swerve, driverController));
 
@@ -84,13 +84,13 @@ public class Robot extends TimedRobot {
         JoystickButton rightBumper = new JoystickButton(OPERATOR_CONTROLLER, 6);
         rightBumper.whileActiveContinuous(new AutoShoot(swerve, shooter, ingestor, OPERATOR_CONTROLLER, DRIVER_CONTROLLER));
 
-        JoystickButton leftBumper = new JoystickButton(OPERATOR_CONTROLLER, 5);
+        JoystickButton leftBumper = new JoystickButton(OPERATOR_CONTROLLER, 1);
         leftBumper.whileActiveContinuous(new SafeZoneShoot(shooter, ingestor, true));
 
-        JoystickButton aButton = new JoystickButton(DRIVER_CONTROLLER, 1);
+        JoystickButton aButton = new JoystickButton(OPERATOR_CONTROLLER, 4);
         aButton.whileActiveContinuous(new HubShoot(shooter, ingestor, true));
 
-        JoystickButton bButton = new JoystickButton(DRIVER_CONTROLLER, 2);
+        JoystickButton bButton = new JoystickButton(OPERATOR_CONTROLLER, 5);
         bButton.whileActiveContinuous(new HubShoot(shooter, ingestor, false));
 
         JoystickButton driverStartButton = new JoystickButton(DRIVER_CONTROLLER, 8);
@@ -219,7 +219,7 @@ public class Robot extends TimedRobot {
     public void teleopPeriodic() {
         ingestor.runIngestor();
         swerve.runTurtleMode(DRIVER_CONTROLLER);
-        SmartDashboard.putData(swerve);
+        //SmartDashboard.putData(swerve);
     }
 
     public static void stopControllerRumble(XboxController controller) {

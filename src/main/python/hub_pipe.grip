@@ -10,7 +10,7 @@
       <grip:Input step="0" socket="1">
         <value>
           <double>53.11526897884677</double>
-          <double>78.53764122056808</double>
+          <double>102.78006546299231</double>
         </value>
       </grip:Input>
       <grip:Input step="0" socket="2">
@@ -77,12 +77,12 @@
   </steps>
   <connections>
     <grip:Connection>
-      <grip:Output source="0" socket="0" previewed="true"/>
-      <grip:Input step="0" socket="0"/>
-    </grip:Connection>
-    <grip:Connection>
       <grip:Output step="0" socket="0" previewed="false"/>
       <grip:Input step="1" socket="0"/>
+    </grip:Connection>
+    <grip:Connection>
+      <grip:Output source="0" socket="0" previewed="true"/>
+      <grip:Input step="0" socket="0"/>
     </grip:Connection>
     <grip:Connection>
       <grip:Output step="1" socket="0" previewed="false"/>
